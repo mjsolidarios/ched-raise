@@ -3,43 +3,9 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Clock } from "lucide-react"
 import { motion } from "framer-motion"
+import { useRef } from "react"
 
 export function Program() {
-    const SessionCard = ({ title, type, desc, time, index }: { title: string, type: string, desc: string, time: string, index: number }) => (
-        <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.1 }}
-        >
-            <Card className="glass-card mb-4 border-white/10 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 group relative overflow-hidden">
-                {/* Animated background gradient */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                
-                <CardContent className="p-6 flex flex-col md:flex-row gap-6 md:items-start relative z-10">
-                    <motion.div 
-                        className="flex-shrink-0 flex items-center gap-2 text-blue-400 group-hover:text-accent transition-all text-sm font-bold md:w-32 pt-1 uppercase tracking-wide"
-                        whileHover={{ scale: 1.05 }}
-                    >
-                        <motion.div
-                            whileHover={{ rotate: 360 }}
-                            transition={{ duration: 0.5 }}
-                        >
-                            <Clock className="w-5 h-5" />
-                        </motion.div>
-                        {time}
-                    </motion.div>
-                    <div className="space-y-2 flex-grow">
-                        <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
-                            <h4 className="text-xl font-bold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-300 group-hover:to-teal-300 transition-all">{title}</h4>
-                            <Badge variant="outline" className="border-white/20 text-slate-400 group-hover:border-primary/50 group-hover:text-primary group-hover:bg-primary/10 transition-all">{type}</Badge>
-                        </div>
-                        <p className="text-slate-400 group-hover:text-slate-300 leading-relaxed transition-colors">{desc}</p>
-                    </div>
-                </CardContent>
-            </Card>
-        </motion.div>
-    )
-
     return (
         <section id="program" className="py-24 bg-slate-950 relative">
             {/* Background decoration */}
@@ -139,5 +105,72 @@ export function Program() {
                 </Tabs>
             </div>
         </section>
+    )
+}
+
+function SessionCard({ title, type, desc, time, index }: { title: string, type: string, desc: string, time: string, index: number }) {
+    const divRef = useRef<HTMLDivElement>(null)
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!divRef.current) return
+
+        const rect = divRef.current.getBoundingClientRect()
+        const x = e.clientX - rect.left
+        const y = e.clientY - rect.top
+
+        divRef.current.style.setProperty("--mouse-x", `${x}px`)
+        divRef.current.style.setProperty("--mouse-y", `${y}px`)
+    }
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.1 }}
+        >
+            <Card
+                ref={divRef as any}
+                onMouseMove={handleMouseMove}
+                className="glass-card mb-4 border-white/10 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 group relative overflow-hidden"
+                style={{
+                    // @ts-ignore
+                    "--mouse-x": "0px",
+                    "--mouse-y": "0px",
+                } as React.CSSProperties}
+            >
+                {/* Spotlight Gradient - Primary Color */}
+                <div
+                    className="absolute inset-0 z-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100 pointer-events-none"
+                    style={{
+                        background: "radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), hsl(var(--primary) / 0.15), transparent 40%)"
+                    }}
+                />
+
+                {/* Animated background gradient */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+
+                <CardContent className="p-6 flex flex-col md:flex-row gap-6 md:items-start relative z-10">
+                    <motion.div
+                        className="flex-shrink-0 flex items-center gap-2 text-blue-400 group-hover:text-accent transition-all text-sm font-bold md:w-32 pt-1 uppercase tracking-wide"
+                        whileHover={{ scale: 1.05 }}
+                    >
+                        <motion.div
+                            whileHover={{ rotate: 360 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <Clock className="w-5 h-5" />
+                        </motion.div>
+                        {time}
+                    </motion.div>
+                    <div className="space-y-2 flex-grow">
+                        <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
+                            <h4 className="text-xl font-bold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-300 group-hover:to-teal-300 transition-all">{title}</h4>
+                            <Badge variant="outline" className="border-white/20 text-slate-400 group-hover:border-primary/50 group-hover:text-primary group-hover:bg-primary/10 transition-all">{type}</Badge>
+                        </div>
+                        <p className="text-slate-400 group-hover:text-slate-300 leading-relaxed transition-colors">{desc}</p>
+                    </div>
+                </CardContent>
+            </Card>
+        </motion.div>
     )
 }

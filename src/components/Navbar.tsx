@@ -51,19 +51,7 @@ export function Navbar() {
                 "flex gap-1",
                 isMobile ? "flex-col items-start w-full gap-2" : "items-center"
             )}>
-                <Link
-                    to="/"
-                    className={cn(
-                        "text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 py-2 px-3 rounded-full transition-all",
-                        isMobile && "w-full text-left pl-4"
-                    )}
-                    onClick={() => {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                        setIsOpen(false);
-                    }}
-                >
-                    Home
-                </Link>
+
                 {["About", "Objectives", "Program"].map((item) => (
                     <a
                         key={item}
@@ -96,7 +84,13 @@ export function Navbar() {
         <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-background/60 backdrop-blur-xl">
             <div className="container mx-auto flex items-center justify-between px-4 h-16">
                 <div className="flex items-center gap-3">
-                    <Link to="/">
+                    <Link
+                        to="/"
+                        onClick={() => {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                            setIsOpen(false);
+                        }}
+                    >
                         <img src="/logo-light.svg" alt="CHED RAISE Logo" className="h-8 w-auto" />
                     </Link>
                 </div>

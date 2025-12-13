@@ -98,8 +98,8 @@ export function Hero() {
                             transition={{ duration: 0.5, delay: 0.3 }}
                             className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-4 leading-tight py-2 relative font-rubik"
                         >
-                            RAISE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#08349f] via-cyan-400 to-teal-400 animate-gradient">2026</span>
-                            CHED RAISE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#08349f] via-cyan-400 to-teal-400 animate-gradient">2026</span>
+                            RAISE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#08349f] via-cyan-400 to-teal-400 animate-gradient pr-4">2026</span>
+
                             <motion.span
                                 className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-cyan-400/20 to-teal-400/20 blur-2xl -z-10"
                                 animate={{ opacity: [0.3, 0.6, 0.3] }}
@@ -134,7 +134,7 @@ export function Hero() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
                     whileHover={{ scale: 1.02 }}
-                    className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 mb-8 p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 backdrop-blur-md shadow-2xl shadow-primary/5 relative overflow-hidden group"
+                    className="flex flex-col md:flex-row items-start md:items-center md:justify-center gap-4 md:gap-8 mb-8 p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 backdrop-blur-md shadow-2xl shadow-primary/5 relative overflow-hidden group"
                 >
                     <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <div className="flex items-center gap-3 text-slate-200 relative z-10">

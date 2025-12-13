@@ -13,7 +13,7 @@ export function Partners() {
         >
             {/* Shimmer effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-            
+
             <span className="text-slate-400 font-bold group-hover:text-white text-center relative z-10 transition-colors">{name}</span>
         </motion.div>
     )
@@ -44,8 +44,7 @@ export function Partners() {
                                 src="/nisu-logo.png"
                                 alt="NISU Logo"
                                 className="h-20 w-auto drop-shadow-[0_0_20px_rgba(8,52,159,0.3)]"
-                                whileHover={{ rotate: [0, -5, 5, 0] }}
-                                transition={{ duration: 0.5 }}
+
                             />
                             <span className="text-xl font-bold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-blue-300 transition-all">Northern Iloilo State University</span>
                         </motion.a>
@@ -65,8 +64,7 @@ export function Partners() {
                                 src="/wvsu-logo.png"
                                 alt="WVSU Logo"
                                 className="h-20 w-auto drop-shadow-[0_0_20px_rgba(20,184,166,0.3)]"
-                                whileHover={{ rotate: [0, 5, -5, 0] }}
-                                transition={{ duration: 0.5 }}
+
                             />
                             <span className="text-xl font-bold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-teal-300 group-hover:to-cyan-300 transition-all">West Visayas State University</span>
                         </motion.a>

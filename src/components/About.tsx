@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { BrainCircuit, Lightbulb, Users, ShieldCheck } from "lucide-react"
 import { motion } from "framer-motion"
+import { useRef } from "react"
 
 export function About() {
     return (
@@ -43,38 +44,73 @@ export function About() {
                             { icon: ShieldCheck, color: "text-teal-400", title: "Ethical", desc: "Responsible adoption grounded in human values." },
                             { icon: Users, color: "text-blue-400", title: "Inclusivity", desc: "Strengthening collaboration between academe, industry, and government." }
                         ].map((item, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
-                                whileHover={{ y: -8 }}
-                            >
-                                <Card className="glass-card bg-gradient-to-br from-white/10 to-white/5 border-white/10 hover:border-white/30 hover:from-white/15 hover:to-white/10 transition-all duration-300 h-full shadow-xl shadow-primary/5 hover:shadow-2xl hover:shadow-primary/10 relative overflow-hidden group">
-                                    {/* Gradient overlay on hover */}
-                                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-teal-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                                    <CardContent className="p-6 relative z-10">
-                                        <motion.div
-                                            whileHover={{ scale: 1.1, rotate: 5 }}
-                                            transition={{ type: "spring", stiffness: 300 }}
-                                            className="inline-block"
-                                        >
-                                            <div className="relative">
-                                                <div className="absolute inset-0 blur-xl opacity-50" style={{ backgroundColor: item.color.replace('text-', '') }} />
-                                                <item.icon className={`h-10 w-10 ${item.color} mb-4 relative`} />
-                                            </div>
-                                        </motion.div>
-                                        <h3 className="text-lg font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-blue-300 transition-all">{item.title}</h3>
-                                        <p className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">{item.desc}</p>
-                                    </CardContent>
-                                </Card>
-                            </motion.div>
+                            <SpotlightCard key={index} item={item} index={index} />
                         ))}
                     </div>
                 </div>
             </div>
         </section>
+    )
+}
+
+function SpotlightCard({ item, index }: { item: any, index: number }) {
+    const divRef = useRef<HTMLDivElement>(null)
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!divRef.current) return
+
+        const rect = divRef.current.getBoundingClientRect()
+        const x = e.clientX - rect.left
+        const y = e.clientY - rect.top
+
+        divRef.current.style.setProperty("--mouse-x", `${x}px`)
+        divRef.current.style.setProperty("--mouse-y", `${y}px`)
+    }
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            whileHover={{ y: -8 }}
+        >
+            <Card
+                ref={divRef as any}
+                onMouseMove={handleMouseMove}
+                className="glass-card bg-gradient-to-br from-white/10 to-white/5 border-white/10 hover:border-white/30 hover:from-white/15 hover:to-white/10 transition-all duration-300 h-full shadow-xl shadow-primary/5 hover:shadow-2xl hover:shadow-primary/10 relative overflow-hidden group"
+                style={{
+                    // @ts-ignore
+                    "--mouse-x": "0px",
+                    "--mouse-y": "0px",
+                } as React.CSSProperties}
+            >
+                {/* Spotlight Gradient - Primary Color */}
+                <div
+                    className="absolute inset-0 z-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100 pointer-events-none"
+                    style={{
+                        background: "radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), hsl(var(--primary) / 0.15), transparent 40%)"
+                    }}
+                />
+
+                {/* Gradient overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-teal-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                <CardContent className="p-6 relative z-10">
+                    <motion.div
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                        className="inline-block"
+                    >
+                        <div className="relative">
+                            <div className="absolute inset-0 blur-xl opacity-50" style={{ backgroundColor: item.color.replace('text-', '') }} />
+                            <item.icon className={`h-10 w-10 ${item.color} mb-4 relative`} />
+                        </div>
+                    </motion.div>
+                    <h3 className="text-lg font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-blue-300 transition-all">{item.title}</h3>
+                    <p className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">{item.desc}</p>
+                </CardContent>
+            </Card>
+        </motion.div>
     )
 }
