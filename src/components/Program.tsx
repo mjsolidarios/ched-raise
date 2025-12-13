@@ -41,7 +41,7 @@ export function Program() {
                 </div>
 
                 <Tabs defaultValue="students" className="max-w-5xl mx-auto">
-                    <TabsList className="grid w-full grid-cols-3 bg-slate-900/50 border border-white/10 p-1.5 h-auto rounded-xl mb-12 backdrop-blur-sm">
+                    <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 bg-slate-900/50 border border-white/10 p-1.5 h-auto rounded-xl mb-12 backdrop-blur-sm">
                         <TabsTrigger value="students" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white py-3 font-semibold rounded-lg transition-all text-slate-400">Students</TabsTrigger>
                         <TabsTrigger value="teachers" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white py-3 font-semibold rounded-lg transition-all text-slate-400">Teachers</TabsTrigger>
                         <TabsTrigger value="admins" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white py-3 font-semibold rounded-lg transition-all text-slate-400">Administrators</TabsTrigger>

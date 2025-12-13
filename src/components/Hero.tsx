@@ -13,44 +13,56 @@ export function Hero() {
                 <div className="absolute top-[40%] left-[60%] w-64 h-64 bg-accent/30 blur-[100px] rounded-full mix-blend-screen opacity-50 animate-bounce duration-[10000ms]" />
             </div>
 
-            <div className="container px-4 relative z-10 text-center flex flex-col items-center">
+            <div className="container px-4 relative z-10 flex flex-col items-center">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <Badge variant="outline" className="mb-8 py-1.5 px-4 border-primary/50 text-blue-200 bg-blue-900/20 hover:bg-blue-900/30 transition-colors uppercase tracking-widest text-xs font-semibold backdrop-blur-sm">
+                    <Badge variant="outline" className="mb-12 py-1.5 px-4 border-primary/50 text-blue-200 bg-blue-900/20 hover:bg-blue-900/30 transition-colors uppercase tracking-widest text-xs font-semibold backdrop-blur-sm">
                         National Industry–Academe Collaborative Conference
                     </Badge>
                 </motion.div>
 
-                <motion.h1
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.1 }}
-                    className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white mb-6 leading-[1.1]"
-                >
-                    CHED RAISE <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-400 to-teal-400">2025</span>
-                </motion.h1>
+                <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 mb-16 max-w-5xl mx-auto">
+                    {/* Logo Side */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8, x: -50 }}
+                        animate={{ opacity: 1, scale: 1, x: 0 }}
+                        transition={{ duration: 0.6 }}
+                        className="flex-shrink-0"
+                    >
+                        <img src="/r-icon.svg" alt="R Icon" className="h-48 md:h-64 w-auto drop-shadow-[0_0_50px_rgba(79,70,229,0.3)]" />
+                    </motion.div>
 
-                <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    className="text-lg md:text-xl font-medium text-indigo-200 mb-2"
-                >
-                    Responding through AI for Societal Empowerment
-                </motion.p>
-
-                <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
-                    className="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto mb-10 leading-relaxed font-light"
-                >
-                    Empowering Minds, Transforming Communities through <br className="hidden md:block" />
-                    <span className="text-white font-medium">Responsible and Inclusive AI</span>
-                </motion.p>
+                    {/* Text Side */}
+                    <div className="flex flex-col text-center md:text-left">
+                        <motion.h2
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.5, delay: 0.2 }}
+                            className="text-4xl md:text-5xl font-light text-white mb-2 tracking-tight"
+                        >
+                            CHED
+                        </motion.h2>
+                        <motion.h1
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.5, delay: 0.3 }}
+                            className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-4 leading-none"
+                        >
+                            RAISE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#08349f] via-cyan-400 to-teal-400">2025</span>
+                        </motion.h1>
+                        <motion.p
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.5, delay: 0.4 }}
+                            className="text-lg md:text-2xl font-medium text-slate-300 max-w-md"
+                        >
+                            Responding through AI for Societal Empowerment
+                        </motion.p>
+                    </div>
+                </div>
 
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -79,27 +91,13 @@ export function Hero() {
                     transition={{ duration: 0.5, delay: 0.5 }}
                     className="flex flex-col sm:flex-row items-center justify-center gap-4"
                 >
-                    <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 h-14 px-8 text-lg font-bold shadow-[0_0_30px_rgba(251,191,36,0.3)] transition-all hover:scale-105">
+                    <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 h-14 px-8 text-lg font-bold shadow-[0_0_30px_rgba(8,52,159,0.5)] transition-all hover:scale-105 active:scale-95 transition-transform">
                         Register Now
                         <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
-                    <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-white/10 hover:bg-white/5 bg-transparent backdrop-blur-sm">
+                    <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-white/10 hover:bg-white/5 bg-transparent backdrop-blur-sm active:scale-95 transition-transform">
                         View Agenda
                     </Button>
-                </motion.div>
-
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 1, delay: 0.8 }}
-                    className="mt-20 pt-10 border-t border-white/5 w-full max-w-4xl flex flex-col md:flex-row justify-between items-center text-sm text-slate-500 gap-4"
-                >
-                    <span>Lead Institutions:</span>
-                    <div className="flex gap-6 font-semibold text-slate-300">
-                        <span>Northern Iloilo State University (NISU)</span>
-                        <span>•</span>
-                        <span>West Visayas State University (WVSU)</span>
-                    </div>
                 </motion.div>
             </div>
         </section>

@@ -18,15 +18,14 @@ export function Navbar() {
             <a
                 href={href}
                 className={cn(
-                    "text-sm font-medium transition-all duration-300 relative py-1 px-2 rounded-md hover:bg-white/5",
-                    isActive ? "text-accent" : "text-slate-300 hover:text-white"
+                    "text-sm font-medium transition-all duration-300 relative py-2 px-4 rounded-full",
+                    isActive
+                        ? "bg-primary text-white shadow-[0_0_20px_rgba(8,52,159,0.5)]"
+                        : "text-slate-300 hover:text-white hover:bg-white/5"
                 )}
                 onClick={() => setIsOpen(false)}
             >
                 {children}
-                {isActive && (
-                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-accent shadow-[0_0_10px_rgba(251,191,36,0.5)] rounded-full" />
-                )}
             </a>
         )
     }
@@ -59,7 +58,6 @@ export function Navbar() {
 
                 {/* Mobile Nav */}
                 <div className="md:hidden flex items-center gap-4">
-                    <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">It's Free</Button>
                     <Sheet open={isOpen} onOpenChange={setIsOpen}>
                         <SheetTrigger asChild>
                             <Button variant="ghost" size="icon">

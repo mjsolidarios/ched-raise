@@ -30,27 +30,29 @@ export function Partners() {
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5 }}
-                            className="flex items-center gap-4"
+                            className="flex items-center gap-4 group"
                         >
-                            {/* Placeholder for NISU Logo */}
-                            <div className="w-16 h-16 rounded-full bg-indigo-900/50 flex items-center justify-center border border-indigo-500/30">
-                                <span className="font-bold text-indigo-200">NISU</span>
-                            </div>
-                            <span className="text-xl font-bold text-white">Northern Iloilo State University</span>
+                            <img
+                                src="/nisu-logo.png"
+                                alt="NISU Logo"
+                                className="h-20 w-auto drop-shadow-[0_0_15px_rgba(79,70,229,0.2)] group-hover:scale-105 transition-transform duration-300"
+                            />
+                            <span className="text-xl font-bold text-white group-hover:text-indigo-300 transition-colors">Northern Iloilo State University</span>
                         </motion.div>
-                        <div className="hidden md:block w-px h-12 bg-white/10" />
+                        <div className="hidden md:block w-px h-16 bg-gradient-to-b from-transparent via-white/10 to-transparent" />
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5 }}
-                            className="flex items-center gap-4"
+                            className="flex items-center gap-4 group"
                         >
-                            {/* Placeholder for WVSU Logo */}
-                            <div className="w-16 h-16 rounded-full bg-teal-900/50 flex items-center justify-center border border-teal-500/30">
-                                <span className="font-bold text-teal-200">WVSU</span>
-                            </div>
-                            <span className="text-xl font-bold text-white">West Visayas State University</span>
+                            <img
+                                src="/wvsu-logo.png"
+                                alt="WVSU Logo"
+                                className="h-20 w-auto drop-shadow-[0_0_15px_rgba(20,184,166,0.2)] group-hover:scale-105 transition-transform duration-300"
+                            />
+                            <span className="text-xl font-bold text-white group-hover:text-teal-300 transition-colors">West Visayas State University</span>
                         </motion.div>
                     </div>
                 </div>

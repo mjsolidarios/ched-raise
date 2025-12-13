@@ -21,7 +21,7 @@ export function About() {
                         </div>
                         <h2 className="text-3xl md:text-5xl font-bold text-white">
                             Beyond Modernization: <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-teal-400">AI for Nation Building</span>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#08349f] to-teal-400">AI for Nation Building</span>
                         </h2>
                         <div className="space-y-6 text-lg text-slate-400 leading-relaxed">
                             <p>

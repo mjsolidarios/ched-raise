@@ -23,8 +23,8 @@
         --popover: 224 71% 4%;
         --popover-foreground: 210 40% 98%;
 
-        --primary: 230 85% 60%;
-        /* Vibrant Indigo */
+        --primary: 222.5 90% 32.7%;
+        /* Requested #08349f */
         --primary-foreground: 210 40% 98%;
 
         --secondary: 160 84% 39%;
@@ -34,9 +34,9 @@
         --muted: 217 33% 17%;
         --muted-foreground: 215 20% 65%;
 
-        --accent: 45 93% 47%;
-        /* Electric Yellow */
-        --accent-foreground: 224 71% 4%;
+        --accent: 222.5 90% 32.7%;
+        /* Requested #08349f */
+        --accent-foreground: 210 40% 98%;
 
         --destructive: 0 84% 60%;
         --destructive-foreground: 210 40% 98%;
