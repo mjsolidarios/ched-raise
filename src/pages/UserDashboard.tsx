@@ -148,7 +148,7 @@ const UserDashboard = () => {
                                     Event Registration
                                 </CardTitle>
                                 <CardDescription>
-                                    CHED-RAISE Summit 2025
+                                    CHED-RAISE Summit 2026
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>

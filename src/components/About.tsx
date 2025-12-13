@@ -26,7 +26,7 @@ export function About() {
                         <div className="space-y-6 text-lg text-slate-400 leading-relaxed">
                             <p>
                                 The rapid rise of AI presents both a challenge and an opportunity.
-                                <strong className="text-white block mt-2">CHED RAISE 2025</strong> captures the vision of leveraging Artificial Intelligence not just for efficiency,
+                                <strong className="text-white block mt-2">CHED RAISE 2026</strong> captures the vision of leveraging Artificial Intelligence not just for efficiency,
                                 but for <span className="text-white">equity and societal empowerment</span>.
                             </p>
                             <p>
@@ -54,7 +54,7 @@ export function About() {
                                 <Card className="glass-card bg-gradient-to-br from-white/10 to-white/5 border-white/10 hover:border-white/30 hover:from-white/15 hover:to-white/10 transition-all duration-300 h-full shadow-xl shadow-primary/5 hover:shadow-2xl hover:shadow-primary/10 relative overflow-hidden group">
                                     {/* Gradient overlay on hover */}
                                     <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-teal-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                    
+
                                     <CardContent className="p-6 relative z-10">
                                         <motion.div
                                             whileHover={{ scale: 1.1, rotate: 5 }}

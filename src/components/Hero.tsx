@@ -98,7 +98,7 @@ export function Hero() {
                             transition={{ duration: 0.5, delay: 0.3 }}
                             className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-4 leading-tight py-2 relative"
                         >
-                            RAISE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#08349f] via-cyan-400 to-teal-400 animate-gradient">2025</span>
+                            CHED RAISE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#08349f] via-cyan-400 to-teal-400 animate-gradient">2026</span>
                             <motion.span
                                 className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-cyan-400/20 to-teal-400/20 blur-2xl -z-10"
                                 animate={{ opacity: [0.3, 0.6, 0.3] }}
