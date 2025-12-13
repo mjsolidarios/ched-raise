@@ -3,12 +3,14 @@ import { Navbar } from './components/Navbar';
 import { Chatbot } from './components/Chatbot';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Suspense, lazy } from 'react';
+import AdminPage from './pages/AdminPage'; // Direct import to fix potential lazy loading issue
+import NotFoundPage from './pages/NotFoundPage';
 
 // Lazy load pages for code splitting optimization
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const UserDashboard = lazy(() => import('./pages/UserDashboard'));
-const AdminPage = lazy(() => import('./pages/AdminPage'));
+// const AdminPage = lazy(() => import('./pages/AdminPage'));
 
 // Loading component
 const PageLoader = () => (
@@ -32,9 +34,8 @@ const App = () => {
                                 <UserDashboard />
                             </ProtectedRoute>
                         } />
-                        {/* Admin should also be protected in a real app, perhaps with a role check.
-                  For now keeping it accessible if auth state allows (AdminPage handles its own auth check UI) */}
                         <Route path="/admin" element={<AdminPage />} />
+                        <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                 </Suspense>
             </div>
