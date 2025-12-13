@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowRight, Calendar, MapPin } from "lucide-react"
 import { motion } from "framer-motion"
+import { Link } from "react-router-dom"
 import Typewriter from 'typewriter-effect';
 
 import { CountdownTimer } from "@/components/CountdownTimer"
@@ -166,13 +167,13 @@ export function Hero() {
                 >
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Button size="lg" className="bg-gradient-to-r from-primary to-accent text-white hover:from-primary/90 hover:to-accent/90 h-14 px-8 text-lg font-bold shadow-[0_0_40px_rgba(8,52,159,0.6)] hover:shadow-[0_0_50px_rgba(8,52,159,0.8)] transition-all relative overflow-hidden group" asChild>
-                            <a href="/login">
+                            <Link to="/login">
                                 <span className="relative z-10 flex items-center">
                                     Register Now
                                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                                 </span>
                                 <span className="absolute inset-0 bg-gradient-to-r from-teal-400/20 to-cyan-400/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                            </a>
+                            </Link>
                         </Button>
                     </motion.div>
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
