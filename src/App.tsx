@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
+import { Chatbot } from './components/Chatbot';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import UserDashboard from './pages/UserDashboard';
@@ -15,6 +16,7 @@ const App = () => {
         <Router>
             <div className="min-h-screen bg-background text-foreground font-sans selection:bg-accent selection:text-white">
                 <Navbar />
+                <Chatbot />
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/login" element={<LoginPage />} />
