@@ -11,18 +11,29 @@ export function Program() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.1 }}
         >
-            <Card className="glass-card mb-4 border-white/5 hover:border-white/20 transition-all group">
-                <CardContent className="p-6 flex flex-col md:flex-row gap-6 md:items-start">
-                    <div className="flex-shrink-0 flex items-center gap-2 text-blue-400 group-hover:text-accent transition-colors text-sm font-bold md:w-32 pt-1 uppercase tracking-wide">
-                        <Clock className="w-4 h-4" />
+            <Card className="glass-card mb-4 border-white/10 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 group relative overflow-hidden">
+                {/* Animated background gradient */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                
+                <CardContent className="p-6 flex flex-col md:flex-row gap-6 md:items-start relative z-10">
+                    <motion.div 
+                        className="flex-shrink-0 flex items-center gap-2 text-blue-400 group-hover:text-accent transition-all text-sm font-bold md:w-32 pt-1 uppercase tracking-wide"
+                        whileHover={{ scale: 1.05 }}
+                    >
+                        <motion.div
+                            whileHover={{ rotate: 360 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <Clock className="w-5 h-5" />
+                        </motion.div>
                         {time}
-                    </div>
+                    </motion.div>
                     <div className="space-y-2 flex-grow">
                         <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
-                            <h4 className="text-xl font-bold text-white group-hover:text-primary-foreground transition-colors">{title}</h4>
-                            <Badge variant="outline" className="border-white/10 text-slate-400">{type}</Badge>
+                            <h4 className="text-xl font-bold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-300 group-hover:to-teal-300 transition-all">{title}</h4>
+                            <Badge variant="outline" className="border-white/20 text-slate-400 group-hover:border-primary/50 group-hover:text-primary group-hover:bg-primary/10 transition-all">{type}</Badge>
                         </div>
-                        <p className="text-slate-400 leading-relaxed">{desc}</p>
+                        <p className="text-slate-400 group-hover:text-slate-300 leading-relaxed transition-colors">{desc}</p>
                     </div>
                 </CardContent>
             </Card>

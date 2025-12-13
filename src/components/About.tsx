@@ -49,12 +49,25 @@ export function About() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.5, delay: index * 0.1 }}
+                                whileHover={{ y: -8 }}
                             >
-                                <Card className="glass-card bg-white/5 border-white/5 hover:bg-white/10 transition-colors h-full">
-                                    <CardContent className="p-6">
-                                        <item.icon className={`h-8 w-8 ${item.color} mb-4`} />
-                                        <h3 className="text-lg font-bold text-white mb-2">{item.title}</h3>
-                                        <p className="text-sm text-slate-400">{item.desc}</p>
+                                <Card className="glass-card bg-gradient-to-br from-white/10 to-white/5 border-white/10 hover:border-white/30 hover:from-white/15 hover:to-white/10 transition-all duration-300 h-full shadow-xl shadow-primary/5 hover:shadow-2xl hover:shadow-primary/10 relative overflow-hidden group">
+                                    {/* Gradient overlay on hover */}
+                                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-teal-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    
+                                    <CardContent className="p-6 relative z-10">
+                                        <motion.div
+                                            whileHover={{ scale: 1.1, rotate: 5 }}
+                                            transition={{ type: "spring", stiffness: 300 }}
+                                            className="inline-block"
+                                        >
+                                            <div className="relative">
+                                                <div className="absolute inset-0 blur-xl opacity-50" style={{ backgroundColor: item.color.replace('text-', '') }} />
+                                                <item.icon className={`h-10 w-10 ${item.color} mb-4 relative`} />
+                                            </div>
+                                        </motion.div>
+                                        <h3 className="text-lg font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-blue-300 transition-all">{item.title}</h3>
+                                        <p className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">{item.desc}</p>
                                     </CardContent>
                                 </Card>
                             </motion.div>

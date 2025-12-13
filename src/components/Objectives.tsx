@@ -48,18 +48,37 @@ export function Objectives() {
                             viewport={{ once: true }}
                             className="h-full"
                         >
-                            <Card className={`glass-card bg-slate-900/40 border-white/5 hover:border-primary/50 transition-all duration-300 hover:-translate-y-2 group overflow-hidden relative h-full`}>
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-110" />
+                            <Card className={`glass-card bg-gradient-to-br from-slate-900/60 to-slate-900/40 border-white/10 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-3 group overflow-hidden relative h-full`}>
+                                {/* Animated gradient background */}
+                                <motion.div 
+                                    className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-primary/20 to-teal-400/10 rounded-bl-full -mr-10 -mt-10"
+                                    whileHover={{ scale: 1.3, rotate: 45 }}
+                                    transition={{ duration: 0.5 }}
+                                />
+                                
+                                {/* Shimmer effect */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
 
-                                <CardHeader>
-                                    <div className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-white mb-4">{pillar.letter}</div>
-                                    <CardTitle className="text-lg font-bold text-white group-hover:text-blue-300 transition-colors">{pillar.title}</CardTitle>
+                                <CardHeader className="relative z-10">
+                                    <motion.div 
+                                        className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-400 via-cyan-300 to-teal-400 mb-4"
+                                        whileHover={{ scale: 1.1, rotate: -5 }}
+                                        transition={{ type: "spring", stiffness: 300 }}
+                                    >
+                                        {pillar.letter}
+                                    </motion.div>
+                                    <CardTitle className="text-lg font-bold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-300 group-hover:to-teal-300 transition-all duration-300">{pillar.title}</CardTitle>
                                 </CardHeader>
-                                <CardContent>
-                                    <div className="h-px w-12 bg-primary/30 mb-4" />
-                                    <p className="text-slate-400 leading-relaxed text-sm">{pillar.desc}</p>
-                                    <div className="text-xs font-bold text-teal-400 uppercase tracking-wider flex flex-col mt-4">
-                                        <span className="text-[10px] text-slate-500 font-normal">Target Outcome</span>
+                                <CardContent className="relative z-10">
+                                    <motion.div 
+                                        className="h-1 w-16 bg-gradient-to-r from-primary to-teal-400 rounded-full mb-4"
+                                        initial={{ width: 0 }}
+                                        whileInView={{ width: 64 }}
+                                        transition={{ duration: 0.8, delay: i * 0.1 }}
+                                    />
+                                    <p className="text-slate-400 group-hover:text-slate-300 leading-relaxed text-sm transition-colors">{pillar.desc}</p>
+                                    <div className="text-xs font-bold text-teal-400 group-hover:text-teal-300 uppercase tracking-wider flex flex-col mt-4 transition-colors">
+                                        <span className="text-[10px] text-slate-500 group-hover:text-slate-400 font-normal transition-colors">Target Outcome</span>
                                         {pillar.outcome}
                                     </div>
                                 </CardContent>
@@ -98,7 +117,11 @@ export function Objectives() {
                                     transition={{ duration: 0.4, delay: i * 0.1 }}
                                     className="flex gap-4 items-start group"
                                 >
-                                    <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-white/5 border border-white/10 text-slate-300 flex items-center justify-center text-sm font-bold group-hover:bg-accent group-hover:text-accent-foreground transition-colors">{i + 1}</span>
+                                    <motion.span 
+                                        className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-white/10 to-white/5 border border-white/20 text-slate-300 flex items-center justify-center text-sm font-bold group-hover:bg-gradient-to-br group-hover:from-accent group-hover:to-primary group-hover:text-white group-hover:border-accent/50 transition-all shadow-lg group-hover:shadow-accent/30"
+                                        whileHover={{ scale: 1.2, rotate: 360 }}
+                                        transition={{ type: "spring", stiffness: 200 }}
+                                    >{i + 1}</motion.span>
                                     <span className="text-slate-300 group-hover:text-white transition-colors pt-1">{obj}</span>
                                 </motion.li>
                             ))}

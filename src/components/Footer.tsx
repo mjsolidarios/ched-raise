@@ -13,8 +13,8 @@ export function Footer() {
                 </p>
 
                 <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm text-slate-500 mb-10 font-medium">
-                    <a href="#" className="hover:text-accent transition-colors">Privacy Policy</a>
-                    <a href="#" className="hover:text-accent transition-colors">Contact Us</a>
+                    <a href="#" className="hover:text-accent hover:underline hover:underline-offset-4 transition-all">Privacy Policy</a>
+                    <a href="#" className="hover:text-accent hover:underline hover:underline-offset-4 transition-all">Contact Us</a>
                 </div>
 
                 <div className="text-xs text-slate-600 border-t border-white/5 pt-8">
