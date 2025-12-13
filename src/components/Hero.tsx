@@ -1,3 +1,4 @@
+import { useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowRight, Calendar, MapPin } from "lucide-react"
@@ -8,10 +9,45 @@ import Typewriter from 'typewriter-effect';
 import { CountdownTimer } from "@/components/CountdownTimer"
 
 export function Hero() {
+    const containerRef = useRef<HTMLElement>(null);
+
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const handleMouseMove = (e: MouseEvent) => {
+            const { left, top } = container.getBoundingClientRect();
+            const x = e.clientX - left;
+            const y = e.clientY - top;
+            container.style.setProperty("--mouse-x", `${x}px`);
+            container.style.setProperty("--mouse-y", `${y}px`);
+        };
+
+        container.addEventListener("mousemove", handleMouseMove);
+        return () => container.removeEventListener("mousemove", handleMouseMove);
+    }, []);
+
     return (
-        <section id="hero" className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
-            {/* Animated Grid Background */}
-            <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-center opacity-20 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]" />
+        <section
+            id="hero"
+            ref={containerRef}
+            className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden group/hero"
+        >
+            {/* Professional Grid & Dots Background Overlay */}
+            <div className="absolute inset-0 pointer-events-none">
+                {/* Base Faint Pattern */}
+                <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.03]" />
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+
+                {/* Dynamic Spotlight Reveal Effect */}
+                <div
+                    className="absolute inset-0 bg-[linear-gradient(to_right,#80808020_1px,transparent_1px),linear-gradient(to_bottom,#80808020_1px,transparent_1px)] bg-[size:40px_40px] opacity-0 transition-opacity duration-300 group-hover/hero:opacity-100 will-change-[mask-image]"
+                    style={{
+                        maskImage: `radial-gradient(300px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), black, transparent)`,
+                        WebkitMaskImage: `radial-gradient(300px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), black, transparent)`,
+                    }}
+                />
+            </div>
 
             {/* Enhanced Background Effects with Animation - Reduced on mobile */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl opacity-50 pointer-events-none overflow-hidden hidden md:block">
