@@ -8,6 +8,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { Loader2, CalendarDays, User as UserIcon, Mail, Phone, Building2, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 
 
@@ -94,6 +95,21 @@ const UserDashboard = () => {
         }
     };
 
+    const container = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    };
+
+    const item = {
+        hidden: { opacity: 0, y: 20 },
+        show: { opacity: 1, y: 0 }
+    };
+
     if (loading) return (
         <div className="flex h-[calc(100vh-64px)] items-center justify-center">
             <div className="flex flex-col items-center gap-4">
@@ -114,9 +130,14 @@ const UserDashboard = () => {
                     </div>
                 </div>
 
-                <div className="grid gap-6 lg:grid-cols-3">
+                <motion.div
+                    variants={container}
+                    initial="hidden"
+                    animate="show"
+                    className="grid gap-6 lg:grid-cols-3"
+                >
                     {/* Main Status / Form Card */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <motion.div variants={item} className="lg:col-span-2 space-y-6">
                         <Card className="glass-card border-primary/10 overflow-hidden relative">
                             {/* Decorative gradient blob */}
                             <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
@@ -150,7 +171,7 @@ const UserDashboard = () => {
                                         </div>
                                     </div>
                                 ) : (
-                                    <form onSubmit={handleSubmit} className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                    <form onSubmit={handleSubmit} className="space-y-4">
                                         <div className="grid gap-4 sm:grid-cols-2">
                                             <div className="space-y-2">
                                                 <Label htmlFor="fullName" className="flex items-center gap-2">
@@ -191,10 +212,10 @@ const UserDashboard = () => {
                                 )}
                             </CardContent>
                         </Card>
-                    </div>
+                    </motion.div>
 
                     {/* Side Info / Details Card */}
-                    <div className="space-y-6">
+                    <motion.div variants={item} className="space-y-6">
                         {registration && (
                             <Card className="glass-card h-fit">
                                 <CardHeader>
@@ -252,8 +273,8 @@ const UserDashboard = () => {
                                 </div>
                             </CardContent>
                         </Card>
-                    </div>
-                </div>
+                    </motion.div>
+                </motion.div>
             </div>
         </div>
     );
