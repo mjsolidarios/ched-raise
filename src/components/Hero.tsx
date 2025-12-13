@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowRight, Calendar, MapPin } from "lucide-react"
 import { motion } from "framer-motion"
+import Typewriter from 'typewriter-effect';
 
 import { CountdownTimer } from "@/components/CountdownTimer"
 
@@ -10,41 +11,41 @@ export function Hero() {
         <section id="hero" className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
             {/* Animated Grid Background */}
             <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-center opacity-20 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]" />
-            
+
             {/* Enhanced Background Effects with Animation */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl opacity-50 pointer-events-none overflow-hidden">
-                <motion.div 
+                <motion.div
                     className="absolute top-[-10%] left-[20%] w-96 h-96 bg-primary blur-[140px] rounded-full mix-blend-screen"
-                    animate={{ 
+                    animate={{
                         scale: [1, 1.2, 1],
                         opacity: [0.4, 0.6, 0.4],
                     }}
-                    transition={{ 
+                    transition={{
                         duration: 8,
                         repeat: Infinity,
                         ease: "easeInOut"
                     }}
                 />
-                <motion.div 
+                <motion.div
                     className="absolute bottom-[10%] right-[20%] w-[500px] h-[500px] bg-secondary blur-[140px] rounded-full mix-blend-screen"
-                    animate={{ 
+                    animate={{
                         scale: [1, 1.3, 1],
                         opacity: [0.3, 0.5, 0.3],
                     }}
-                    transition={{ 
+                    transition={{
                         duration: 10,
                         repeat: Infinity,
                         ease: "easeInOut",
                         delay: 1
                     }}
                 />
-                <motion.div 
+                <motion.div
                     className="absolute top-[40%] left-[60%] w-80 h-80 bg-teal-400/40 blur-[120px] rounded-full mix-blend-screen"
-                    animate={{ 
+                    animate={{
                         y: [0, -50, 0],
                         opacity: [0.2, 0.4, 0.2],
                     }}
-                    transition={{ 
+                    transition={{
                         duration: 12,
                         repeat: Infinity,
                         ease: "easeInOut",
@@ -74,14 +75,9 @@ export function Hero() {
                         initial={{ opacity: 0, scale: 0.8, x: -50 }}
                         animate={{ opacity: 1, scale: 1, x: 0 }}
                         transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
-                        whileHover={{ 
-                            scale: 1.05,
-                            rotate: [0, -5, 5, 0],
-                            transition: { duration: 0.5 }
-                        }}
                         className="flex-shrink-0 relative"
                     >
-                        <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full animate-pulse" />
+                        <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
                         <img src="/r-icon.svg" alt="R Icon" className="h-48 md:h-64 w-auto drop-shadow-[0_0_50px_rgba(8,52,159,0.5)] relative z-10" />
                     </motion.div>
 
@@ -99,23 +95,35 @@ export function Hero() {
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.3 }}
-                            className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-4 leading-none relative"
+                            className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-4 leading-tight py-2 relative"
                         >
                             RAISE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#08349f] via-cyan-400 to-teal-400 animate-gradient">2025</span>
-                            <motion.span 
+                            <motion.span
                                 className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-cyan-400/20 to-teal-400/20 blur-2xl -z-10"
                                 animate={{ opacity: [0.3, 0.6, 0.3] }}
                                 transition={{ duration: 3, repeat: Infinity }}
                             />
                         </motion.h1>
-                        <motion.p
+                        <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.4 }}
-                            className="text-lg md:text-2xl font-medium text-blue-200 max-w-md"
+                            className="text-lg md:text-2xl font-medium text-blue-200 max-w-md h-[64px]"
                         >
-                            Responding through AI for Societal Empowerment
-                        </motion.p>
+                            <Typewriter
+                                options={{
+                                    strings: [
+                                        'Responding through AI for Societal Empowerment',
+                                        'Connecting ASEAN Through Knowledge & Play',
+                                        'Building a Future-Ready Region'
+                                    ],
+                                    autoStart: true,
+                                    loop: true,
+                                    deleteSpeed: 50,
+                                    delay: 50,
+                                }}
+                            />
+                        </motion.div>
                     </div>
                 </div>
 
@@ -128,7 +136,7 @@ export function Hero() {
                 >
                     <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <div className="flex items-center gap-3 text-slate-200 relative z-10">
-                        <motion.div 
+                        <motion.div
                             className="p-3 rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 text-blue-300 shadow-lg shadow-primary/20"
                             whileHover={{ scale: 1.1, rotate: 5 }}
                         >
@@ -138,7 +146,7 @@ export function Hero() {
                     </div>
                     <div className="hidden md:block w-px h-10 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
                     <div className="flex items-center gap-3 text-slate-200 relative z-10">
-                        <motion.div 
+                        <motion.div
                             className="p-3 rounded-xl bg-gradient-to-br from-teal-500/30 to-teal-500/10 text-teal-300 shadow-lg shadow-teal-500/20"
                             whileHover={{ scale: 1.1, rotate: -5 }}
                         >
