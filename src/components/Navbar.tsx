@@ -100,7 +100,7 @@ export function Navbar() {
                     <NavLinks />
                     {user ? (
                         <div className="flex items-center gap-4">
-                            <div className="text-sm text-muted-foreground hidden lg:block">
+                            <div className="text-sm text-muted-foreground hidden lg:block max-w-[150px] truncate" title={user.displayName || user.email || ''}>
                                 {user.displayName || user.email}
                             </div>
                             <Button
