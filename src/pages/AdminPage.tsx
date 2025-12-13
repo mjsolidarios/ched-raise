@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { db, auth } from '@/lib/firebase';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc } from 'firebase/firestore';
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut, type User } from 'firebase/auth';
+import { onAuthStateChanged, signInWithEmailAndPassword, type User } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
