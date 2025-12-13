@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Outfit:wght@100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        /* 
+      Modern Dark Theme based on instructions:
+      Primary: Deep Indigo/Navy Blue
+      Secondary: Vibrant Teal/Emerald Green
+      Accent: Electric Yellow/Bright Orange
+    */
+        --background: 224 71% 4%;
+        /* Deep dark blue */
+        --foreground: 210 40% 98%;
+
+        --card: 224 71% 5%;
+        /* Slightly transparent potential later */
+        --card-foreground: 210 40% 98%;
+
+        --popover: 224 71% 4%;
+        --popover-foreground: 210 40% 98%;
+
+        --primary: 230 85% 60%;
+        /* Vibrant Indigo */
+        --primary-foreground: 210 40% 98%;
+
+        --secondary: 160 84% 39%;
+        /* Vibrant Teal */
+        --secondary-foreground: 210 40% 98%;
+
+        --muted: 217 33% 17%;
+        --muted-foreground: 215 20% 65%;
+
+        --accent: 45 93% 47%;
+        /* Electric Yellow */
+        --accent-foreground: 224 71% 4%;
+
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 210 40% 98%;
+
+        --border: 217 33% 20%;
+        --input: 217 33% 17%;
+        --ring: 224 76% 48%;
+
+        --radius: 0.75rem;
+    }
+
+    .dark {
+        /* Already in root, but keeping structure if we add light mode later */
+        --background: 224 71% 4%;
+        --foreground: 210 40% 98%;
+        /* ... */
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply bg-background text-foreground antialiased font-sans;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-heading;
+    }
+}
+
+/* Glassmorphism utilities */
+.glass {
+    @apply bg-background/60 backdrop-blur-xl border border-white/10;
+}
+
+.glass-card {
+    @apply bg-card/40 backdrop-blur-md border border-white/5;
+}
