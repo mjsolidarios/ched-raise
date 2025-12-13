@@ -1,23 +1,35 @@
-import { Navbar } from "@/components/Navbar"
-import { Hero } from "@/components/Hero"
-import { About } from "@/components/About"
-import { Objectives } from "@/components/Objectives"
-import { Program } from "@/components/Program"
-import { Partners } from "@/components/Partners"
-import { Footer } from "@/components/Footer"
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Navbar } from './components/Navbar';
+import LandingPage from './pages/LandingPage';
+import LoginPage from './pages/LoginPage';
+import UserDashboard from './pages/UserDashboard';
+import AdminPage from './pages/AdminPage';
+import ProtectedRoute from './components/ProtectedRoute';
 
-export default function App() {
+// Placeholder for LandingPage if it doesn't exist yet or if we need to wrap existing content
+// Assuming current App content IS the landing page, we might need to refactor.
+// For now, let's create the route structure.
+
+const App = () => {
     return (
-        <div className="min-h-screen bg-background text-foreground font-sans antialiased selection:bg-accent selection:text-accent-foreground overflow-x-hidden">
-            <Navbar />
-            <main>
-                <Hero />
-                <About />
-                <Objectives />
-                <Program />
-                <Partners />
-            </main>
-            <Footer />
-        </div>
-    )
-}
+        <Router>
+            <div className="min-h-screen bg-background text-foreground font-sans selection:bg-accent selection:text-white">
+                <Navbar />
+                <Routes>
+                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/dashboard" element={
+                        <ProtectedRoute>
+                            <UserDashboard />
+                        </ProtectedRoute>
+                    } />
+                    {/* Admin should also be protected in a real app, perhaps with a role check.
+              For now keeping it accessible if auth state allows (AdminPage handles its own auth check UI) */}
+                    <Route path="/admin" element={<AdminPage />} />
+                </Routes>
+            </div>
+        </Router>
+    );
+};
+
+export default App;

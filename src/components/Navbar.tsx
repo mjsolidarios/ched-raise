@@ -1,22 +1,37 @@
 import { Button } from "@/components/ui/button"
-import { Menu } from "lucide-react"
+import { Menu, LogOut } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import { auth } from '@/lib/firebase';
+import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
 
-import { useScrollSpy } from "@/hooks/use-scroll-spy"
 import { cn } from "@/lib/utils"
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false)
-    const activeId = useScrollSpy(["hero", "about", "objectives", "program", "partners"], 100)
+    const [user, setUser] = useState<User | null>(null);
+    const location = useLocation()
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    const handleLogout = async () => {
+        await signOut(auth);
+        navigate('/');
+    };
 
     const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
-        const id = href.replace("#", "")
-        const isActive = activeId === id
+        const isActive = location.pathname === href
 
         return (
-            <a
-                href={href}
+            <Link
+                to={href}
                 className={cn(
                     "text-sm font-medium transition-all duration-300 relative py-2 px-4 rounded-full",
                     isActive
@@ -26,17 +41,54 @@ export function Navbar() {
                 onClick={() => setIsOpen(false)}
             >
                 {children}
-            </a>
+            </Link>
         )
     }
 
-    const NavLinks = () => (
+    const NavLinks = ({ isMobile = false }: { isMobile?: boolean }) => (
         <>
-            <NavLink href="#hero">Home</NavLink>
-            <NavLink href="#about">About</NavLink>
-            <NavLink href="#objectives">Objectives</NavLink>
-            <NavLink href="#program">Program</NavLink>
-            <NavLink href="#partners">Partners</NavLink>
+            <div className={cn(
+                "flex gap-1",
+                isMobile ? "flex-col items-start w-full gap-2" : "items-center"
+            )}>
+                <Link
+                    to="/"
+                    className={cn(
+                        "text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 py-2 px-3 rounded-full transition-all",
+                        isMobile && "w-full text-left pl-4"
+                    )}
+                    onClick={() => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        setIsOpen(false);
+                    }}
+                >
+                    Home
+                </Link>
+                {["About", "Objectives", "Program"].map((item) => (
+                    <a
+                        key={item}
+                        href={`/#${item.toLowerCase()}`}
+                        className={cn(
+                            "text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 py-2 px-3 rounded-full transition-all",
+                            isMobile && "w-full text-left pl-4"
+                        )}
+                        onClick={() => setIsOpen(false)}
+                    >
+                        {item}
+                    </a>
+                ))}
+            </div>
+
+            <div className={cn(
+                "bg-white/10 mx-2",
+                isMobile ? "h-px w-full my-2" : "w-px h-6"
+            )} />
+
+            {user && (
+                <div className={cn(isMobile && "w-full pl-1")}>
+                    <NavLink href="/dashboard">My Registration</NavLink>
+                </div>
+            )}
         </>
     )
 
@@ -44,16 +96,35 @@ export function Navbar() {
         <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-background/60 backdrop-blur-xl">
             <div className="container mx-auto flex items-center justify-between px-4 h-16">
                 <div className="flex items-center gap-3">
-                    {/* Logo path assuming it's in public folder */}
-                    <img src="/logo-light.svg" alt="CHED RAISE Logo" className="h-8 w-auto" />
+                    <Link to="/">
+                        <img src="/logo-light.svg" alt="CHED RAISE Logo" className="h-8 w-auto" />
+                    </Link>
                 </div>
 
                 {/* Desktop Nav */}
                 <div className="hidden md:flex items-center gap-8 text-foreground/80">
                     <NavLinks />
-                    <Button className="bg-accent text-accent-foreground hover:bg-accent/90 font-bold">
-                        Register Now
-                    </Button>
+                    {user ? (
+                        <div className="flex items-center gap-4">
+                            <div className="text-sm text-muted-foreground hidden lg:block">
+                                {user.displayName || user.email}
+                            </div>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleLogout}
+                                className="text-red-400 hover:text-red-300 hover:bg-red-950/20"
+                            >
+                                <LogOut className="w-4 h-4 mr-2" /> Logout
+                            </Button>
+                        </div>
+                    ) : (
+                        <Link to="/login">
+                            <Button className="bg-accent text-accent-foreground hover:bg-accent/90 font-bold">
+                                Sign In / Register
+                            </Button>
+                        </Link>
+                    )}
                 </div>
 
                 {/* Mobile Nav */}
@@ -66,10 +137,25 @@ export function Navbar() {
                         </SheetTrigger>
                         <SheetContent side="right" className="bg-background/95 backdrop-blur-xl border-l border-white/10">
                             <div className="flex flex-col gap-6 mt-10">
-                                <NavLinks />
-                                <Button className="bg-accent text-accent-foreground hover:bg-accent/90 w-full">
-                                    Register Now
-                                </Button>
+                                <NavLinks isMobile={true} />
+                                {user ? (
+                                    <Button
+                                        variant="outline"
+                                        className="w-full border-red-500/50 text-red-400 hover:bg-red-950/20"
+                                        onClick={() => {
+                                            handleLogout();
+                                            setIsOpen(false);
+                                        }}
+                                    >
+                                        Logout
+                                    </Button>
+                                ) : (
+                                    <Link to="/login" onClick={() => setIsOpen(false)}>
+                                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90 w-full">
+                                            Sign In / Register
+                                        </Button>
+                                    </Link>
+                                )}
                             </div>
                         </SheetContent>
                     </Sheet>

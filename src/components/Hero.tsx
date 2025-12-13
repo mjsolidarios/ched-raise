@@ -95,9 +95,11 @@ export function Hero() {
                     transition={{ duration: 0.5, delay: 0.5 }}
                     className="flex flex-col sm:flex-row items-center justify-center gap-4"
                 >
-                    <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 h-14 px-8 text-lg font-bold shadow-[0_0_30px_rgba(8,52,159,0.5)] transition-all hover:scale-105 active:scale-95 transition-transform">
-                        Register Now
-                        <ArrowRight className="ml-2 h-5 w-5" />
+                    <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 h-14 px-8 text-lg font-bold shadow-[0_0_30px_rgba(8,52,159,0.5)] transition-all hover:scale-105 active:scale-95 transition-transform" asChild>
+                        <a href="/login">
+                            Register Now
+                            <ArrowRight className="ml-2 h-5 w-5" />
+                        </a>
                     </Button>
                     <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-white/10 hover:bg-white/5 bg-transparent backdrop-blur-sm active:scale-95 transition-transform">
                         View Agenda
