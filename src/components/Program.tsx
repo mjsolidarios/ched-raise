@@ -131,7 +131,7 @@ function SessionCard({ title, type, desc, time, index }: { title: string, type: 
             <Card
                 ref={divRef as any}
                 onMouseMove={handleMouseMove}
-                className="glass-card mb-4 border-white/10 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 group relative overflow-hidden"
+                className="glass-card mb-4 border-white/10 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 group relative overflow-hidden gpu-accelerated"
                 style={{
                     // @ts-ignore
                     "--mouse-x": "0px",

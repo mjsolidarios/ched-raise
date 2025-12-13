@@ -98,7 +98,15 @@
     }
 }
 
+/* Performance optimizations */
+.gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+}
+
 .animate-gradient {
     background-size: 200% 200%;
     animation: gradient 5s ease infinite;
+    will-change: background-position;
 }

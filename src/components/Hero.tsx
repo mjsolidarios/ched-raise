@@ -16,7 +16,7 @@ export function Hero() {
             {/* Enhanced Background Effects with Animation - Reduced on mobile */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl opacity-50 pointer-events-none overflow-hidden hidden md:block">
                 <motion.div
-                    className="absolute top-[-10%] left-[20%] w-96 h-96 bg-primary blur-[140px] rounded-full mix-blend-screen"
+                    className="absolute top-[-10%] left-[20%] w-96 h-96 bg-primary blur-[100px] rounded-full mix-blend-screen gpu-accelerated"
                     animate={{
                         scale: [1, 1.2, 1],
                         opacity: [0.4, 0.6, 0.4],
@@ -28,7 +28,7 @@ export function Hero() {
                     }}
                 />
                 <motion.div
-                    className="absolute bottom-[10%] right-[20%] w-[500px] h-[500px] bg-secondary blur-[140px] rounded-full mix-blend-screen"
+                    className="absolute bottom-[10%] right-[20%] w-[500px] h-[500px] bg-secondary blur-[100px] rounded-full mix-blend-screen gpu-accelerated"
                     animate={{
                         scale: [1, 1.3, 1],
                         opacity: [0.3, 0.5, 0.3],
@@ -41,7 +41,7 @@ export function Hero() {
                     }}
                 />
                 <motion.div
-                    className="absolute top-[40%] left-[60%] w-80 h-80 bg-teal-400/40 blur-[120px] rounded-full mix-blend-screen"
+                    className="absolute top-[40%] left-[60%] w-80 h-80 bg-teal-400/40 blur-[80px] rounded-full mix-blend-screen gpu-accelerated"
                     animate={{
                         y: [0, -50, 0],
                         opacity: [0.2, 0.4, 0.2],

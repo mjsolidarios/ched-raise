@@ -69,7 +69,7 @@ function KeyObjectivesCard() {
         <div
             ref={divRef}
             onMouseMove={handleMouseMove}
-            className="relative rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-b from-white/5 to-transparent p-1 group"
+            className="relative rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-b from-white/5 to-transparent p-1 group gpu-accelerated"
             style={{
                 // @ts-ignore
                 "--mouse-x": "0px",
@@ -151,7 +151,7 @@ function SpotlightCard({ pillar, index }: { pillar: { letter: string, title: str
             <Card
                 ref={divRef as any}
                 onMouseMove={handleMouseMove}
-                className={`glass-card bg-gradient-to-br from-slate-900/60 to-slate-900/40 border-white/10 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-3 group overflow-hidden relative h-full`}
+                className={`glass-card bg-gradient-to-br from-slate-900/60 to-slate-900/40 border-white/10 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-3 group overflow-hidden relative h-full gpu-accelerated`}
                 style={{
                     // @ts-ignore
                     "--mouse-x": "0px",

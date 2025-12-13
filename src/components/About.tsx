@@ -78,7 +78,7 @@ function SpotlightCard({ item, index }: { item: any, index: number }) {
             <Card
                 ref={divRef as any}
                 onMouseMove={handleMouseMove}
-                className="glass-card bg-gradient-to-br from-white/10 to-white/5 border-white/10 hover:border-white/30 hover:from-white/15 hover:to-white/10 transition-all duration-300 h-full shadow-xl shadow-primary/5 hover:shadow-2xl hover:shadow-primary/10 relative overflow-hidden group"
+                className="glass-card bg-gradient-to-br from-white/10 to-white/5 border-white/10 hover:border-white/30 hover:from-white/15 hover:to-white/10 transition-all duration-300 h-full shadow-xl shadow-primary/5 hover:shadow-2xl hover:shadow-primary/10 relative overflow-hidden group gpu-accelerated"
                 style={{
                     // @ts-ignore
                     "--mouse-x": "0px",
