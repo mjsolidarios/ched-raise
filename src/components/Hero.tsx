@@ -3,6 +3,8 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowRight, Calendar, MapPin } from "lucide-react"
 import { motion } from "framer-motion"
 
+import { CountdownTimer } from "@/components/CountdownTimer"
+
 export function Hero() {
     return (
         <section id="hero" className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-[url('/grid-pattern.svg')] bg-center [mask-image:linear-gradient(to_bottom,white,transparent)]">
@@ -32,7 +34,7 @@ export function Hero() {
                         transition={{ duration: 0.6 }}
                         className="flex-shrink-0"
                     >
-                        <img src="/r-icon.svg" alt="R Icon" className="h-48 md:h-64 w-auto drop-shadow-[0_0_50px_rgba(79,70,229,0.3)]" />
+                        <img src="/r-icon.svg" alt="R Icon" className="h-48 md:h-64 w-auto drop-shadow-[0_0_50px_rgba(8,52,159,0.3)]" />
                     </motion.div>
 
                     {/* Text Side */}
@@ -57,7 +59,7 @@ export function Hero() {
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.4 }}
-                            className="text-lg md:text-2xl font-medium text-slate-300 max-w-md"
+                            className="text-lg md:text-2xl font-medium text-blue-200 max-w-md"
                         >
                             Responding through AI for Societal Empowerment
                         </motion.p>
@@ -68,10 +70,10 @@ export function Hero() {
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
-                    className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 mb-12 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm"
+                    className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 mb-8 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm"
                 >
                     <div className="flex items-center gap-3 text-slate-200">
-                        <div className="p-2 rounded-full bg-indigo-500/20 text-indigo-300">
+                        <div className="p-2 rounded-full bg-primary/20 text-blue-300">
                             <Calendar className="h-5 w-5" />
                         </div>
                         <span className="font-medium">January 28-30, 2026</span>
@@ -84,6 +86,8 @@ export function Hero() {
                         <span className="font-medium">Iloilo Convention Center, Iloilo City</span>
                     </div>
                 </motion.div>
+
+                <CountdownTimer targetDate="2026-01-28T08:00:00" />
 
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}

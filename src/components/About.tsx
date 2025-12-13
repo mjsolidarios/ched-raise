@@ -38,7 +38,7 @@ export function About() {
 
                     <div className="grid sm:grid-cols-2 gap-4">
                         {[
-                            { icon: BrainCircuit, color: "text-indigo-400", title: "AI-Ready", desc: "Operationalizing the National AI Upskilling Roadmap." },
+                            { icon: BrainCircuit, color: "text-blue-400", title: "AI-Ready", desc: "Operationalizing the National AI Upskilling Roadmap." },
                             { icon: Lightbulb, color: "text-accent", title: "Innovation", desc: "Creative and values-based solutions for SDGs." },
                             { icon: ShieldCheck, color: "text-teal-400", title: "Ethical", desc: "Responsible adoption grounded in human values." },
                             { icon: Users, color: "text-blue-400", title: "Inclusivity", desc: "Strengthening collaboration between academe, industry, and government." }

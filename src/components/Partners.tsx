@@ -35,9 +35,9 @@ export function Partners() {
                             <img
                                 src="/nisu-logo.png"
                                 alt="NISU Logo"
-                                className="h-20 w-auto drop-shadow-[0_0_15px_rgba(79,70,229,0.2)] group-hover:scale-105 transition-transform duration-300"
+                                className="h-20 w-auto drop-shadow-[0_0_15px_rgba(8,52,159,0.2)] group-hover:scale-105 transition-transform duration-300"
                             />
-                            <span className="text-xl font-bold text-white group-hover:text-indigo-300 transition-colors">Northern Iloilo State University</span>
+                            <span className="text-xl font-bold text-white group-hover:text-primary transition-colors">Northern Iloilo State University</span>
                         </motion.div>
                         <div className="hidden md:block w-px h-16 bg-gradient-to-b from-transparent via-white/10 to-transparent" />
                         <motion.div

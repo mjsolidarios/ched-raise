@@ -39,26 +39,26 @@ export function Objectives() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-24">
-                    {pillars.map((pillar, index) => (
+                    {pillars.map((pillar, i) => (
                         <motion.div
-                            key={pillar.letter}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
+                            key={i}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: i * 0.1 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.4, delay: index * 0.1 }}
+                            className="h-full"
                         >
-                            <Card className={`glass-card bg-slate-900/40 border-white/5 hover:border-indigo-500/50 transition-all duration-300 hover:-translate-y-2 group overflow-hidden relative h-full`}>
-                                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                                    <span className="text-8xl font-black">{pillar.letter}</span>
-                                </div>
-                                <CardHeader className="pb-2 relative pt-8">
-                                    <div className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 to-white mb-4">{pillar.letter}</div>
-                                    <CardTitle className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors leading-tight h-12 flex items-center">{pillar.title}</CardTitle>
+                            <Card className={`glass-card bg-slate-900/40 border-white/5 hover:border-primary/50 transition-all duration-300 hover:-translate-y-2 group overflow-hidden relative h-full`}>
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-110" />
+
+                                <CardHeader>
+                                    <div className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-white mb-4">{pillar.letter}</div>
+                                    <CardTitle className="text-lg font-bold text-white group-hover:text-blue-300 transition-colors">{pillar.title}</CardTitle>
                                 </CardHeader>
-                                <CardContent className="relative">
-                                    <div className="h-px w-12 bg-indigo-500/30 mb-4" />
-                                    <p className="text-sm text-slate-400 mb-6 min-h-[60px]">{pillar.desc}</p>
-                                    <div className="text-xs font-bold text-teal-400 uppercase tracking-wider flex flex-col">
+                                <CardContent>
+                                    <div className="h-px w-12 bg-primary/30 mb-4" />
+                                    <p className="text-slate-400 leading-relaxed text-sm">{pillar.desc}</p>
+                                    <div className="text-xs font-bold text-teal-400 uppercase tracking-wider flex flex-col mt-4">
                                         <span className="text-[10px] text-slate-500 font-normal">Target Outcome</span>
                                         {pillar.outcome}
                                     </div>
