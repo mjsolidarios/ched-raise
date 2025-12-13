@@ -12,8 +12,8 @@ export function Hero() {
             {/* Animated Grid Background */}
             <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-center opacity-20 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]" />
 
-            {/* Enhanced Background Effects with Animation */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl opacity-50 pointer-events-none overflow-hidden">
+            {/* Enhanced Background Effects with Animation - Reduced on mobile */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl opacity-50 pointer-events-none overflow-hidden hidden md:block">
                 <motion.div
                     className="absolute top-[-10%] left-[20%] w-96 h-96 bg-primary blur-[140px] rounded-full mix-blend-screen"
                     animate={{
@@ -87,7 +87,7 @@ export function Hero() {
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.2 }}
-                            className="text-4xl md:text-5xl font-light text-white mb-2 tracking-tight"
+                            className="text-4xl md:text-5xl font-light text-white mb-2 tracking-tight font-rubik"
                         >
                             CHED
                         </motion.h2>
@@ -95,9 +95,9 @@ export function Hero() {
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.3 }}
-                            className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-4 leading-tight py-2 relative"
+                            className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-4 leading-tight py-2 relative font-rubik"
                         >
-                            RAISE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#08349f] via-cyan-400 to-teal-400 animate-gradient">2025</span>
+                            RAISE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#08349f] via-cyan-400 to-teal-400 animate-gradient">2026</span>
                             <motion.span
                                 className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-cyan-400/20 to-teal-400/20 blur-2xl -z-10"
                                 animate={{ opacity: [0.3, 0.6, 0.3] }}

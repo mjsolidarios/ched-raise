@@ -57,7 +57,7 @@ const RegistrationPage = () => {
             <Card className="w-full max-w-md glass-card">
                 <CardHeader>
                     <CardTitle className="text-2xl text-center text-primary">Event Registration</CardTitle>
-                    <CardDescription className="text-center">Join us for CHED RAISE 2025</CardDescription>
+                    <CardDescription className="text-center">Join us for CHED RAISE 2026</CardDescription>
                 </CardHeader>
                 <CardContent>
                     {status === 'success' ? (

@@ -1,9 +1,9 @@
-# CHED RAISE 2025
+# CHED RAISE 2026
 
-Official website for the **CHED RAISE 2025: Responding through AI for Societal Empowerment** conference.
+Official website for the **CHED RAISE 2026: Responding through AI for Societal Empowerment** conference.
 
 ## Overview
-This project is a modern, responsive website built to promote the CHED RAISE 2025 conference. It features a dark, glassmorphic design and provides comprehensive information about the event's vision, objectives, program, and partners.
+This project is a modern, responsive website built to promote the CHED RAISE 2026 conference. It features a dark, glassmorphic design and provides comprehensive information about the event's vision, objectives, program, and partners.
 
 ## Tech Stack
 - **Framework:** React + Vite

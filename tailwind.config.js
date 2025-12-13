@@ -61,6 +61,7 @@ export default {
       fontFamily: {
         sans: ["Inter", "sans-serif"],
         heading: ["Outfit", "sans-serif"],
+        rubik: ["Rubik", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {

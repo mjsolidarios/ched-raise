@@ -18,7 +18,7 @@ export function Footer() {
                 </div>
 
                 <div className="text-xs text-slate-600 border-t border-white/5 pt-8">
-                    <p>&copy; 2025 Northern Iloilo State University & West Visayas State University. All rights reserved.</p>
+                    <p>&copy; 2026 Northern Iloilo State University & West Visayas State University. All rights reserved.</p>
                     <p className="mt-2 text-slate-700">Designed for Societal Empowerment.</p>
                 </div>
             </div>

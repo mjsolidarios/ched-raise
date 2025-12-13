@@ -3,7 +3,7 @@
 This file provides guidance to WARP (warp.dev) when working with code in this repository.
 
 ## Project Overview
-CHED RAISE 2025 is a conference registration website built with React + TypeScript + Vite. The site features a dark glassmorphic design and includes Firebase authentication and Firestore for managing event registrations.
+CHED RAISE 2026 is a conference registration website built with React + TypeScript + Vite. The site features a dark glassmorphic design and includes Firebase authentication and Firestore for managing event registrations.
 
 **Key Tech Stack:**
 - React 19 with TypeScript (strict mode)
