@@ -178,7 +178,7 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
   const patternFront = useMemo(() => makeIdPatternDataUrl(registration.id, 'front'), [registration.id]);
   const patternBack = useMemo(() => makeIdPatternDataUrl(registration.id, 'back'), [registration.id]);
 
-  const qrSize = isSmUp ? 160 : 132;
+  const qrSize = isSmUp ? 160 : 120;
 
   const toggle = () => setFlipped((v) => !v);
 
@@ -224,10 +224,11 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
         el.style.setProperty('--tilt-y', '0deg');
       }}
       className={cn(
-        'flip-card group w-full cursor-pointer select-none',
+        'flip-card group w-full max-w-[90vw] mx-auto cursor-pointer select-none',
         'transition-transform duration-300 hover:scale-[1.01] active:scale-[0.995]',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-        flipped && 'is-flipped'
+        flipped && 'is-flipped',
+        'scale-90 sm:scale-100'
       )}
       onClick={toggle}
       onKeyDown={(e) => {
@@ -240,7 +241,7 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
       tabIndex={0}
       aria-label={flipped ? 'Flip card to front' : 'Flip card to back'}
     >
-      <div className="flip-card-inner aspect-[3/2] sm:aspect-[7/4] w-full min-h-[420px] sm:min-h-[260px]">
+      <div className="flip-card-inner aspect-[3/2] w-full min-h-[380px] sm:min-h-[260px]">
         {/* Front */}
         <div className="flip-card-face absolute inset-0">
           <div className="relative h-full rounded-2xl p-[1px] bg-gradient-to-br from-primary/35 via-white/10 to-secondary/35 shadow-[0_18px_60px_-22px_rgba(8,52,159,0.7)]">
@@ -295,11 +296,11 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
                   </div>
 
                   <div className="leading-tight">
-                    <p className="text-[11px] uppercase tracking-wider text-muted-foreground">RAISE Card</p>
+                    <p className="text-[10px] sm:text-[11px] uppercase tracking-wider text-muted-foreground">RAISE Card</p>
                     <img
                       src="/logo-light.svg"
                       alt="RAISE logo"
-                      className="h-6 mt-1"
+                      className="h-5 sm:h-6 mt-1"
                       draggable={false}
                     />
                   </div>
@@ -309,7 +310,7 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
                   <Badge
                     variant="outline"
                     className={cn(
-                      'text-[11px] px-3 py-1 rounded-full backdrop-blur-md',
+                      'text-[10px] sm:text-[11px] px-2 sm:px-3 py-0.5 sm:py-1 rounded-full backdrop-blur-md',
                       'shadow-[0_0_0_1px_rgba(255,255,255,0.06)]',
                       getStatusColor(registration.status)
                     )}
@@ -323,12 +324,12 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
               {/* "Chip" accent */}
               <div className="relative mt-5 flex items-center justify-between">
                 <div className="h-9 w-14 rounded-lg bg-gradient-to-br from-amber-300/20 via-white/10 to-primary/25 border border-white/10 shadow-inner" />
-                <p className="text-xs text-muted-foreground">Tap card to flip</p>
+                <p className="text-[11px] sm:text-xs text-muted-foreground">Tap card to flip</p>
               </div>
 
             <div className="relative mt-5 space-y-1">
-              <p className="text-xl sm:text-2xl font-semibold tracking-tight">{fullName}</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-lg sm:text-2xl font-semibold tracking-tight">{fullName}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 {registrantTypeLabel}{registration.schoolAffiliation ? ` • ${registration.schoolAffiliation}` : ''}
               </p>
             </div>
@@ -336,20 +337,20 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
             <div className="relative mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
               <div className="space-y-1">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Registration ID</p>
-                <p className="font-mono text-xs break-all bg-muted/40 border border-border/40 rounded-md p-2">
+                <p className="font-mono text-[11px] sm:text-xs break-all bg-muted/40 border border-border/40 rounded-md p-1.5 sm:p-2">
                   {registration.id}
                 </p>
               </div>
               <div className="space-y-1">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Email</p>
-                <p className="text-xs break-all bg-muted/40 border border-border/40 rounded-md p-2">{email || '—'}</p>
+                <p className="text-[11px] sm:text-xs uppercase tracking-wider text-muted-foreground font-semibold">Email</p>
+                <p className="text-[11px] sm:text-xs break-all bg-muted/40 border border-border/40 rounded-md p-1.5 sm:p-2">{email || '—'}</p>
               </div>
             </div>
 
               <div className="relative mt-3 flex items-center justify-end">
                 <div className="inline-flex items-center gap-2 text-xs text-muted-foreground">
-                  <RotateCw className="h-3.5 w-3.5" />
-                  <span>Back side has QR</span>
+                  <RotateCw className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  <span className="text-[11px] sm:text-xs">Back side has QR</span>
                 </div>
               </div>
             </div>
@@ -394,60 +395,15 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
                 draggable={false}
               />
 
-            <div className="relative flex items-start justify-between gap-4">
-              <div>
-                <p className="text-base sm:text-lg font-semibold">Attendance QR</p>
-                <p className="text-xs text-muted-foreground mt-1">Present this code at the event entrance.</p>
+            <div className="h-full flex flex-col justify-center items-center p-4">
+              <div className="relative rounded-2xl bg-white p-3 border border-white/10 shadow-[0_18px_50px_-28px_rgba(0,0,0,0.9)]">
+                <div className="absolute -inset-3 rounded-3xl bg-primary/10 blur-2xl" />
+                <div className="relative">
+                  <QRCode value={qrValue} size={isSmUp ? 200 : 160} />
+                </div>
               </div>
-
-              <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 px-2 text-muted-foreground hover:text-white hover:bg-white/10"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggle();
-                  }}
-                >
-                  <RotateCw className="h-4 w-4" />
-                </Button>
-              </div>
+              <p className="mt-4 text-sm text-muted-foreground text-center">Present this code at the event entrance</p>
             </div>
-
-              <div className="relative mt-4 grid gap-4 sm:grid-cols-[180px,1fr] items-start">
-                <div className="relative rounded-2xl bg-white p-3 w-fit border border-white/10 shadow-[0_18px_50px_-28px_rgba(0,0,0,0.9)] mx-auto sm:mx-0">
-                  <div className="absolute -inset-3 rounded-3xl bg-primary/10 blur-2xl" />
-                  <div className="relative">
-                    <QRCode value={qrValue} size={qrSize} />
-                  </div>
-                </div>
-
-              <div className="text-sm space-y-2 sm:space-y-3">
-                <div>
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Registration ID</p>
-                  <p className="font-mono text-xs break-all">{registration.id}</p>
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Contact</p>
-                  <p className="text-sm">{registration.contactNumber || '—'}</p>
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">School</p>
-                  <p className="text-sm">{registration.schoolAffiliation || '—'}</p>
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Registrant Type</p>
-                  <p className="text-sm capitalize">{registrantTypeLabel}</p>
-                </div>
-              </div>
-            </div>
-
-              <div className="relative mt-5 pt-4 border-t border-white/10 flex items-center justify-between">
-                <p className="text-xs text-muted-foreground">Tap card to flip back</p>
-                <p className="text-xs text-muted-foreground">Keep this QR private</p>
-              </div>
             </div>
           </div>
         </div>
