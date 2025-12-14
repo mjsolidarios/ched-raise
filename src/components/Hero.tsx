@@ -124,7 +124,7 @@ export function Hero() {
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.2 }}
-                            className="text-4xl md:text-5xl font-light text-white mb-2 tracking-tight font-rubik"
+                            className="text-4xl md:text-5xl font-light text-white mb-2 tracking-tight font-rubik px-4"
                         >
                             CHED
                         </motion.h2>
@@ -132,36 +132,21 @@ export function Hero() {
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.3 }}
-                            className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-4 leading-tight py-2 relative font-rubik"
-                        >
-                            RAISE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#08349f] via-cyan-400 to-teal-400 animate-gradient pr-4">2026</span>
-
+                            className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-0 leading-tight py-2 relative font-rubik px-4"
+                        > RAISE
                             <motion.span
                                 className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-cyan-400/20 to-teal-400/20 blur-2xl -z-10"
                                 animate={{ opacity: [0.3, 0.6, 0.3] }}
                                 transition={{ duration: 3, repeat: Infinity }}
                             />
                         </motion.h1>
-                        <motion.div
+                        <motion.h1
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.5, delay: 0.4 }}
-                            className="text-lg md:text-2xl font-medium text-blue-200 max-w-md h-[64px]"
-                        >
-                            <Typewriter
-                                options={{
-                                    strings: [
-                                        'Responding through AI for Societal Empowerment',
-                                        'Connecting ASEAN Through Knowledge & Play',
-                                        'Building a Future-Ready Region'
-                                    ],
-                                    autoStart: true,
-                                    loop: true,
-                                    deleteSpeed: 50,
-                                    delay: 50,
-                                }}
-                            />
-                        </motion.div>
+                            transition={{ duration: 0.5, delay: 0.3 }}
+                            className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-4 leading-tight py-0 relative font-rubik"
+                        > <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#08349f] via-cyan-400 to-teal-400 animate-gradient px-4">2026</span>
+                        </motion.h1>
                     </div>
                 </div>
 
