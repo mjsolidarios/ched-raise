@@ -124,6 +124,68 @@
     }
 }
 
+@keyframes card-pattern-drift {
+    0%, 100% {
+        transform: translate3d(0%, 0%, 0) scale(1.04) rotate(0deg);
+        filter: hue-rotate(0deg);
+    }
+    50% {
+        transform: translate3d(-2.5%, -1.5%, 0) scale(1.08) rotate(1.5deg);
+        filter: hue-rotate(10deg);
+    }
+}
+
+.card-pattern-animate {
+    animation: card-pattern-drift 18s ease-in-out infinite;
+    will-change: transform, filter;
+}
+
+.card-spotlight {
+    opacity: 0;
+    transition: opacity 250ms ease;
+    background: radial-gradient(
+        520px circle at var(--spot-x, 50%) var(--spot-y, 35%),
+        hsl(var(--primary) / 0.22),
+        hsl(var(--secondary) / 0.10) 22%,
+        rgba(255, 255, 255, 0.00) 58%
+    );
+}
+
+.group:hover .card-spotlight {
+    opacity: 1;
+}
+
+@keyframes card-dot-pulse {
+    0%, 100% {
+        opacity: 0.35;
+        filter: saturate(1.2) brightness(1.0);
+    }
+    50% {
+        opacity: 0.65;
+        filter: saturate(1.6) brightness(1.08);
+    }
+}
+
+.card-dot-grid {
+    opacity: 0;
+    transition: opacity 250ms ease;
+    background-image:
+        radial-gradient(circle, hsl(var(--primary) / 0.45) 1px, rgba(0, 0, 0, 0) 1px),
+        radial-gradient(circle, hsl(var(--secondary) / 0.35) 1px, rgba(0, 0, 0, 0) 1px);
+    background-size: 18px 18px;
+    background-position:
+        var(--grid-x, 0px) var(--grid-y, 0px),
+        calc(var(--grid-x, 0px) + 9px) calc(var(--grid-y, 0px) + 9px);
+    mask-image: radial-gradient(260px circle at var(--spot-x, 50%) var(--spot-y, 35%), #000 0%, rgba(0,0,0,0) 72%);
+    -webkit-mask-image: radial-gradient(260px circle at var(--spot-x, 50%) var(--spot-y, 35%), #000 0%, rgba(0,0,0,0) 72%);
+    animation: card-dot-pulse 3.8s ease-in-out infinite;
+    will-change: background-position, opacity, filter;
+}
+
+.group:hover .card-dot-grid {
+    opacity: 1;
+}
+
 /* Performance optimizations */
 .gpu-accelerated {
     transform: translateZ(0);

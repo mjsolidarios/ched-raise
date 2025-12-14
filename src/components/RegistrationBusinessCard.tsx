@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useMemo, useRef, useState, type ReactNode } from 'react';
 import QRCode from 'react-qr-code';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -130,6 +130,7 @@ const getStatusColor = (status?: string) => {
 
 export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions }: RegistrationBusinessCardProps) => {
   const [flipped, setFlipped] = useState(false);
+  const cardRef = useRef<HTMLDivElement | null>(null);
 
   const email = registration.email || fallbackEmail || '';
 
@@ -155,8 +156,33 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
 
   const toggle = () => setFlipped((v) => !v);
 
+  const setSpotlight = (clientX: number, clientY: number) => {
+    const el = cardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    el.style.setProperty('--spot-x', `${x}px`);
+    el.style.setProperty('--spot-y', `${y}px`);
+
+    // Parallax-ish dot grid offset (inverse movement)
+    el.style.setProperty('--grid-x', `${Math.round(-x * 0.18)}px`);
+    el.style.setProperty('--grid-y', `${Math.round(-y * 0.18)}px`);
+  };
+
   return (
     <div
+      ref={cardRef}
+      onPointerMove={(e) => setSpotlight(e.clientX, e.clientY)}
+      onPointerLeave={() => {
+        const el = cardRef.current;
+        if (!el) return;
+        el.style.setProperty('--spot-x', '50%');
+        el.style.setProperty('--spot-y', '35%');
+        el.style.setProperty('--grid-x', '0px');
+        el.style.setProperty('--grid-y', '0px');
+      }}
       className={cn(
         'flip-card group w-full cursor-pointer select-none',
         'transition-transform duration-300 hover:scale-[1.01] active:scale-[0.995]',
@@ -179,15 +205,21 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
         <div className="flip-card-face absolute inset-0">
           <div className="relative h-full rounded-2xl p-[1px] bg-gradient-to-br from-primary/35 via-white/10 to-secondary/35 shadow-[0_18px_60px_-22px_rgba(8,52,159,0.7)]">
             <div className="glass-card relative overflow-hidden rounded-2xl p-4 sm:p-5 h-full">
-              {/* ID-seeded abstract pattern */}
+              {/* ID-seeded abstract pattern (slow animated drift) */}
               <div
-                className="pointer-events-none absolute inset-0 opacity-[0.42] mix-blend-screen saturate-150 contrast-125"
+                className="pointer-events-none absolute inset-0 card-pattern-animate opacity-[0.42] mix-blend-screen saturate-150 contrast-125"
                 style={{
-                  backgroundImage: `url("${patternFront}")`,
+                  backgroundImage: `url(\"${patternFront}\")`,
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                 }}
               />
+
+              {/* Spotlight (follows cursor) */}
+              <div className="pointer-events-none absolute inset-0 card-spotlight mix-blend-screen" />
+
+              {/* Dot grid (follows cursor) */}
+              <div className="pointer-events-none absolute inset-0 card-dot-grid mix-blend-screen" />
 
               {/* Subtle grid pattern */}
               <div
@@ -288,15 +320,21 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
         <div className="flip-card-face flip-card-back absolute inset-0">
           <div className="relative h-full rounded-2xl p-[1px] bg-gradient-to-br from-secondary/35 via-white/10 to-primary/35 shadow-[0_18px_60px_-22px_rgba(16,185,129,0.45)]">
             <div className="glass-card relative overflow-hidden rounded-2xl p-4 sm:p-5 h-full">
-              {/* ID-seeded abstract pattern */}
+              {/* ID-seeded abstract pattern (slow animated drift) */}
               <div
-                className="pointer-events-none absolute inset-0 opacity-[0.42] mix-blend-screen saturate-150 contrast-125"
+                className="pointer-events-none absolute inset-0 card-pattern-animate opacity-[0.42] mix-blend-screen saturate-150 contrast-125"
                 style={{
-                  backgroundImage: `url("${patternBack}")`,
+                  backgroundImage: `url(\"${patternBack}\")`,
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                 }}
               />
+
+              {/* Spotlight (follows cursor) */}
+              <div className="pointer-events-none absolute inset-0 card-spotlight mix-blend-screen" />
+
+              {/* Dot grid (follows cursor) */}
+              <div className="pointer-events-none absolute inset-0 card-dot-grid mix-blend-screen" />
 
               {/* Subtle grid pattern */}
               <div
