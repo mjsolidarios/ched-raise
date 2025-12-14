@@ -3,23 +3,69 @@ import { MapPin, Hotel, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
+import { useRef } from 'react';
+import { Badge } from '@/components/ui/badge';
+
+const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+};
+
+const SpotlightCard = ({ children, index }: { children: React.ReactNode, index: number }) => {
+    const cardRef = useRef<HTMLDivElement>(null);
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!cardRef.current) return;
+        const rect = cardRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        cardRef.current.style.setProperty("--mouse-x", `${x}px`);
+        cardRef.current.style.setProperty("--mouse-y", `${y}px`);
+    };
+
+    return (
+        <motion.div variants={item}>
+            <div
+                ref={cardRef}
+                onMouseMove={handleMouseMove}
+                className="relative h-full group"
+                style={{
+                    // @ts-ignore
+                    "--mouse-x": "0px",
+                    "--mouse-y": "0px",
+                } as React.CSSProperties}
+            >
+                <div className="absolute inset-0 z-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100 pointer-events-none rounded-lg"
+                    style={{
+                        background: "radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), hsl(var(--primary) / 0.15), transparent 40%)"
+                    }}
+                />
+                {children}
+            </div>
+        </motion.div>
+    );
+};
 
 export const ExploreIloilo = () => {
     const highlights = [
         {
             icon: MapPin,
             title: 'Historic Sites',
-            description: 'Visit iconic landmarks like Molo Church and Jaro Cathedral'
+            description: 'Visit iconic landmarks like Molo Church and Jaro Cathedral',
+            category: 'Attraction'
         },
         {
             icon: Hotel,
             title: 'Comfortable Stays',
-            description: 'From luxury hotels to budget-friendly accommodations'
+            description: 'From luxury hotels to budget-friendly accommodations',
+            category: 'Accommodation'
         },
         {
             icon: ArrowRight,
             title: 'Local Experiences',
-            description: 'Taste authentic La Paz Batchoy and explore the Esplanade'
+            description: 'Taste authentic La Paz Batchoy and explore the Esplanade',
+            category: 'Experience'
+
         }
     ];
 
@@ -50,17 +96,31 @@ export const ExploreIloilo = () => {
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, delay: index * 0.1 }}
                         >
-                            <Card className="glass-card h-full text-center hover:border-primary/50 transition-all">
-                                <CardHeader>
-                                    <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-3">
-                                        <highlight.icon className="h-6 w-6 text-primary" />
-                                    </div>
-                                    <CardTitle className="text-lg">{highlight.title}</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <CardDescription>{highlight.description}</CardDescription>
-                                </CardContent>
-                            </Card>
+                            <SpotlightCard key={index} index={index}>
+                                <Card className="glass-card h-full border-white/10 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                                    <CardHeader className="relative z-10">
+                                        <div className="flex items-start justify-between mb-3">
+                                            <motion.div
+                                                whileHover={{ scale: 1.1, rotate: 5 }}
+                                                className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5"
+                                            >
+                                                <highlight.icon className="h-6 w-6 text-primary" />
+                                            </motion.div>
+                                            <Badge variant="outline" className="border-primary/30 text-primary text-xs">
+                                                {highlight.category}
+                                            </Badge>
+                                        </div>
+                                        <CardTitle className="text-xl group-hover:text-primary transition-colors">{highlight.title}</CardTitle>
+                                        <p className="text-xs text-accent font-semibold">{highlight.category}</p>
+                                    </CardHeader>
+                                    <CardContent className="relative z-10">
+                                        <CardDescription className="text-sm leading-relaxed">
+                                            {highlight.description}
+                                        </CardDescription>
+                                    </CardContent>
+                                </Card>
+                            </SpotlightCard>
                         </motion.div>
                     ))}
                 </div>
