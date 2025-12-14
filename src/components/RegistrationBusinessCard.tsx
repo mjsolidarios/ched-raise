@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import QRCode from 'react-qr-code';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -132,6 +132,30 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
   const [flipped, setFlipped] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
 
+  const [isSmUp, setIsSmUp] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return window.matchMedia('(min-width: 640px)').matches;
+  });
+
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 640px)');
+    const onChange = (e: MediaQueryListEvent) => setIsSmUp(e.matches);
+
+    // Set initial
+    setIsSmUp(mql.matches);
+
+    if (typeof mql.addEventListener === 'function') {
+      mql.addEventListener('change', onChange);
+      return () => mql.removeEventListener('change', onChange);
+    }
+
+    // Safari fallback
+    // eslint-disable-next-line deprecation/deprecation
+    mql.addListener(onChange);
+    // eslint-disable-next-line deprecation/deprecation
+    return () => mql.removeListener(onChange);
+  }, []);
+
   const email = registration.email || fallbackEmail || '';
 
   const fullName = useMemo(() => {
@@ -154,6 +178,8 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
   const patternFront = useMemo(() => makeIdPatternDataUrl(registration.id, 'front'), [registration.id]);
   const patternBack = useMemo(() => makeIdPatternDataUrl(registration.id, 'back'), [registration.id]);
 
+  const qrSize = isSmUp ? 160 : 132;
+
   const toggle = () => setFlipped((v) => !v);
 
   const setSpotlight = (clientX: number, clientY: number) => {
@@ -169,6 +195,18 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
     // Parallax-ish dot grid offset (inverse movement)
     el.style.setProperty('--grid-x', `${Math.round(-x * 0.18)}px`);
     el.style.setProperty('--grid-y', `${Math.round(-y * 0.18)}px`);
+
+    // Subtle card swivel based on cursor position
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const dx = (x - cx) / cx; // -1..1
+    const dy = (y - cy) / cy; // -1..1
+    const maxDeg = 4;
+    const tiltY = dx * maxDeg;
+    const tiltX = -dy * maxDeg;
+
+    el.style.setProperty('--tilt-x', `${tiltX.toFixed(2)}deg`);
+    el.style.setProperty('--tilt-y', `${tiltY.toFixed(2)}deg`);
   };
 
   return (
@@ -182,6 +220,8 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
         el.style.setProperty('--spot-y', '35%');
         el.style.setProperty('--grid-x', '0px');
         el.style.setProperty('--grid-y', '0px');
+        el.style.setProperty('--tilt-x', '0deg');
+        el.style.setProperty('--tilt-y', '0deg');
       }}
       className={cn(
         'flip-card group w-full cursor-pointer select-none',
@@ -200,7 +240,7 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
       tabIndex={0}
       aria-label={flipped ? 'Flip card to front' : 'Flip card to back'}
     >
-      <div className="flip-card-inner aspect-[7/4] w-full min-h-[240px]">
+      <div className="flip-card-inner aspect-[3/2] sm:aspect-[7/4] w-full min-h-[420px] sm:min-h-[260px]">
         {/* Front */}
         <div className="flip-card-face absolute inset-0">
           <div className="relative h-full rounded-2xl p-[1px] bg-gradient-to-br from-primary/35 via-white/10 to-secondary/35 shadow-[0_18px_60px_-22px_rgba(8,52,159,0.7)]">
@@ -293,7 +333,7 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
               </p>
             </div>
 
-            <div className="relative mt-6 grid grid-cols-2 gap-3 text-sm">
+            <div className="relative mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
               <div className="space-y-1">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Registration ID</p>
                 <p className="font-mono text-xs break-all bg-muted/40 border border-border/40 rounded-md p-2">
@@ -356,7 +396,7 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
 
             <div className="relative flex items-start justify-between gap-4">
               <div>
-                <p className="text-lg font-semibold">Attendance QR</p>
+                <p className="text-base sm:text-lg font-semibold">Attendance QR</p>
                 <p className="text-xs text-muted-foreground mt-1">Present this code at the event entrance.</p>
               </div>
 
@@ -377,14 +417,14 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
             </div>
 
               <div className="relative mt-4 grid gap-4 sm:grid-cols-[180px,1fr] items-start">
-                <div className="relative rounded-2xl bg-white p-3 w-fit border border-white/10 shadow-[0_18px_50px_-28px_rgba(0,0,0,0.9)]">
+                <div className="relative rounded-2xl bg-white p-3 w-fit border border-white/10 shadow-[0_18px_50px_-28px_rgba(0,0,0,0.9)] mx-auto sm:mx-0">
                   <div className="absolute -inset-3 rounded-3xl bg-primary/10 blur-2xl" />
                   <div className="relative">
-                    <QRCode value={qrValue} size={160} />
+                    <QRCode value={qrValue} size={qrSize} />
                   </div>
                 </div>
 
-              <div className="text-sm space-y-3">
+              <div className="text-sm space-y-2 sm:space-y-3">
                 <div>
                   <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Registration ID</p>
                   <p className="font-mono text-xs break-all">{registration.id}</p>

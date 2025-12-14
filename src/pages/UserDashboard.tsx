@@ -207,9 +207,9 @@ const UserDashboard = () => {
 
     const getStatusIcon = (status: string) => {
         switch (status) {
-            case 'confirmed': return <CheckCircle2 className="h-12 w-12 text-emerald-500 mb-2" />;
-            case 'rejected': return <XCircle className="h-12 w-12 text-destructive mb-2" />;
-            default: return <Clock className="h-12 w-12 text-amber-500 mb-2" />;
+            case 'confirmed': return <CheckCircle2 className="h-10 w-10 sm:h-12 sm:w-12 text-emerald-500 mb-2" />;
+            case 'rejected': return <XCircle className="h-10 w-10 sm:h-12 sm:w-12 text-destructive mb-2" />;
+            default: return <Clock className="h-10 w-10 sm:h-12 sm:w-12 text-amber-500 mb-2" />;
         }
     };
 
@@ -238,13 +238,13 @@ const UserDashboard = () => {
     );
 
     return (
-        <div className="container mx-auto px-4 py-8 lg:py-12 min-h-[calc(100vh-64px)]">
-            <div className="max-w-4xl mx-auto space-y-8">
+        <div className="container mx-auto px-4 py-6 sm:py-8 lg:py-12 min-h-[calc(100vh-64px)]">
+            <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
                 {/* Header Welcome Section */}
-                <div className="mt-10 flex items-center justify-between pb-6 border-b border-border/40">
+                <div className="mt-6 sm:mt-10 flex items-center justify-between pb-4 sm:pb-6 border-b border-border/40">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight">My Registration</h1>
-                        <p className="text-muted-foreground mt-1">Manage your event registration and view status.</p>
+                        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">My Registration</h1>
+                        <p className="text-sm sm:text-base text-muted-foreground mt-1">Manage your event registration and view status.</p>
                     </div>
                 </div>
 
@@ -254,7 +254,7 @@ const UserDashboard = () => {
                     variants={container}
                     initial="hidden"
                     animate="show"
-                    className="grid gap-6 lg:grid-cols-3"
+                    className="grid gap-4 sm:gap-6 lg:grid-cols-3"
                 >
                     {registration && (
                         <motion.div variants={item} className="lg:col-span-3">
@@ -365,12 +365,12 @@ const UserDashboard = () => {
                             {/* Decorative gradient blob */}
                             <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
 
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-2xl">
-                                    <CalendarDays className="h-6 w-6 text-primary" />
+                            <CardHeader className="pb-4 sm:pb-6">
+                                <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
+                                    <CalendarDays className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                                     Event Registration
                                 </CardTitle>
-                                <CardDescription>
+                                <CardDescription className="text-sm sm:text-base">
                                     CHED-RAISE Summit 2026
                                 </CardDescription>
                             </CardHeader>
@@ -378,18 +378,18 @@ const UserDashboard = () => {
                                 {registration ? (
                                     <div className="space-y-6">
                                         {/* Status Display */}
-                                        <div className="flex flex-col items-center justify-center p-8 bg-background/50 rounded-xl border border-border/50 text-center">
+                                        <div className="flex flex-col items-center justify-center p-4 sm:p-8 bg-background/50 rounded-xl border border-border/50 text-center">
                                             {getStatusIcon(registration.status)}
-                                            <h3 className="text-xl font-semibold mb-2 capitalize">
+                                            <h3 className="text-lg sm:text-xl font-semibold mb-2 capitalize">
                                                 Registration {registration.status}
                                             </h3>
-                                            <p className="text-muted-foreground max-w-sm mx-auto mb-6 text-sm">
+                                            <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mx-auto mb-5 sm:mb-6">
                                                 {registration.status === 'pending' && "We have received your details. Our team is reviewing your application."}
                                                 {registration.status === 'confirmed' && "You are all set! Present your QR code or ID at the venue entrance."}
                                                 {registration.status === 'rejected' && "Unfortunately, we cannot accommodate your registration at this time. Please check your email for details."}
                                             </p>
                                             <div className="flex flex-col gap-4">
-                                                <Badge variant="outline" className={`text-base px-6 py-2 h-auto mx-auto ${getStatusColor(registration.status)}`}>
+                                                <Badge variant="outline" className={`text-sm sm:text-base px-4 sm:px-6 py-2 h-auto mx-auto ${getStatusColor(registration.status)}`}>
                                                     {registration.status.toUpperCase()}
                                                 </Badge>
 
@@ -424,7 +424,7 @@ const UserDashboard = () => {
                                     </div>
                                 ) : (
                                     <form onSubmit={handleSubmit} className="space-y-4">
-                                        <div className="grid gap-4 sm:grid-cols-3">
+                                        <div className="grid gap-3 sm:gap-4 sm:grid-cols-3">
                                             <div className="space-y-2">
                                                 <Label htmlFor="lastName">Last Name <span className="text-destructive">*</span></Label>
                                                 <Input id="lastName" name="lastName" required value={formData.lastName} onChange={handleChange} placeholder="Dela Cruz" className="bg-background/50" />
@@ -439,7 +439,7 @@ const UserDashboard = () => {
                                             </div>
                                         </div>
 
-                                        <div className="grid gap-4 sm:grid-cols-2">
+                                        <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
                                             <div className="space-y-2">
                                                 <Label htmlFor="email" className="flex items-center gap-2">
                                                     <Mail className="h-4 w-4 text-muted-foreground" /> Email Address
@@ -515,7 +515,7 @@ const UserDashboard = () => {
                             <CardHeader>
                                 <CardTitle className="text-base text-primary">Need Help?</CardTitle>
                             </CardHeader>
-                            <CardContent className="text-sm text-muted-foreground">
+                            <CardContent className="text-xs sm:text-sm text-muted-foreground">
                                 <p>If you have any questions about your registration status or need to make changes, please contact the developer.</p>
                                 <div className="mt-4 pt-4 border-t border-primary/10 flex items-center gap-2">
                                     <Mail className="h-4 w-4 text-primary" />
