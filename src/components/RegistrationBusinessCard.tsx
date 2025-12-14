@@ -309,7 +309,7 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
                 </div>
 
                 <div className="flex-1 flex flex-col justify-center">
-                  <p ref={nameRef} className="text-4xl sm:text-4xl font-bold tracking-tight text-white">{fullName}</p>
+                  <p ref={nameRef} className="text-5xl sm:text-7xl font-bold tracking-tight text-white">{fullName}</p>
                   <p className="text-sm sm:text-2xl text-muted-foreground mt-2">
                     {registrantTypeLabel}{registration.schoolAffiliation ? ` • ${registration.schoolAffiliation}` : ''}
                   </p>
