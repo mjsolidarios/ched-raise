@@ -106,7 +106,7 @@ export function Chatbot() {
             const errorMessage: Message = {
                 id: (Date.now() + 1).toString(),
                 role: 'model',
-                content: "I'm sorry, I'm having trouble connecting right now. Please try again later or check your API key."
+                content: "I'm sorry, I'm having trouble connecting right now. Please try again later."
             };
             setMessages(prev => [...prev, errorMessage]);
         } finally {

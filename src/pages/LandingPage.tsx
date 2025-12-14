@@ -14,6 +14,7 @@ import { Hero } from "@/components/Hero"
 import { About } from "@/components/About"
 import { Objectives } from "@/components/Objectives"
 import { Program } from "@/components/Program"
+import { ExploreIloilo } from "@/components/ExploreIloilo"
 import { Partners } from "@/components/Partners"
 import { Footer } from "@/components/Footer"
 
@@ -25,6 +26,7 @@ const LandingPage = () => {
                 <About />
                 <Objectives />
                 <Program />
+                <ExploreIloilo />
                 <Partners />
             </main>
             <Footer />

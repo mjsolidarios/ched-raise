@@ -88,6 +88,9 @@ export function Navbar() {
                         {item}
                     </a>
                 ))}
+                <NavLink href="/tourism">
+                    Visit Iloilo
+                </NavLink>
             </div>
 
             <div className={cn(
