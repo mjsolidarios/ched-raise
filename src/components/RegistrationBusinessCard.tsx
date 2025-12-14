@@ -298,7 +298,7 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
               <div className="relative flex flex-col h-full">
                 <div className="flex items-start justify-between">
                   <div className="leading-tight">
-                    <p className="text-xs sm:text-sm uppercase tracking-wider text-muted-foreground font-semibold">RAISE 2026</p>
+                    <p className="text-xs sm:text-sm uppercase tracking-wider text-muted-foreground font-semibold">MY REGISTRATION CARD</p>
                     <img
                       src="/logo-light.svg"
                       alt="RAISE logo"
@@ -309,7 +309,7 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
                 </div>
 
                 <div className="flex-1 flex flex-col justify-center">
-                  <p ref={nameRef} className="text-5xl sm:text-7xl font-bold tracking-tight text-white">{fullName}</p>
+                  <p ref={nameRef} className="text-4xl sm:text-6xl font-bold tracking-tight text-white">{fullName}</p>
                   <p className="text-sm sm:text-2xl text-muted-foreground mt-2">
                     {registrantTypeLabel}{registration.schoolAffiliation ? ` • ${registration.schoolAffiliation}` : ''}
                   </p>
