@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom"
+
 export function Footer() {
     return (
         <footer className="py-12 bg-slate-950 border-t border-white/10 relative overflow-hidden">
@@ -13,7 +15,7 @@ export function Footer() {
                 </p>
 
                 <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm text-slate-500 mb-10 font-medium">
-                    <a href="#" className="hover:text-accent hover:underline hover:underline-offset-4 transition-all">Privacy Policy</a>
+                    <Link to="/privacy-policy" className="hover:text-accent hover:underline hover:underline-offset-4 transition-all">Privacy Policy</Link>
                     <a href="#" className="hover:text-accent hover:underline hover:underline-offset-4 transition-all">Contact Us</a>
                 </div>
 

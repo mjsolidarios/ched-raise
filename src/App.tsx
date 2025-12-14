@@ -10,6 +10,7 @@ import NotFoundPage from './pages/NotFoundPage';
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const UserDashboard = lazy(() => import('./pages/UserDashboard'));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 // const AdminPage = lazy(() => import('./pages/AdminPage'));
 
 // Loading component
@@ -35,6 +36,7 @@ const App = () => {
                             </ProtectedRoute>
                         } />
                         <Route path="/admin" element={<AdminPage />} />
+                        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                         <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                 </Suspense>

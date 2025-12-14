@@ -3,14 +3,17 @@ import { Menu, LogOut } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useState, useEffect } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { auth } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
 import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
 
 import { cn } from "@/lib/utils"
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false)
     const [user, setUser] = useState<User | null>(null);
+    const [isRegistrationComplete, setIsRegistrationComplete] = useState(false);
+    const [checkingRegistration, setCheckingRegistration] = useState(true);
     const location = useLocation()
     const navigate = useNavigate();
 
@@ -20,6 +23,26 @@ export function Navbar() {
         });
         return () => unsubscribe();
     }, []);
+
+    useEffect(() => {
+        if (!user) {
+            setCheckingRegistration(false);
+            return;
+        }
+
+        const q = query(collection(db, 'registrations'), where('uid', '==', user.uid));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            if (!snapshot.empty) {
+                const data = snapshot.docs[0].data();
+                setIsRegistrationComplete(data.status === 'confirmed');
+            } else {
+                setIsRegistrationComplete(false); // No registration means not complete
+            }
+            setCheckingRegistration(false);
+        });
+
+        return () => unsubscribe();
+    }, [user]);
 
     const handleLogout = async () => {
         await signOut(auth);
@@ -33,9 +56,9 @@ export function Navbar() {
             <Link
                 to={href}
                 className={cn(
-                    "text-sm font-medium transition-all duration-300 relative py-2 px-4 rounded-full",
+                    "text-sm font-medium transition-all duration-300 relative py-2 px-4 rounded-full flex items-center gap-2 overflow-hidden",
                     isActive
-                        ? "bg-primary text-white shadow-[0_0_20px_rgba(8,52,159,0.5)]"
+                        ? "bg-primary text-white shadow-none ring-0 outline-none"
                         : "text-slate-300 hover:text-white hover:bg-white/5"
                 )}
                 onClick={() => setIsOpen(false)}
@@ -74,7 +97,17 @@ export function Navbar() {
 
             {user && (
                 <div className={cn(isMobile && "w-full pl-1")}>
-                    <NavLink href="/dashboard">My Registration</NavLink>
+                    <NavLink href="/dashboard">
+                        <div className="flex items-center gap-2">
+                            My Registration
+                            {!checkingRegistration && !isRegistrationComplete && (
+                                <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                </span>
+                            )}
+                        </div>
+                    </NavLink>
                 </div>
             )}
         </>

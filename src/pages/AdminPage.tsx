@@ -32,7 +32,7 @@ const AdminPage = () => {
 
     useEffect(() => {
         if (user) {
-            const q = query(collection(db, 'registrations'), orderBy('createdAt', 'desc'));
+            const q = query(collection(db, 'registrations'), orderBy('timestamp', 'desc'));
             const unsubscribe = onSnapshot(q, (snapshot) => {
                 setRegistrations(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
             });
@@ -59,11 +59,19 @@ const AdminPage = () => {
         }
     };
 
+    // Helper to format full name
+    const formatFullName = (lastName?: string, firstName?: string, middleName?: string) => {
+        if (!lastName && !firstName && !middleName) return 'N/A';
+        return `${lastName || ''}, ${firstName || ''} ${middleName || ''}`.trim();
+    };
+
     // Filter registrations
     const filteredRegistrations = registrations.filter(reg =>
-        reg.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        reg.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        reg.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        reg.middleName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         reg.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        reg.company?.toLowerCase().includes(searchTerm.toLowerCase())
+        reg.schoolAffiliation?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     // Calculate Stats
@@ -217,9 +225,9 @@ const AdminPage = () => {
                                 <Table>
                                     <TableHeader className="bg-muted/50">
                                         <TableRow>
-                                            <TableHead>Participant</TableHead>
+                                            <TableHead>Full Name</TableHead>
+                                            <TableHead>School / Type</TableHead>
                                             <TableHead>Contact</TableHead>
-                                            <TableHead>Organization</TableHead>
                                             <TableHead>Status</TableHead>
                                             <TableHead className="text-right">Actions</TableHead>
                                         </TableRow>
@@ -235,14 +243,17 @@ const AdminPage = () => {
                                             filteredRegistrations.map((reg) => (
                                                 <TableRow key={reg.id} className="hover:bg-muted/30 transition-colors">
                                                     <TableCell>
-                                                        <div className="font-medium">{reg.fullName}</div>
+                                                        <div className="font-medium">{formatFullName(reg.lastName, reg.firstName, reg.middleName)}</div>
                                                         <div className="text-xs text-muted-foreground/70 font-mono">{reg.id.slice(0, 8)}...</div>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div className="text-sm">{reg.schoolAffiliation || 'N/A'}</div>
+                                                        <div className="text-xs text-muted-foreground capitalize">{reg.registrantType || 'N/A'} {reg.registrantType === 'others' && reg.registrantTypeOther ? `(${reg.registrantTypeOther})` : ''}</div>
                                                     </TableCell>
                                                     <TableCell>
                                                         <div className="text-sm">{reg.email}</div>
                                                         <div className="text-xs text-muted-foreground">{reg.contactNumber}</div>
                                                     </TableCell>
-                                                    <TableCell>{reg.company}</TableCell>
                                                     <TableCell>
                                                         <Badge
                                                             variant="outline"

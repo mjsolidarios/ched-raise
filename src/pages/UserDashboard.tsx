@@ -1,14 +1,38 @@
 import { useState, useEffect } from 'react';
 import { db, auth } from '@/lib/firebase';
-import { collection, addDoc, serverTimestamp, query, where, onSnapshot } from 'firebase/firestore';
+import { collection, addDoc, deleteDoc, updateDoc, doc, serverTimestamp, query, where, onSnapshot, getDocs } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { onAuthStateChanged, type User } from 'firebase/auth';
-import { Loader2, CalendarDays, User as UserIcon, Mail, Phone, Building2, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { Loader2, CalendarDays, User as UserIcon, Mail, Phone, Building2, CheckCircle2, XCircle, Clock, Pencil } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { RegistrationProgress } from '@/components/RegistrationProgress';
+import { SchoolAutocomplete } from '@/components/SchoolAutocomplete';
+import { toTitleCase } from '@/lib/utils/format';
 
 
 
@@ -17,14 +41,22 @@ const UserDashboard = () => {
     const [registration, setRegistration] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
-    // Form State
     const [formData, setFormData] = useState({
-        fullName: user?.displayName || '',
+        lastName: '',
+        firstName: '',
+        middleName: '',
         email: user?.email || '',
         contactNumber: '',
-        company: ''
+        schoolAffiliation: '',
+        registrantType: '',
+        registrantTypeOther: ''
     });
     const [submitting, setSubmitting] = useState(false);
+
+    // Edit State
+    const [isEditOpen, setIsEditOpen] = useState(false);
+    const [editFormData, setEditFormData] = useState<any>(null);
+    const [editing, setEditing] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -59,21 +91,107 @@ const UserDashboard = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const handleSelectChange = (value: string) => {
+        setFormData({ ...formData, registrantType: value });
+    };
+
+    const handleCancelRegistration = async () => {
+        if (!registration?.id) return;
+
+        try {
+            await deleteDoc(doc(db, "registrations", registration.id));
+            // State will automatically update via onSnapshot
+        } catch (error) {
+            console.error("Error cancelling registration:", error);
+            alert("Failed to cancel registration.");
+        }
+    };
+
+    const handleEditOpen = () => {
+        setEditFormData({
+            lastName: registration.lastName || '',
+            firstName: registration.firstName || '',
+            middleName: registration.middleName || '',
+            contactNumber: registration.contactNumber || '',
+            schoolAffiliation: registration.schoolAffiliation || '',
+            registrantType: registration.registrantType || '',
+            registrantTypeOther: registration.registrantTypeOther || ''
+        });
+        setIsEditOpen(true);
+    };
+
+    const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setEditFormData({ ...editFormData, [e.target.name]: e.target.value });
+    };
+
+    const handleEditSelectChange = (value: string) => {
+        setEditFormData({ ...editFormData, registrantType: value });
+    };
+
+    const handleUpdateRegistration = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!registration?.id) return;
+        setEditing(true);
+
+        try {
+            await updateDoc(doc(db, "registrations", registration.id), {
+                ...editFormData,
+                lastName: toTitleCase(editFormData.lastName),
+                firstName: toTitleCase(editFormData.firstName),
+                middleName: toTitleCase(editFormData.middleName),
+                schoolAffiliation: toTitleCase(editFormData.schoolAffiliation)
+            });
+            setIsEditOpen(false);
+        } catch (error) {
+            console.error("Error updating registration:", error);
+            alert("Failed to update registration.");
+        } finally {
+            setEditing(false);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitting(true);
 
+        if (!formData.lastName || !formData.firstName || !formData.middleName || !formData.contactNumber || !formData.schoolAffiliation || !formData.registrantType) {
+            alert("Please fill in all required fields.");
+            setSubmitting(false);
+            return;
+        }
+
+        if (formData.registrantType === 'others' && !formData.registrantTypeOther) {
+            alert("Please specify your registrant type.");
+            setSubmitting(false);
+            return;
+        }
+
         try {
+            // Check if user already exists
+            const q = query(collection(db, "registrations"), where("uid", "==", user?.uid));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                alert("You have already registered.");
+                setSubmitting(false);
+                return;
+            }
+
             await addDoc(collection(db, 'registrations'), {
                 ...formData,
-                uid: user?.uid, // Link to Auth UID
+                lastName: toTitleCase(formData.lastName),
+                firstName: toTitleCase(formData.firstName),
+                middleName: toTitleCase(formData.middleName),
+                schoolAffiliation: toTitleCase(formData.schoolAffiliation),
+                uid: user?.uid,
                 status: 'pending',
-                createdAt: serverTimestamp()
+                timestamp: serverTimestamp()
             });
-            // onSnapshot will update the view
+
+            // Reset form (optional, as we redirect or show status)
         } catch (error) {
-            console.error("Error adding registration: ", error);
-            alert("Registration failed. Please try again.");
+            console.error("Error submitting registration:", error);
+            alert("Failed to submit registration.");
         } finally {
             setSubmitting(false);
         }
@@ -130,6 +248,8 @@ const UserDashboard = () => {
                     </div>
                 </div>
 
+                <RegistrationProgress status={registration ? registration.status : null} />
+
                 <motion.div
                     variants={container}
                     initial="hidden"
@@ -165,41 +285,114 @@ const UserDashboard = () => {
                                                 {registration.status === 'confirmed' && "You are all set! Present your QR code or ID at the venue entrance."}
                                                 {registration.status === 'rejected' && "Unfortunately, we cannot accommodate your registration at this time. Please check your email for details."}
                                             </p>
-                                            <Badge variant="outline" className={`text-base px-6 py-2 h-auto ${getStatusColor(registration.status)}`}>
-                                                {registration.status.toUpperCase()}
-                                            </Badge>
+                                            <div className="flex flex-col gap-4">
+                                                <Badge variant="outline" className={`text-base px-6 py-2 h-auto mx-auto ${getStatusColor(registration.status)}`}>
+                                                    {registration.status.toUpperCase()}
+                                                </Badge>
+
+                                                {(registration.status === 'pending' || registration.status === 'confirmed') && (
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button
+                                                                variant="ghost"
+                                                                className="text-destructive hover:text-destructive hover:bg-destructive/10 text-sm"
+                                                            >
+                                                                Cancel Registration
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    This action cannot be undone. This will permanently delete your registration for the CHED RAISE 2026 Summit.
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                <AlertDialogAction onClick={handleCancelRegistration} className="bg-destructive hover:bg-destructive/90">
+                                                                    Continue
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 ) : (
                                     <form onSubmit={handleSubmit} className="space-y-4">
-                                        <div className="grid gap-4 sm:grid-cols-2">
+                                        <div className="grid gap-4 sm:grid-cols-3">
                                             <div className="space-y-2">
-                                                <Label htmlFor="fullName" className="flex items-center gap-2">
-                                                    <UserIcon className="h-4 w-4 text-muted-foreground" /> Full Name
-                                                </Label>
-                                                <Input id="fullName" name="fullName" required value={formData.fullName} onChange={handleChange} placeholder="Juana Dela Cruz" className="bg-background/50" />
+                                                <Label htmlFor="lastName">Last Name <span className="text-destructive">*</span></Label>
+                                                <Input id="lastName" name="lastName" required value={formData.lastName} onChange={handleChange} placeholder="Dela Cruz" className="bg-background/50" />
                                             </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="firstName">First Name <span className="text-destructive">*</span></Label>
+                                                <Input id="firstName" name="firstName" required value={formData.firstName} onChange={handleChange} placeholder="Juana" className="bg-background/50" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="middleName">Middle Name <span className="text-destructive">*</span></Label>
+                                                <Input id="middleName" name="middleName" required value={formData.middleName} onChange={handleChange} placeholder="Santos" className="bg-background/50" />
+                                            </div>
+                                        </div>
+
+                                        <div className="grid gap-4 sm:grid-cols-2">
                                             <div className="space-y-2">
                                                 <Label htmlFor="email" className="flex items-center gap-2">
                                                     <Mail className="h-4 w-4 text-muted-foreground" /> Email Address
                                                 </Label>
                                                 <Input id="email" name="email" type="email" required value={formData.email} onChange={handleChange} disabled className="bg-muted opacity-80" />
                                             </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="contactNumber" className="flex items-center gap-2">
+                                                    <Phone className="h-4 w-4 text-muted-foreground" /> Contact Number <span className="text-destructive">*</span>
+                                                </Label>
+                                                <Input id="contactNumber" name="contactNumber" required value={formData.contactNumber} onChange={handleChange} placeholder="0912 345 6789" className="bg-background/50" />
+                                            </div>
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="contactNumber" className="flex items-center gap-2">
-                                                <Phone className="h-4 w-4 text-muted-foreground" /> Contact Number
-                                            </Label>
-                                            <Input id="contactNumber" name="contactNumber" required value={formData.contactNumber} onChange={handleChange} placeholder="0912 345 6789" className="bg-background/50" />
+                                            <Label htmlFor="schoolAffiliation">School Affiliation <span className="text-destructive">*</span></Label>
+                                            <SchoolAutocomplete
+                                                id="schoolAffiliation"
+                                                name="schoolAffiliation"
+                                                value={formData.schoolAffiliation}
+                                                onChange={(val) => setFormData(prev => ({ ...prev, schoolAffiliation: val }))}
+                                                placeholder="e.g. University of the Philippines"
+                                                className="bg-background/50"
+                                                required
+                                            />
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="company" className="flex items-center gap-2">
-                                                <Building2 className="h-4 w-4 text-muted-foreground" /> Company / Institution
-                                            </Label>
-                                            <Input id="company" name="company" value={formData.company} onChange={handleChange} placeholder="University of the Philippines" className="bg-background/50" />
+                                            <Label htmlFor="registrantType">Registrant Type <span className="text-destructive">*</span></Label>
+                                            <Select onValueChange={handleSelectChange} value={formData.registrantType}>
+                                                <SelectTrigger className="bg-background/50">
+                                                    <SelectValue placeholder="Select type" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="student">Student</SelectItem>
+                                                    <SelectItem value="faculty">Faculty</SelectItem>
+                                                    <SelectItem value="administrator">Administrator</SelectItem>
+                                                    <SelectItem value="others">Others</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                         </div>
+
+                                        {formData.registrantType === 'others' && (
+                                            <div className="space-y-2">
+                                                <Label htmlFor="registrantTypeOther">Please specify <span className="text-destructive">*</span></Label>
+                                                <Input
+                                                    id="registrantTypeOther"
+                                                    name="registrantTypeOther"
+                                                    required
+                                                    value={formData.registrantTypeOther}
+                                                    onChange={handleChange}
+                                                    placeholder="e.g. Researcher, Guest"
+                                                    className="bg-background/50"
+                                                />
+                                            </div>
+                                        )}
 
                                         <Button type="submit" className="w-full bg-primary hover:bg-primary/90 mt-4" size="lg" disabled={submitting}>
                                             {submitting ? (
@@ -214,12 +407,93 @@ const UserDashboard = () => {
                         </Card>
                     </motion.div>
 
-                    {/* Side Info / Details Card */}
                     <motion.div variants={item} className="space-y-6">
                         {registration && (
                             <Card className="glass-card h-fit">
-                                <CardHeader>
+                                <CardHeader className="flex flex-row items-center justify-between pb-2">
                                     <CardTitle className="text-lg">Your Details</CardTitle>
+                                    <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+                                        <DialogTrigger asChild>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-white hover:bg-white/10" onClick={handleEditOpen}>
+                                                <Pencil className="h-4 w-4" />
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent className="sm:max-w-[425px]">
+                                            <DialogHeader>
+                                                <DialogTitle>Edit Registration Details</DialogTitle>
+                                                <DialogDescription>
+                                                    Make changes to your registration profile here. Click save when you're done.
+                                                </DialogDescription>
+                                            </DialogHeader>
+                                            {editFormData && (
+                                                <form onSubmit={handleUpdateRegistration} className="space-y-4 py-4">
+                                                    <div className="grid grid-cols-3 gap-4">
+                                                        <div className="space-y-2 col-span-1">
+                                                            <Label htmlFor="edit-lastName">Last Name <span className="text-destructive">*</span></Label>
+                                                            <Input id="edit-lastName" name="lastName" value={editFormData.lastName} onChange={handleEditChange} className="col-span-3" />
+                                                        </div>
+                                                        <div className="space-y-2 col-span-1">
+                                                            <Label htmlFor="edit-firstName">First Name <span className="text-destructive">*</span></Label>
+                                                            <Input id="edit-firstName" name="firstName" value={editFormData.firstName} onChange={handleEditChange} className="col-span-3" />
+                                                        </div>
+                                                        <div className="space-y-2 col-span-1">
+                                                            <Label htmlFor="edit-middleName">Middle Name <span className="text-destructive">*</span></Label>
+                                                            <Input id="edit-middleName" name="middleName" value={editFormData.middleName} onChange={handleEditChange} className="col-span-3" />
+                                                        </div>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="edit-schoolAffiliation">School Affiliation <span className="text-destructive">*</span></Label>
+                                                        <SchoolAutocomplete
+                                                            id="edit-schoolAffiliation"
+                                                            name="schoolAffiliation"
+                                                            value={editFormData.schoolAffiliation}
+                                                            onChange={(val) => setEditFormData((prev: any) => ({ ...prev, schoolAffiliation: val }))}
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="edit-contactNumber">Contact Number <span className="text-destructive">*</span></Label>
+                                                        <Input id="edit-contactNumber" name="contactNumber" value={editFormData.contactNumber} onChange={handleEditChange} className="col-span-3" />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="edit-registrantType">Registrant Type <span className="text-destructive">*</span></Label>
+                                                        <Select onValueChange={handleEditSelectChange} value={editFormData.registrantType}>
+                                                            <SelectTrigger className="bg-background/50">
+                                                                <SelectValue placeholder="Select type" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="student">Student</SelectItem>
+                                                                <SelectItem value="faculty">Faculty</SelectItem>
+                                                                <SelectItem value="administrator">Administrator</SelectItem>
+                                                                <SelectItem value="others">Others</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+
+                                                    {editFormData.registrantType === 'others' && (
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="edit-registrantTypeOther">Please specify <span className="text-destructive">*</span></Label>
+                                                            <Input
+                                                                id="edit-registrantTypeOther"
+                                                                name="registrantTypeOther"
+                                                                value={editFormData.registrantTypeOther}
+                                                                onChange={handleEditChange}
+                                                                className="col-span-3"
+                                                            />
+                                                        </div>
+                                                    )}
+                                                    <DialogFooter>
+                                                        <Button type="submit" disabled={editing}>
+                                                            {editing ? (
+                                                                <>
+                                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...
+                                                                </>
+                                                            ) : 'Save changes'}
+                                                        </Button>
+                                                    </DialogFooter>
+                                                </form>
+                                            )}
+                                        </DialogContent>
+                                    </Dialog>
                                 </CardHeader>
                                 <CardContent className="space-y-4 text-sm">
                                     <div className="space-y-1">
@@ -227,27 +501,27 @@ const UserDashboard = () => {
                                         <p className="font-mono bg-muted/50 p-2 rounded text-xs break-all border border-border/50">{registration.id}</p>
                                     </div>
 
-                                    <div className="pt-2 flex items-start gap-3">
-                                        <UserIcon className="h-4 w-4 text-muted-foreground mt-0.5" />
-                                        <div>
-                                            <p className="font-medium">{registration.fullName}</p>
-                                            <span className="text-muted-foreground text-xs">Full Name</span>
-                                        </div>
+                                    <div className="space-y-1">
+                                        <p className="font-medium">{registration.lastName}, {registration.firstName} {registration.middleName}</p>
+                                        <span className="text-muted-foreground text-xs">Name</span>
                                     </div>
-
-                                    <div className="flex items-start gap-3">
-                                        <Mail className="h-4 w-4 text-muted-foreground mt-0.5" />
-                                        <div>
-                                            <p className="font-medium">{registration.email}</p>
-                                            <span className="text-muted-foreground text-xs">Email</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-start gap-3">
+                                    <div className="flex items-start gap-3 mt-4">
                                         <Building2 className="h-4 w-4 text-muted-foreground mt-0.5" />
                                         <div>
-                                            <p className="font-medium">{registration.company}</p>
-                                            <span className="text-muted-foreground text-xs">Institution</span>
+                                            <p className="font-medium">{registration.schoolAffiliation}</p>
+                                            <span className="text-muted-foreground text-xs">School Affiliation</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-start gap-3">
+                                        <UserIcon className="h-4 w-4 text-muted-foreground mt-0.5" />
+                                        <div>
+                                            <p className="font-medium capitalize">
+                                                {registration.registrantType === 'others'
+                                                    ? registration.registrantTypeOther
+                                                    : registration.registrantType}
+                                            </p>
+                                            <span className="text-muted-foreground text-xs">Registrant Type</span>
                                         </div>
                                     </div>
                                     <div className="flex items-start gap-3">

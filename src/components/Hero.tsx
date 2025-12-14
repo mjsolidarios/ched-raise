@@ -36,7 +36,7 @@ export function Hero() {
             {/* Professional Grid & Dots Background Overlay */}
             <div className="absolute inset-0 pointer-events-none">
                 {/* Base Faint Pattern */}
-                <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.03]" />
+                <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] opacity-5" />
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
 
                 {/* Dynamic Spotlight Reveal Effect */}
@@ -119,7 +119,7 @@ export function Hero() {
                     </motion.div>
 
                     {/* Text Side */}
-                    <div className="flex flex-col text-center md:text-left">
+                    <div className="flex flex-col text-center md:text-left items-center md:items-start">
                         <motion.h2
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
