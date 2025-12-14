@@ -3,7 +3,7 @@ import QRCode from 'react-qr-code';
 import { Badge } from '@/components/ui/badge';
 
 import { cn } from '@/lib/utils';
-import { Clock, RotateCw } from 'lucide-react';
+import { Clock, RotateCw, XCircle } from 'lucide-react';
 
 const hashStringToUint32 = (str: string) => {
   // FNV-1a 32-bit
@@ -29,20 +29,20 @@ const makeIdPatternDataUrl = (registrationId: string, variant: 'front' | 'back')
   const rand = mulberry32(seedBase);
 
   // Derive a palette from the seed.
-  const hueA = Math.floor(rand() * 360);
-  const hueB = (hueA + 150 + Math.floor(rand() * 60)) % 360;
-  const hueC = (hueA + 240 + Math.floor(rand() * 40)) % 360;
+  const hueA = 222.5; // Primary color
+  const hueB = (hueA + 30 + Math.floor(rand() * 20)) % 360;
+  const hueC = (hueA - 30 - Math.floor(rand() * 20)) % 360;
 
-  const circles = Array.from({ length: 12 }).map(() => {
+  const circles = Array.from({ length: 6 }).map(() => {
     const cx = Math.floor(rand() * 1200);
     const cy = Math.floor(rand() * 700);
-    const r = Math.floor(80 + rand() * 250);
-    const a = (0.05 + rand() * 0.12).toFixed(3);
+    const r = Math.floor(50 + rand() * 200);
+    const a = (0.04 + rand() * 0.08).toFixed(3);
     const h = [hueA, hueB, hueC][Math.floor(rand() * 3)];
-    return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="hsl(${h} 90% 65% / ${a})" />`;
+    return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="hsl(${h} 80% 60% / ${a})" />`;
   });
 
-  const paths = Array.from({ length: 5 }).map(() => {
+  const paths = Array.from({ length: 3 }).map(() => {
     const x1 = Math.floor(rand() * 1200);
     const y1 = Math.floor(rand() * 700);
     const x2 = Math.floor(rand() * 1200);
@@ -51,10 +51,10 @@ const makeIdPatternDataUrl = (registrationId: string, variant: 'front' | 'back')
     const c1y = Math.floor(rand() * 700);
     const c2x = Math.floor(rand() * 1200);
     const c2y = Math.floor(rand() * 700);
-    const width = (1.2 + rand() * 2.5).toFixed(2);
-    const a = (0.12 + rand() * 0.2).toFixed(3);
+    const width = (1.0 + rand() * 1.5).toFixed(2);
+    const a = (0.08 + rand() * 0.1).toFixed(3);
     const h = [hueA, hueB, hueC][Math.floor(rand() * 3)];
-    return `<path d="M ${x1} ${y1} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${x2} ${y2}" fill="none" stroke="hsl(${h} 90% 72% / ${a})" stroke-width="${width}" />`;
+    return `<path d="M ${x1} ${y1} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${x2} ${y2}" fill="none" stroke="hsl(${h} 80% 70% / ${a})" stroke-width="${width}" />`;
   });
 
   const svg = `
@@ -87,10 +87,13 @@ const makeIdPatternDataUrl = (registrationId: string, variant: 'front' | 'back')
   </g>
 
   <!-- ID hint lines (deterministic but subtle) -->
-  <g opacity="0.16">
-    <path d="M 0 ${60 + Math.floor((seedBase % 200))} L 1200 ${60 + Math.floor((seedBase % 200))}" stroke="hsl(${hueA} 85% 70% / 0.35)" stroke-width="1" />
-    <path d="M 0 ${260 + Math.floor((seedBase % 180))} L 1200 ${260 + Math.floor((seedBase % 180))}" stroke="hsl(${hueB} 85% 70% / 0.25)" stroke-width="1" />
-    <path d="M 0 ${470 + Math.floor((seedBase % 150))} L 1200 ${470 + Math.floor((seedBase % 150))}" stroke="hsl(${hueC} 85% 70% / 0.22)" stroke-width="1" />
+  <g opacity="0.2">
+    <path d="M 0 ${60 + Math.floor((seedBase % 150))} L 1200 ${60 + Math.floor((seedBase % 250))}" stroke="hsl(${hueA} 85% 70% / 0.4)" stroke-width="1.5" />
+    <path d="M 0 ${200 + Math.floor((seedBase % 120))} L 1200 ${220 + Math.floor((seedBase % 180))}" stroke="hsl(${hueB} 85% 70% / 0.3)" stroke-width="1" />
+    <path d="M 0 ${350 + Math.floor((seedBase % 100))} L 1200 ${400 + Math.floor((seedBase % 150))}" stroke="hsl(${hueC} 85% 70% / 0.25)" stroke-width="1.2" />
+    <path d="M 0 ${500 + Math.floor((seedBase % 80))} L 1200 ${550 + Math.floor((seedBase % 100))}" stroke="hsl(${hueA} 85% 70% / 0.2)" stroke-width="0.8" />
+    <path d="M ${100 + Math.floor((seedBase % 100))} 0 L ${150 + Math.floor((seedBase % 150))} 700" stroke="hsl(${hueB} 85% 70% / 0.15)" stroke-width="0.5" />
+    <path d="M ${800 + Math.floor((seedBase % 100))} 0 L ${850 + Math.floor((seedBase % 150))} 700" stroke="hsl(${hueC} 85% 70% / 0.1)" stroke-width="0.5" />
   </g>
 </svg>`.trim();
 
@@ -322,9 +325,9 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
                 <p className="text-[11px] sm:text-xs text-muted-foreground">Tap card to flip</p>
               </div>
 
-              <div className="relative mt-5 space-y-1">
-                <p className="text-lg sm:text-2xl font-semibold tracking-tight">{fullName}</p>
-                <p className="text-xs sm:text-sm text-muted-foreground">
+              <div className="relative mt-5 space-y-2">
+                <p className="text-xl sm:text-3xl font-bold tracking-tight">{fullName}</p>
+                <p className="text-sm sm:text-base text-muted-foreground">
                   {registrantTypeLabel}{registration.schoolAffiliation ? ` • ${registration.schoolAffiliation}` : ''}
                 </p>
               </div>
@@ -332,14 +335,19 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
               <div className="relative mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                 <div className="space-y-1">
                   <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Registration ID</p>
-                  <p className="font-mono text-[11px] sm:text-xs break-all bg-muted/40 border border-border/40 rounded-md p-1.5 sm:p-2">
+                  <p className="font-mono text-xs sm:text-sm break-all bg-muted/40 border border-border/40 rounded-md p-1.5 sm:p-2">
                     {registration.id}
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[11px] sm:text-xs uppercase tracking-wider text-muted-foreground font-semibold">Email</p>
-                  <p className="text-[11px] sm:text-xs break-all bg-muted/40 border border-border/40 rounded-md p-1.5 sm:p-2">{email || '—'}</p>
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Email</p>
+                  <p className="text-xs sm:text-sm break-all bg-muted/40 border border-border/40 rounded-md p-1.5 sm:p-2">{email || '—'}</p>
                 </div>
+              </div>
+
+              <div className="absolute bottom-4 left-5">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Valid Thru</p>
+                <p className="font-mono text-sm">01/30</p>
               </div>
 
               <div className="relative mt-3 flex items-center justify-end">
@@ -401,9 +409,15 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
                         <p className="mt-2 text-sm font-semibold text-amber-600">Pending Approval</p>
                       </div>
                     )}
+                    {registration.status === 'rejected' && (
+                      <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center text-center">
+                        <XCircle className="w-12 h-12 text-destructive" />
+                        <p className="mt-2 text-sm font-semibold text-destructive">Registration Rejected</p>
+                      </div>
+                    )}
                   </div>
                 </div>
-                {registration.status !== 'pending' && (
+                {registration.status !== 'pending' && registration.status !== 'rejected' && (
                   <p className="mt-4 text-sm text-muted-foreground text-center">Present this code at the event entrance</p>
                 )}
               </div>

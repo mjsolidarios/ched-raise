@@ -146,8 +146,8 @@
     transition: opacity 250ms ease;
     background: radial-gradient(
         520px circle at var(--spot-x, 50%) var(--spot-y, 35%),
-        hsl(var(--primary) / 0.22),
-        hsl(var(--secondary) / 0.10) 22%,
+        hsl(var(--primary) / 0.35),
+        hsl(var(--primary) / 0.15) 22%,
         rgba(255, 255, 255, 0.00) 58%
     );
 }
