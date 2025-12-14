@@ -11,7 +11,7 @@ const item = {
     show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
 };
 
-const SpotlightCard = ({ children, index }: { children: React.ReactNode, index: number }) => {
+const SpotlightCard = ({ children }: { children: React.ReactNode }) => {
     const cardRef = useRef<HTMLDivElement>(null);
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -96,7 +96,7 @@ export const ExploreIloilo = () => {
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, delay: index * 0.1 }}
                         >
-                            <SpotlightCard key={index} index={index}>
+                            <SpotlightCard key={index}>
                                 <Card className="glass-card h-full border-white/10 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden">
                                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                                     <CardHeader className="relative z-10">
