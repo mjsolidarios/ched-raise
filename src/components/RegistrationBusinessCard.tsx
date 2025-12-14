@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import QRCode from 'react-qr-code';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+
 import { cn } from '@/lib/utils';
 import { RotateCw } from 'lucide-react';
 
@@ -178,7 +178,7 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
   const patternFront = useMemo(() => makeIdPatternDataUrl(registration.id, 'front'), [registration.id]);
   const patternBack = useMemo(() => makeIdPatternDataUrl(registration.id, 'back'), [registration.id]);
 
-  const qrSize = isSmUp ? 160 : 120;
+
 
   const toggle = () => setFlipped((v) => !v);
 
