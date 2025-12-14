@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { MapPin, Hotel, Lightbulb, ArrowRight, Church, Building2, TreePine, Waves, Utensils, Car } from 'lucide-react';
+import { MapPin, Hotel, Lightbulb, ArrowRight, Church, Building2, TreePine, Waves, Utensils, Car, CameraIcon } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -117,79 +117,96 @@ const TourismPage = () => {
 
     return (
         <div className="min-h-screen">
-            {/* Hero Section */}
-            <section className="relative py-20 lg:py-32 overflow-hidden bg-gradient-to-br from-primary/20 via-background to-background">
+            {/* Hero and Attractions Section with Shared Background */}
+            <div className="relative overflow-hidden">
+                {/* Background Image */}
+                <div className="absolute inset-0">
+                    <img
+                        src="/iloilo.webp"
+                        alt="Iloilo City"
+                        className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/80 to-background/90" />
+                    {/* Photo Credit */}
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-white/40 z-10 opacity-30 hover:opacity-100 transition-opacity duration-300">
+                        <CameraIcon className="inline mr-1 h-4 w-4" /> Janssen Panizales via Pexels
+                    </div>
+                </div>
                 <div className="absolute inset-0 bg-grid-white/5" />
-                <div className="container mx-auto px-4 relative z-10">
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                        className="text-center max-w-4xl mx-auto"
-                    >
-                        <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-                            Discover Iloilo
-                        </h1>
-                        <p className="text-xl text-muted-foreground mb-8">
-                            Experience the heart of Western Visayas - where history, culture, and modern living blend seamlessly
-                        </p>
-                        <div className="flex flex-wrap gap-4 justify-center">
-                            <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
-                                <Link to="/">
-                                    Register for Summit <ArrowRight className="ml-2 h-4 w-4" />
-                                </Link>
-                            </Button>
-                        </div>
-                    </motion.div>
-                </div>
-            </section>
 
-            {/* Tourist Attractions */}
-            <section className="py-16 lg:py-24">
-                <div className="container mx-auto px-4">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="text-center mb-12"
-                    >
-                        <MapPin className="h-12 w-12 mx-auto mb-4 text-primary" />
-                        <h2 className="text-3xl md:text-4xl font-bold mb-4">Must-Visit Attractions</h2>
-                        <p className="text-muted-foreground max-w-2xl mx-auto">
-                            Explore Iloilo's rich heritage and vibrant culture
-                        </p>
-                    </motion.div>
+                {/* Hero Section */}
+                <section className="relative py-20 lg:py-32">
+                    <div className="container mx-auto px-4 relative z-10">
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8 }}
+                            className="text-center max-w-4xl mx-auto"
+                        >
+                            <h1 className="mt-10 text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                                Discover Iloilo
+                            </h1>
+                            <p className="text-xl text-muted-foreground mb-8">
+                                Experience the heart of Western Visayas - where history, culture, and modern living blend seamlessly
+                            </p>
+                            <div className="flex flex-wrap gap-4 justify-center">
+                                <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
+                                    <Link to="/">
+                                        Register for Summit <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Link>
+                                </Button>
+                            </div>
+                        </motion.div>
+                    </div>
+                </section>
 
-                    <motion.div
-                        variants={container}
-                        initial="hidden"
-                        whileInView="show"
-                        viewport={{ once: true }}
-                        className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-                    >
-                        {attractions.map((attraction, index) => (
-                            <motion.div key={index} variants={item}>
-                                <Card className="glass-card h-full hover:border-primary/50 transition-all duration-300">
-                                    <CardHeader>
-                                        <div className="flex items-start justify-between mb-2">
-                                            <attraction.icon className="h-8 w-8 text-primary" />
-                                            <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
-                                                {attraction.category}
-                                            </span>
-                                        </div>
-                                        <CardTitle className="text-xl">{attraction.name}</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <CardDescription className="text-base">
-                                            {attraction.description}
-                                        </CardDescription>
-                                    </CardContent>
-                                </Card>
-                            </motion.div>
-                        ))}
-                    </motion.div>
-                </div>
-            </section>
+                {/* Tourist Attractions */}
+                <section className="relative py-16 lg:py-24">
+                    <div className="container mx-auto px-4 relative z-10">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="text-center mb-12"
+                        >
+                            <MapPin className="h-12 w-12 mx-auto mb-4 text-primary" />
+                            <h2 className="text-3xl md:text-4xl font-bold mb-4">Must-Visit Attractions</h2>
+                            <p className="text-muted-foreground max-w-2xl mx-auto">
+                                Explore Iloilo's rich heritage and vibrant culture
+                            </p>
+                        </motion.div>
+
+                        <motion.div
+                            variants={container}
+                            initial="hidden"
+                            whileInView="show"
+                            viewport={{ once: true }}
+                            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+                        >
+                            {attractions.map((attraction, index) => (
+                                <motion.div key={index} variants={item}>
+                                    <Card className="glass-card h-full hover:border-primary/50 transition-all duration-300">
+                                        <CardHeader>
+                                            <div className="flex items-start justify-between mb-2">
+                                                <attraction.icon className="h-8 w-8 text-primary" />
+                                                <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
+                                                    {attraction.category}
+                                                </span>
+                                            </div>
+                                            <CardTitle className="text-xl">{attraction.name}</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <CardDescription className="text-base">
+                                                {attraction.description}
+                                            </CardDescription>
+                                        </CardContent>
+                                    </Card>
+                                </motion.div>
+                            ))}
+                        </motion.div>
+                    </div>
+                </section>
+            </div>
 
             {/* Hotels */}
             <section className="py-16 lg:py-24 bg-muted/30">
