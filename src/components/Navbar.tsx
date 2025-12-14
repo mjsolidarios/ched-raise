@@ -89,7 +89,7 @@ export function Navbar() {
                     </a>
                 ))}
                 <NavLink href="/tourism">
-                    Visit Iloilo
+                    Host City
                 </NavLink>
             </div>
 
@@ -149,7 +149,7 @@ export function Navbar() {
                             </Button>
                         </div>
                     ) : (
-                        <Link to="/login">
+                        <Link to="/login" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                             <Button className="bg-accent text-accent-foreground hover:bg-accent/90 font-bold">
                                 Sign In / Register
                             </Button>
@@ -180,7 +180,10 @@ export function Navbar() {
                                         Logout
                                     </Button>
                                 ) : (
-                                    <Link to="/login" onClick={() => setIsOpen(false)}>
+                                    <Link to="/login" onClick={() => {
+                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        setIsOpen(false);
+                                    }}>
                                         <Button className="bg-accent text-accent-foreground hover:bg-accent/90 w-full">
                                             Sign In / Register
                                         </Button>
