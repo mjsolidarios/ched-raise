@@ -3,7 +3,8 @@ import QRCode from 'react-qr-code';
 import { Badge } from '@/components/ui/badge';
 
 import { cn } from '@/lib/utils';
-import { Clock, RotateCw, XCircle } from 'lucide-react';
+import { CheckCircle, Clock, RotateCw, XCircle } from 'lucide-react';
+import { useFitText } from '@/hooks/use-fit-text';
 
 const hashStringToUint32 = (str: string) => {
   // FNV-1a 32-bit
@@ -33,16 +34,16 @@ const makeIdPatternDataUrl = (registrationId: string, variant: 'front' | 'back')
   const hueB = (hueA + 30 + Math.floor(rand() * 20)) % 360;
   const hueC = (hueA - 30 - Math.floor(rand() * 20)) % 360;
 
-  const circles = Array.from({ length: 6 }).map(() => {
+  const circles = Array.from({ length: 3 }).map(() => {
     const cx = Math.floor(rand() * 1200);
     const cy = Math.floor(rand() * 700);
-    const r = Math.floor(50 + rand() * 200);
-    const a = (0.04 + rand() * 0.08).toFixed(3);
+    const r = Math.floor(100 + rand() * 200);
+    const a = (0.05 + rand() * 0.05).toFixed(3);
     const h = [hueA, hueB, hueC][Math.floor(rand() * 3)];
     return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="hsl(${h} 80% 60% / ${a})" />`;
   });
 
-  const paths = Array.from({ length: 3 }).map(() => {
+  const paths = Array.from({ length: 2 }).map(() => {
     const x1 = Math.floor(rand() * 1200);
     const y1 = Math.floor(rand() * 700);
     const x2 = Math.floor(rand() * 1200);
@@ -51,8 +52,8 @@ const makeIdPatternDataUrl = (registrationId: string, variant: 'front' | 'back')
     const c1y = Math.floor(rand() * 700);
     const c2x = Math.floor(rand() * 1200);
     const c2y = Math.floor(rand() * 700);
-    const width = (1.0 + rand() * 1.5).toFixed(2);
-    const a = (0.08 + rand() * 0.1).toFixed(3);
+    const width = (1.5 + rand() * 2.0).toFixed(2);
+    const a = (0.1 + rand() * 0.1).toFixed(3);
     const h = [hueA, hueB, hueC][Math.floor(rand() * 3)];
     return `<path d="M ${x1} ${y1} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${x2} ${y2}" fill="none" stroke="hsl(${h} 80% 70% / ${a})" stroke-width="${width}" />`;
   });
@@ -137,6 +138,8 @@ const getStatusColor = (status?: string) => {
 export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions }: RegistrationBusinessCardProps) => {
   const [flipped, setFlipped] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
+  const nameRef = useRef<HTMLParagraphElement | null>(null);
+  useFitText(nameRef, 2);
 
   const [isSmUp, setIsSmUp] = useState(() => {
     if (typeof window === 'undefined') return true;
@@ -165,7 +168,8 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
   const email = registration.email || fallbackEmail || '';
 
   const fullName = useMemo(() => {
-    const parts = [registration.firstName, registration.middleName, registration.lastName].filter(Boolean);
+    const middleInitial = registration.middleName ? `${registration.middleName.charAt(0)}.` : '';
+    const parts = [registration.firstName, middleInitial, registration.lastName].filter(Boolean);
     return parts.length ? parts.join(' ') : 'Registrant';
   }, [registration.firstName, registration.middleName, registration.lastName]);
 
@@ -291,69 +295,58 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
                 draggable={false}
               />
 
-              <div className="relative flex items-start justify-between gap-4">
-                <div className="flex items-center gap-3">
+              <div className="relative flex flex-col h-full">
+                <div className="flex items-start justify-between">
                   <div className="leading-tight">
-                    <p className="text-[10px] sm:text-[11px] uppercase tracking-wider text-muted-foreground">RAISE Card</p>
+                    <p className="text-xs sm:text-sm uppercase tracking-wider text-muted-foreground font-semibold">RAISE 2026</p>
                     <img
                       src="/logo-light.svg"
                       alt="RAISE logo"
-                      className="h-5 sm:h-6 mt-1"
+                      className="h-6 sm:h-7 mt-1"
                       draggable={false}
                     />
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                <div className="flex-1 flex flex-col justify-center">
+                  <p ref={nameRef} className="text-4xl sm:text-4xl font-bold tracking-tight text-white">{fullName}</p>
+                  <p className="text-sm sm:text-2xl text-muted-foreground mt-2">
+                    {registrantTypeLabel}{registration.schoolAffiliation ? ` • ${registration.schoolAffiliation}` : ''}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4 text-sm mb-10 sm:mb-4">
+                  <div>
+                    <p className="uppercase tracking-wider text-muted-foreground font-semibold">Valid Thru</p>
+                    <p className="font-mono text-sm sm:text-2xl">01/30</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="uppercase tracking-wider text-muted-foreground font-semibold">Registration ID</p>
+                    <p className="font-mono text-sm sm:text-2xl break-all">{registration.id}</p>
+                  </div>
+                </div>
+
+                <div className="absolute top-4 right-4 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                   <Badge
                     variant="outline"
                     className={cn(
-                      'text-[10px] sm:text-[11px] px-2 sm:px-3 py-0.5 sm:py-1 rounded-full backdrop-blur-md',
-                      'shadow-[0_0_0_1px_rgba(255,255,255,0.06)]',
+                      'text-xs sm:text-sm px-3 py-1 rounded-full backdrop-blur-xl',
+                      'shadow-[0_0_0_1px_rgba(255,255,255,0.1)]',
+                      'flex items-center gap-2',
                       getStatusColor(registration.status)
                     )}
                   >
-                    {(registration.status || 'pending').toUpperCase()}
+                    {registration.status === 'confirmed' && <CheckCircle className="w-4 h-4" />}
+                    {registration.status === 'pending' && <Clock className="w-4 h-4" />}
+                    {registration.status === 'rejected' && <XCircle className="w-4 h-4" />}
+                    <span className="font-semibold">{(registration.status || 'pending').toUpperCase()}</span>
                   </Badge>
                   {actions}
                 </div>
-              </div>
 
-              {/* "Chip" accent */}
-              <div className="relative mt-5 flex items-center justify-between">
-                <div className="h-9 w-14 rounded-lg bg-gradient-to-br from-amber-300/20 via-white/10 to-primary/25 border border-white/10 shadow-inner" />
-                <p className="text-[11px] sm:text-xs text-muted-foreground">Tap card to flip</p>
-              </div>
-
-              <div className="relative mt-5 space-y-2">
-                <p className="text-xl sm:text-3xl font-bold tracking-tight">{fullName}</p>
-                <p className="text-sm sm:text-base text-muted-foreground">
-                  {registrantTypeLabel}{registration.schoolAffiliation ? ` • ${registration.schoolAffiliation}` : ''}
-                </p>
-              </div>
-
-              <div className="relative mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                <div className="space-y-1">
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Registration ID</p>
-                  <p className="font-mono text-xs sm:text-sm break-all bg-muted/40 border border-border/40 rounded-md p-1.5 sm:p-2">
-                    {registration.id}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Email</p>
-                  <p className="text-xs sm:text-sm break-all bg-muted/40 border border-border/40 rounded-md p-1.5 sm:p-2">{email || '—'}</p>
-                </div>
-              </div>
-
-              <div className="absolute bottom-4 left-5">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Valid Thru</p>
-                <p className="font-mono text-sm">01/30</p>
-              </div>
-
-              <div className="relative mt-3 flex items-center justify-end">
-                <div className="inline-flex items-center gap-2 text-xs text-muted-foreground">
-                  <RotateCw className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                  <span className="text-[11px] sm:text-xs">Back side has QR</span>
+                <div className="absolute bottom-4 right-4 flex items-center gap-2 text-xs text-muted-foreground">
+                  <RotateCw className="h-3 w-3" />
+                  <span>Tap to flip</span>
                 </div>
               </div>
             </div>
