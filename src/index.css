@@ -88,6 +88,32 @@
     @apply bg-card/40 backdrop-blur-md border border-white/5;
 }
 
+/* 3D flip-card helpers */
+.flip-card {
+    perspective: 1200px;
+}
+
+.flip-card-inner {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 650ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: transform;
+}
+
+.flip-card.is-flipped .flip-card-inner {
+    transform: rotateY(180deg);
+}
+
+.flip-card-face {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform-style: preserve-3d;
+}
+
+.flip-card-back {
+    transform: rotateY(180deg);
+}
+
 /* Custom animations */
 @keyframes gradient {
     0%, 100% {

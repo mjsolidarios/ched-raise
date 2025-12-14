@@ -23,15 +23,15 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { onAuthStateChanged, type User } from 'firebase/auth';
-import { Loader2, CalendarDays, User as UserIcon, Mail, Phone, Building2, CheckCircle2, XCircle, Clock, Pencil } from 'lucide-react';
+import { Loader2, CalendarDays, Mail, Phone, CheckCircle2, XCircle, Clock, Pencil } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { RegistrationProgress } from '@/components/RegistrationProgress';
 import { SchoolAutocomplete } from '@/components/SchoolAutocomplete';
+import { RegistrationBusinessCard } from '@/components/RegistrationBusinessCard';
 import { toTitleCase } from '@/lib/utils/format';
 
 
@@ -256,6 +256,109 @@ const UserDashboard = () => {
                     animate="show"
                     className="grid gap-6 lg:grid-cols-3"
                 >
+                    {registration && (
+                        <motion.div variants={item} className="lg:col-span-3">
+                            <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+                                <div className="max-w-3xl mx-auto">
+                                    <RegistrationBusinessCard
+                                        registration={registration}
+                                        fallbackEmail={user?.email}
+                                        actions={
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8 text-muted-foreground hover:text-white hover:bg-white/10"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleEditOpen();
+                                                }}
+                                            >
+                                                <Pencil className="h-4 w-4" />
+                                            </Button>
+                                        }
+                                    />
+                                </div>
+
+                                <DialogContent className="sm:max-w-[425px]">
+                                    <DialogHeader>
+                                        <DialogTitle>Edit Registration Details</DialogTitle>
+                                        <DialogDescription>
+                                            Make changes to your registration profile here. Click save when you're done.
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    {editFormData && (
+                                        <form onSubmit={handleUpdateRegistration} className="space-y-4 py-4">
+                                            <div className="grid grid-cols-3 gap-4">
+                                                <div className="space-y-2 col-span-1">
+                                                    <Label htmlFor="edit-lastName">Last Name <span className="text-destructive">*</span></Label>
+                                                    <Input id="edit-lastName" name="lastName" value={editFormData.lastName} onChange={handleEditChange} className="col-span-3" />
+                                                </div>
+                                                <div className="space-y-2 col-span-1">
+                                                    <Label htmlFor="edit-firstName">First Name <span className="text-destructive">*</span></Label>
+                                                    <Input id="edit-firstName" name="firstName" value={editFormData.firstName} onChange={handleEditChange} className="col-span-3" />
+                                                </div>
+                                                <div className="space-y-2 col-span-1">
+                                                    <Label htmlFor="edit-middleName">Middle Name <span className="text-destructive">*</span></Label>
+                                                    <Input id="edit-middleName" name="middleName" value={editFormData.middleName} onChange={handleEditChange} className="col-span-3" />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="edit-schoolAffiliation">School Affiliation <span className="text-destructive">*</span></Label>
+                                                <SchoolAutocomplete
+                                                    id="edit-schoolAffiliation"
+                                                    name="schoolAffiliation"
+                                                    value={editFormData.schoolAffiliation}
+                                                    onChange={(val) => setEditFormData((prev: any) => ({ ...prev, schoolAffiliation: val }))}
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="edit-contactNumber">Contact Number <span className="text-destructive">*</span></Label>
+                                                <Input id="edit-contactNumber" name="contactNumber" value={editFormData.contactNumber} onChange={handleEditChange} className="col-span-3" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="edit-registrantType">Registrant Type <span className="text-destructive">*</span></Label>
+                                                <Select onValueChange={handleEditSelectChange} value={editFormData.registrantType}>
+                                                    <SelectTrigger className="bg-background/50">
+                                                        <SelectValue placeholder="Select type" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="student">Student</SelectItem>
+                                                        <SelectItem value="faculty">Faculty</SelectItem>
+                                                        <SelectItem value="administrator">Administrator</SelectItem>
+                                                        <SelectItem value="others">Others</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+
+                                            {editFormData.registrantType === 'others' && (
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="edit-registrantTypeOther">Please specify <span className="text-destructive">*</span></Label>
+                                                    <Input
+                                                        id="edit-registrantTypeOther"
+                                                        name="registrantTypeOther"
+                                                        value={editFormData.registrantTypeOther}
+                                                        onChange={handleEditChange}
+                                                        className="col-span-3"
+                                                    />
+                                                </div>
+                                            )}
+                                            <DialogFooter>
+                                                <Button type="submit" disabled={editing}>
+                                                    {editing ? (
+                                                        <>
+                                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...
+                                                        </>
+                                                    ) : 'Save changes'}
+                                                </Button>
+                                            </DialogFooter>
+                                        </form>
+                                    )}
+                                </DialogContent>
+                            </Dialog>
+                        </motion.div>
+                    )}
+
                     {/* Main Status / Form Card */}
                     <motion.div variants={item} className="lg:col-span-2 space-y-6">
                         <Card className="glass-card border-primary/10 overflow-hidden relative">
@@ -408,133 +511,6 @@ const UserDashboard = () => {
                     </motion.div>
 
                     <motion.div variants={item} className="space-y-6">
-                        {registration && (
-                            <Card className="glass-card h-fit">
-                                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                    <CardTitle className="text-lg">Your Details</CardTitle>
-                                    <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-                                        <DialogTrigger asChild>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-white hover:bg-white/10" onClick={handleEditOpen}>
-                                                <Pencil className="h-4 w-4" />
-                                            </Button>
-                                        </DialogTrigger>
-                                        <DialogContent className="sm:max-w-[425px]">
-                                            <DialogHeader>
-                                                <DialogTitle>Edit Registration Details</DialogTitle>
-                                                <DialogDescription>
-                                                    Make changes to your registration profile here. Click save when you're done.
-                                                </DialogDescription>
-                                            </DialogHeader>
-                                            {editFormData && (
-                                                <form onSubmit={handleUpdateRegistration} className="space-y-4 py-4">
-                                                    <div className="grid grid-cols-3 gap-4">
-                                                        <div className="space-y-2 col-span-1">
-                                                            <Label htmlFor="edit-lastName">Last Name <span className="text-destructive">*</span></Label>
-                                                            <Input id="edit-lastName" name="lastName" value={editFormData.lastName} onChange={handleEditChange} className="col-span-3" />
-                                                        </div>
-                                                        <div className="space-y-2 col-span-1">
-                                                            <Label htmlFor="edit-firstName">First Name <span className="text-destructive">*</span></Label>
-                                                            <Input id="edit-firstName" name="firstName" value={editFormData.firstName} onChange={handleEditChange} className="col-span-3" />
-                                                        </div>
-                                                        <div className="space-y-2 col-span-1">
-                                                            <Label htmlFor="edit-middleName">Middle Name <span className="text-destructive">*</span></Label>
-                                                            <Input id="edit-middleName" name="middleName" value={editFormData.middleName} onChange={handleEditChange} className="col-span-3" />
-                                                        </div>
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="edit-schoolAffiliation">School Affiliation <span className="text-destructive">*</span></Label>
-                                                        <SchoolAutocomplete
-                                                            id="edit-schoolAffiliation"
-                                                            name="schoolAffiliation"
-                                                            value={editFormData.schoolAffiliation}
-                                                            onChange={(val) => setEditFormData((prev: any) => ({ ...prev, schoolAffiliation: val }))}
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="edit-contactNumber">Contact Number <span className="text-destructive">*</span></Label>
-                                                        <Input id="edit-contactNumber" name="contactNumber" value={editFormData.contactNumber} onChange={handleEditChange} className="col-span-3" />
-                                                    </div>
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="edit-registrantType">Registrant Type <span className="text-destructive">*</span></Label>
-                                                        <Select onValueChange={handleEditSelectChange} value={editFormData.registrantType}>
-                                                            <SelectTrigger className="bg-background/50">
-                                                                <SelectValue placeholder="Select type" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectItem value="student">Student</SelectItem>
-                                                                <SelectItem value="faculty">Faculty</SelectItem>
-                                                                <SelectItem value="administrator">Administrator</SelectItem>
-                                                                <SelectItem value="others">Others</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </div>
-
-                                                    {editFormData.registrantType === 'others' && (
-                                                        <div className="space-y-2">
-                                                            <Label htmlFor="edit-registrantTypeOther">Please specify <span className="text-destructive">*</span></Label>
-                                                            <Input
-                                                                id="edit-registrantTypeOther"
-                                                                name="registrantTypeOther"
-                                                                value={editFormData.registrantTypeOther}
-                                                                onChange={handleEditChange}
-                                                                className="col-span-3"
-                                                            />
-                                                        </div>
-                                                    )}
-                                                    <DialogFooter>
-                                                        <Button type="submit" disabled={editing}>
-                                                            {editing ? (
-                                                                <>
-                                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...
-                                                                </>
-                                                            ) : 'Save changes'}
-                                                        </Button>
-                                                    </DialogFooter>
-                                                </form>
-                                            )}
-                                        </DialogContent>
-                                    </Dialog>
-                                </CardHeader>
-                                <CardContent className="space-y-4 text-sm">
-                                    <div className="space-y-1">
-                                        <span className="text-muted-foreground text-xs uppercase tracking-wider font-semibold">Registration ID</span>
-                                        <p className="font-mono bg-muted/50 p-2 rounded text-xs break-all border border-border/50">{registration.id}</p>
-                                    </div>
-
-                                    <div className="space-y-1">
-                                        <p className="font-medium">{registration.lastName}, {registration.firstName} {registration.middleName}</p>
-                                        <span className="text-muted-foreground text-xs">Name</span>
-                                    </div>
-                                    <div className="flex items-start gap-3 mt-4">
-                                        <Building2 className="h-4 w-4 text-muted-foreground mt-0.5" />
-                                        <div>
-                                            <p className="font-medium">{registration.schoolAffiliation}</p>
-                                            <span className="text-muted-foreground text-xs">School Affiliation</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-start gap-3">
-                                        <UserIcon className="h-4 w-4 text-muted-foreground mt-0.5" />
-                                        <div>
-                                            <p className="font-medium capitalize">
-                                                {registration.registrantType === 'others'
-                                                    ? registration.registrantTypeOther
-                                                    : registration.registrantType}
-                                            </p>
-                                            <span className="text-muted-foreground text-xs">Registrant Type</span>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-start gap-3">
-                                        <Phone className="h-4 w-4 text-muted-foreground mt-0.5" />
-                                        <div>
-                                            <p className="font-medium">{registration.contactNumber}</p>
-                                            <span className="text-muted-foreground text-xs">Mobile</span>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        )}
-
                         <Card className="glass-card bg-primary/5 border-primary/10">
                             <CardHeader>
                                 <CardTitle className="text-base text-primary">Need Help?</CardTitle>
