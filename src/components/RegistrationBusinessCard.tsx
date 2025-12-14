@@ -185,7 +185,7 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
     return `CHED-RAISE-2026|${registration.id}|${email}`;
   }, [email, registration.id]);
 
-  const { dataUrl: patternFront, hue: hueA } = useMemo(
+  const { dataUrl: patternFront } = useMemo(
     () => makeIdPatternDataUrl(registration.id, 'front'),
     [registration.id]
   );
