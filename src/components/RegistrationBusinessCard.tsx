@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import QRCode from 'react-qr-code';
+import { type ReactNode, useState, useEffect, useRef } from 'react';
 import { Badge } from '@/components/ui/badge';
-
 import { cn } from '@/lib/utils';
 import { CheckCircle, Clock, RotateCw, XCircle } from 'lucide-react';
+import RaiseProtocolEncoderGrid from './RaiseProtocolEncoderGrid';
 import { useFitText } from '@/hooks/use-fit-text';
 
 const hashStringToUint32 = (str: string) => {
@@ -116,11 +115,11 @@ type Registration = {
   schoolAffiliation?: string;
   registrantType?: string;
   registrantTypeOther?: string;
+  raiseId?: number[];
 };
 
 type RegistrationBusinessCardProps = {
   registration: Registration;
-  fallbackEmail?: string | null;
   actions?: ReactNode;
 };
 
@@ -135,12 +134,13 @@ const getStatusColor = (status?: string) => {
   }
 };
 
-export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions }: RegistrationBusinessCardProps) => {
+export const RegistrationBusinessCard = ({ registration, actions }: RegistrationBusinessCardProps) => {
   const [flipped, setFlipped] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
   const nameRef = useRef<HTMLParagraphElement | null>(null);
   useFitText(nameRef, 2);
 
+  // Responsive design handling
   const [isSmUp, setIsSmUp] = useState(() => {
     if (typeof window === 'undefined') return true;
     return window.matchMedia('(min-width: 640px)').matches;
@@ -149,47 +149,24 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
   useEffect(() => {
     const mql = window.matchMedia('(min-width: 640px)');
     const onChange = (e: MediaQueryListEvent) => setIsSmUp(e.matches);
-
-    // Set initial
-    setIsSmUp(mql.matches);
-
-    if (typeof mql.addEventListener === 'function') {
-      mql.addEventListener('change', onChange);
-      return () => mql.removeEventListener('change', onChange);
-    }
-
-    // Safari fallback
-    // eslint-disable-next-line deprecation/deprecation
-    mql.addListener(onChange);
-    // eslint-disable-next-line deprecation/deprecation
-    return () => mql.removeListener(onChange);
+    
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
   }, []);
 
-  const email = registration.email || fallbackEmail || '';
+  const middleInitial = registration.middleName ? `${registration.middleName.charAt(0)}.` : '';
+  const fullName = [registration.firstName, middleInitial, registration.lastName].filter(Boolean).join(' ') || 'Registrant';
 
-  const fullName = useMemo(() => {
-    const middleInitial = registration.middleName ? `${registration.middleName.charAt(0)}.` : '';
-    const parts = [registration.firstName, middleInitial, registration.lastName].filter(Boolean);
-    return parts.length ? parts.join(' ') : 'Registrant';
-  }, [registration.firstName, registration.middleName, registration.lastName]);
-
-  const registrantTypeLabel = useMemo(() => {
+  const registrantTypeLabel = (() => {
     if (registration.registrantType === 'others') return registration.registrantTypeOther || 'Other';
     if (registration.registrantType) return registration.registrantType;
     return '—';
-  }, [registration.registrantType, registration.registrantTypeOther]);
+  })();
 
-  const qrValue = useMemo(() => {
-    // Simple payload for fast scanning and manual fallback.
-    // Format: CHED-RAISE-2026|<registrationId>|<email>
-    return `CHED-RAISE-2026|${registration.id}|${email}`;
-  }, [email, registration.id]);
 
-  const { dataUrl: patternFront } = useMemo(
-    () => makeIdPatternDataUrl(registration.id, 'front'),
-    [registration.id]
-  );
-  const { dataUrl: patternBack } = useMemo(() => makeIdPatternDataUrl(registration.id, 'back'), [registration.id]);
+
+  const { dataUrl: patternFront } = makeIdPatternDataUrl(registration.id, 'front');
+  const { dataUrl: patternBack } = makeIdPatternDataUrl(registration.id, 'back');
 
 
 
@@ -391,28 +368,46 @@ export const RegistrationBusinessCard = ({ registration, fallbackEmail, actions 
                 draggable={false}
               />
 
-              <div className="h-full flex flex-col justify-center items-center p-4">
-                <div className="relative rounded-2xl bg-white p-3 border border-white/10 shadow-[0_18px_50px_-28px_rgba(0,0,0,0.9)]">
+              <div className="h-full flex flex-col justify-center items-center p-6">
+                <div className="relative w-full max-w-xs">
                   <div className="absolute -inset-3 rounded-3xl bg-primary/10 blur-2xl" />
-                  <div className="relative">
-                    <QRCode value={qrValue} size={isSmUp ? 200 : 160} />
+                  <div className="relative bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+                    <div className="text-center mb-6">
+                      <h3 className="text-lg font-bold text-foreground mb-1">RAISE ID</h3>
+                      <p className="text-muted-foreground text-sm">Your unique registration code</p>
+                    </div>
+                    
+                    <div className="bg-background/50 border-border/50 rounded-lg p-4 mb-4 flex justify-center items-center">
+                      {registration.raiseId ? (
+                        <RaiseProtocolEncoderGrid grid={registration.raiseId} size={160} />
+                      ) : (
+                        <p className="font-mono text-sm text-center text-muted-foreground">ID not generated</p>
+                      )}
+                    </div>
+
+                    <div className="text-center">
+                      <p className="text-xs text-muted-foreground">
+                        Present this ID at the event entrance
+                      </p>
+                    </div>
+
                     {registration.status === 'pending' && (
-                      <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center text-center">
-                        <Clock className="w-12 h-12 text-amber-500" />
-                        <p className="mt-2 text-sm font-semibold text-amber-600">Pending Approval</p>
+                      <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center text-center p-6">
+                        <Clock className="w-12 h-12 text-amber-500 mb-2" />
+                        <p className="text-sm font-medium text-amber-600">Pending Approval</p>
+                        <p className="text-xs text-muted-foreground mt-1">Your registration is under review</p>
                       </div>
                     )}
+                    
                     {registration.status === 'rejected' && (
-                      <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center text-center">
-                        <XCircle className="w-12 h-12 text-destructive" />
-                        <p className="mt-2 text-sm font-semibold text-destructive">Registration Rejected</p>
+                      <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center text-center p-6">
+                        <XCircle className="w-12 h-12 text-destructive mb-2" />
+                        <p className="text-sm font-medium text-destructive">Registration Rejected</p>
+                        <p className="text-xs text-muted-foreground mt-1">Please contact support for assistance</p>
                       </div>
                     )}
                   </div>
                 </div>
-                {registration.status !== 'pending' && registration.status !== 'rejected' && (
-                  <p className="mt-4 text-sm text-muted-foreground text-center">Present this code at the event entrance</p>
-                )}
               </div>
             </div>
           </div>

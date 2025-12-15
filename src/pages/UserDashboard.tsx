@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { db, auth } from '@/lib/firebase';
 import { collection, addDoc, deleteDoc, updateDoc, doc, serverTimestamp, query, where, onSnapshot, getDocs } from 'firebase/firestore';
@@ -33,8 +34,7 @@ import { RegistrationProgress } from '@/components/RegistrationProgress';
 import { SchoolAutocomplete } from '@/components/SchoolAutocomplete';
 import { RegistrationBusinessCard } from '@/components/RegistrationBusinessCard';
 import { toTitleCase } from '@/lib/utils/format';
-
-
+import { generateRaiseId } from '@/lib/raiseCodeUtils';
 
 const UserDashboard = () => {
     const [user, setUser] = useState<User | null>(auth.currentUser);
@@ -134,13 +134,19 @@ const UserDashboard = () => {
         setEditing(true);
 
         try {
-            await updateDoc(doc(db, "registrations", registration.id), {
+            const updatedData: any = {
                 ...editFormData,
                 lastName: toTitleCase(editFormData.lastName),
                 firstName: toTitleCase(editFormData.firstName),
                 middleName: toTitleCase(editFormData.middleName),
                 schoolAffiliation: toTitleCase(editFormData.schoolAffiliation)
-            });
+            };
+
+            if (!registration.raiseId) {
+                updatedData.raiseId = generateRaiseId();
+            }
+
+            await updateDoc(doc(db, "registrations", registration.id), updatedData);
             setIsEditOpen(false);
         } catch (error) {
             console.error("Error updating registration:", error);
@@ -177,6 +183,9 @@ const UserDashboard = () => {
                 return;
             }
 
+            // Generate RAISE ID
+            const raiseId = generateRaiseId(); // This is now a flat array
+
             await addDoc(collection(db, 'registrations'), {
                 ...formData,
                 lastName: toTitleCase(formData.lastName),
@@ -185,6 +194,7 @@ const UserDashboard = () => {
                 schoolAffiliation: toTitleCase(formData.schoolAffiliation),
                 uid: user?.uid,
                 status: 'pending',
+                raiseId, // Save the generated RAISE ID
                 timestamp: serverTimestamp()
             });
 
@@ -262,7 +272,6 @@ const UserDashboard = () => {
                                 <div className="max-w-3xl mx-auto">
                                     <RegistrationBusinessCard
                                         registration={registration}
-                                        fallbackEmail={user?.email}
                                         actions={
                                             <Button
                                                 type="button"
