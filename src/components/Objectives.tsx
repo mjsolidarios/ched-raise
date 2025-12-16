@@ -12,9 +12,9 @@ const pillars = [
 
 export function Objectives() {
     return (
-        <section id="objectives" className="py-24 bg-background relative">
-            <div className="absolute top-0 right-0 p-20 opacity-20 pointer-events-none overflow-hidden">
-                <div className="w-96 h-96 bg-primary blur-[150px] rounded-full" />
+        <section id="objectives" className="py-24 relative">
+            <div className="absolute top-0 right-0 p-20 opacity-20 pointer-events-none overflow-hidden w-full">
+                <div className="w-96 h-96 bg-primary blur-[300px] rounded-full" />
             </div>
 
             <div className="container px-4 relative z-10">
@@ -151,7 +151,7 @@ function SpotlightCard({ pillar, index }: { pillar: { letter: string, title: str
             <Card
                 ref={divRef as any}
                 onMouseMove={handleMouseMove}
-                className={`glass-card bg-gradient-to-br from-slate-900/60 to-slate-900/40 border-white/10 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-3 group overflow-hidden relative h-full gpu-accelerated`}
+                className={`glass-card bg-gradient-to-br from-slate-900/60 to-slate-900/40 border-white/10 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-3 group overflow-hidden relative h-full gpu-accelerated flex flex-col`}
                 style={{
                     // @ts-ignore
                     "--mouse-x": "0px",
@@ -191,7 +191,7 @@ function SpotlightCard({ pillar, index }: { pillar: { letter: string, title: str
                     </motion.div>
                     <CardTitle className="text-lg font-bold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-300 group-hover:to-teal-300 transition-all duration-300">{pillar.title}</CardTitle>
                 </CardHeader>
-                <CardContent className="relative z-10">
+                <CardContent className="relative z-10 flex-1 flex flex-col">
                     <motion.div
                         className="h-1 w-16 bg-gradient-to-r from-primary to-teal-400 rounded-full mb-4"
                         initial={{ width: 0 }}
@@ -199,7 +199,7 @@ function SpotlightCard({ pillar, index }: { pillar: { letter: string, title: str
                         transition={{ duration: 0.8, delay: index * 0.1 }}
                     />
                     <p className="text-slate-400 group-hover:text-slate-300 leading-relaxed text-sm transition-colors">{pillar.desc}</p>
-                    <div className="text-xs font-bold text-teal-400 group-hover:text-teal-300 uppercase tracking-wider flex flex-col mt-4 transition-colors">
+                    <div className="text-xs font-bold text-teal-400 group-hover:text-teal-300 uppercase tracking-wider flex flex-col mt-auto pt-4 transition-colors">
                         <span className="text-[10px] text-slate-500 group-hover:text-slate-400 font-normal transition-colors">Target Outcome</span>
                         {pillar.outcome}
                     </div>
