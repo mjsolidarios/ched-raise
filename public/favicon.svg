@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="34.751507mm"
-   height="34.751507mm"
-   viewBox="0 0 34.751507 34.751507"
+   width="41.844753mm"
+   height="41.844753mm"
+   viewBox="0 0 41.844753 41.844753"
    version="1.1"
    id="svg1"
    inkscape:version="1.4 (86a8ad7, 2024-10-11)"
@@ -23,9 +23,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="1.4770342"
-     inkscape:cx="49.76188"
-     inkscape:cy="84.967564"
+     inkscape:zoom="2.0888418"
+     inkscape:cx="81.624181"
+     inkscape:cy="79.709244"
      inkscape:window-width="1920"
      inkscape:window-height="1009"
      inkscape:window-x="-8"
@@ -38,14 +38,17 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-87.624245,-131.12425)">
+     transform="translate(-84.077621,-127.57763)">
     <rect
-       style="fill:#1a1a1a;stroke-width:0.799999;stroke-linecap:square;stroke-linejoin:round;paint-order:fill markers stroke"
+       style="fill:#1a1a1a;stroke-width:0.963289;stroke-linecap:square;stroke-linejoin:round;paint-order:fill markers stroke"
        id="rect1"
-       width="34.751507"
-       height="34.751507"
-       x="87.624245"
-       y="131.12425" />
+       width="41.844753"
+       height="41.844753"
+       x="84.077621"
+       y="127.57763"
+       inkscape:export-filename="C:\Users\PC\Desktop\rect1.png"
+       inkscape:export-xdpi="621.57001"
+       inkscape:export-ydpi="621.57001" />
     <path
        id="path2"
        style="font-weight:bold;font-size:31.75px;line-height:1.05;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';letter-spacing:0px;word-spacing:0px;fill:#f9f9f9;fill-opacity:1;stroke-width:6.00936;stroke-linecap:round;stroke-linejoin:round;paint-order:fill markers stroke"

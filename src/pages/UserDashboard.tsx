@@ -66,6 +66,10 @@ const UserDashboard = () => {
     }, []);
 
     useEffect(() => {
+        console.log('🎨 Registration state changed:', registration);
+    }, [registration]);
+
+    useEffect(() => {
         if (!user) {
             setLoading(false); // If no user, stop loading and show registration form
             return;
@@ -75,12 +79,19 @@ const UserDashboard = () => {
         const q = query(collection(db, 'registrations'), where('uid', '==', user.uid));
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
+            console.log('📡 onSnapshot triggered, empty:', snapshot.empty, 'size:', snapshot.size);
             if (!snapshot.empty) {
                 const docData = snapshot.docs[0];
-                setRegistration({ id: docData.id, ...docData.data() });
+                const regData = { id: docData.id, ...docData.data() };
+                console.log('✅ Registration data:', regData);
+                setRegistration(regData);
             } else {
+                console.log('❌ No registration found');
                 setRegistration(null);
             }
+            setLoading(false);
+        }, (error) => {
+            console.error('🔥 onSnapshot error:', error);
             setLoading(false);
         });
 
@@ -147,6 +158,7 @@ const UserDashboard = () => {
             }
 
             await updateDoc(doc(db, "registrations", registration.id), updatedData);
+            console.log('✏️ Registration updated successfully');
             setIsEditOpen(false);
         } catch (error) {
             console.error("Error updating registration:", error);
@@ -186,7 +198,7 @@ const UserDashboard = () => {
             // Generate RAISE ID
             const raiseId = generateRaiseId(); // This is now a flat array
 
-            await addDoc(collection(db, 'registrations'), {
+            const docRef = await addDoc(collection(db, 'registrations'), {
                 ...formData,
                 lastName: toTitleCase(formData.lastName),
                 firstName: toTitleCase(formData.firstName),
@@ -197,6 +209,7 @@ const UserDashboard = () => {
                 raiseId, // Save the generated RAISE ID
                 timestamp: serverTimestamp()
             });
+            console.log('✨ New registration created with ID:', docRef.id);
 
             // Reset form (optional, as we redirect or show status)
         } catch (error) {
@@ -267,7 +280,11 @@ const UserDashboard = () => {
                     className="grid gap-4 sm:gap-6 lg:grid-cols-3"
                 >
                     {registration && (
-                        <motion.div variants={item} className="lg:col-span-3">
+                        <motion.div
+                            key={`registration-card-${registration.id}-${registration.timestamp?.seconds || Date.now()}`}
+                            variants={item}
+                            className="lg:col-span-3"
+                        >
                             <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
                                 <div className="max-w-3xl mx-auto">
                                     <RegistrationBusinessCard
@@ -525,10 +542,10 @@ const UserDashboard = () => {
                                 <CardTitle className="text-base text-primary">Need Help?</CardTitle>
                             </CardHeader>
                             <CardContent className="text-xs sm:text-sm text-muted-foreground">
-                                <p>If you have any questions about your registration status or need to make changes, please contact the developer.</p>
+                                <p>If you have any questions about your registration status or need to make changes, please contact support.</p>
                                 <div className="mt-4 pt-4 border-t border-primary/10 flex items-center gap-2">
                                     <Mail className="h-4 w-4 text-primary" />
-                                    <a href="mailto:mjsolidarios@wvsu.edu.ph" className="text-primary hover:underline">mjsolidarios@wvsu.edu.ph</a>
+                                    <a href="mailto:mjsolidarios@wvsu.edu.ph" className="text-primary hover:underline">helpdesk.chedraise@gmail.com</a>
                                 </div>
                             </CardContent>
                         </Card>
