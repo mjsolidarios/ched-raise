@@ -220,10 +220,13 @@ export function Hero() {
                         </Button>
                     </motion.div>
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-white/20 hover:bg-white/10 hover:border-white/40 bg-white/5 backdrop-blur-md transition-all relative overflow-hidden group" asChild>
+                        <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-white/20 hover:bg-white/5 hover:border-teal-400/50 bg-white/5 backdrop-blur-md transition-all relative overflow-hidden group" asChild>
                             <Link to="/agenda">
-                                <span className="relative z-10">View Agenda</span>
-                                <span className="absolute inset-0 bg-gradient-to-r from-primary/10 to-teal-400/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
+                                <span className="relative z-10 flex items-center group-hover:text-teal-300 transition-colors">
+                                    <Calendar className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
+                                    View Agenda
+                                </span>
+                                <span className="absolute inset-0 bg-gradient-to-r from-teal-400/10 via-cyan-400/10 to-transparent -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out" />
                             </Link>
                         </Button>
                     </motion.div>
