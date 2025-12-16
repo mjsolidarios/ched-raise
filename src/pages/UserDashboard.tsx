@@ -34,7 +34,7 @@ import { RegistrationProgress } from '@/components/RegistrationProgress';
 import { SchoolAutocomplete } from '@/components/SchoolAutocomplete';
 import { RegistrationBusinessCard } from '@/components/RegistrationBusinessCard';
 import { toTitleCase } from '@/lib/utils/format';
-import { generateRaiseId } from '@/lib/raiseCodeUtils';
+import { encodeTextToRaiseId } from '@/lib/raiseCodeUtils';
 
 const UserDashboard = () => {
     const [user, setUser] = useState<User | null>(auth.currentUser);
@@ -154,7 +154,7 @@ const UserDashboard = () => {
             };
 
             if (!registration.raiseId) {
-                updatedData.raiseId = generateRaiseId();
+                updatedData.raiseId = encodeTextToRaiseId(registration.id);
             }
 
             await updateDoc(doc(db, "registrations", registration.id), updatedData);
@@ -195,9 +195,7 @@ const UserDashboard = () => {
                 return;
             }
 
-            // Generate RAISE ID
-            const raiseId = generateRaiseId(); // This is now a flat array
-
+            // Create registration document first to get the ID
             const docRef = await addDoc(collection(db, 'registrations'), {
                 ...formData,
                 lastName: toTitleCase(formData.lastName),
@@ -206,10 +204,17 @@ const UserDashboard = () => {
                 schoolAffiliation: toTitleCase(formData.schoolAffiliation),
                 uid: user?.uid,
                 status: 'pending',
-                raiseId, // Save the generated RAISE ID
                 timestamp: serverTimestamp()
             });
             console.log('✨ New registration created with ID:', docRef.id);
+
+            // Generate RAISE ID based on the document ID
+            const raiseId = encodeTextToRaiseId(docRef.id);
+
+            // Update the document with the RAISE ID
+            await updateDoc(doc(db, 'registrations', docRef.id), {
+                raiseId
+            });
 
             // Reset form (optional, as we redirect or show status)
         } catch (error) {

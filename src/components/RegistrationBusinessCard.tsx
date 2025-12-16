@@ -220,99 +220,99 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
       <div className="flip-card-inner aspect-[3/2] w-full min-h-[380px] sm:min-h-[260px]">
         {/* Front */}
         <div className="flip-card-face absolute inset-0">
-                      <div className="relative h-full rounded-2xl p-[1px] bg-gradient-to-br from-primary/35 via-white/10 to-secondary/35 shadow-[0_18px_60px_-22px_hsl(222.5_90%_32.7%_/_0.7)]">          <div className="glass-card relative overflow-hidden rounded-2xl p-4 sm:p-5 h-full">
-              {/* ID-seeded abstract pattern (slow animated drift) */}
-              <div
-                className="pointer-events-none absolute inset-0 card-pattern-animate opacity-[0.42] mix-blend-screen saturate-150 contrast-125"
-                style={{
-                  backgroundImage: `url(\"${patternFront}\")`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }}
-              />
+          <div className="relative h-full rounded-2xl p-[1px] bg-gradient-to-br from-primary/35 via-white/10 to-secondary/35 shadow-[0_18px_60px_-22px_hsl(222.5_90%_32.7%_/_0.7)]">          <div className="glass-card relative overflow-hidden rounded-2xl p-4 sm:p-5 h-full">
+            {/* ID-seeded abstract pattern (slow animated drift) */}
+            <div
+              className="pointer-events-none absolute inset-0 card-pattern-animate opacity-[0.42] mix-blend-screen saturate-150 contrast-125"
+              style={{
+                backgroundImage: `url(\"${patternFront}\")`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            />
 
-              {/* Spotlight (follows cursor) */}
-              <div className="pointer-events-none absolute inset-0 card-spotlight mix-blend-screen" />
+            {/* Spotlight (follows cursor) */}
+            <div className="pointer-events-none absolute inset-0 card-spotlight mix-blend-screen" />
 
-              {/* Dot grid (follows cursor) */}
-              <div className="pointer-events-none absolute inset-0 card-dot-grid mix-blend-screen" />
+            {/* Dot grid (follows cursor) */}
+            <div className="pointer-events-none absolute inset-0 card-dot-grid mix-blend-screen" />
 
-              {/* Subtle grid pattern */}
-              <div
-                className="absolute inset-0 opacity-[0.05]"
-                style={{ backgroundImage: 'url(/grid-pattern.svg)', backgroundSize: 'cover', backgroundPosition: 'center' }}
-              />
+            {/* Subtle grid pattern */}
+            <div
+              className="absolute inset-0 opacity-[0.05]"
+              style={{ backgroundImage: 'url(/grid-pattern.svg)', backgroundSize: 'cover', backgroundPosition: 'center' }}
+            />
 
-              {/* Decorative gradient blobs */}
-              <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
-              <div className="absolute -bottom-16 -left-16 h-56 w-56 rounded-full bg-secondary/10 blur-3xl" />
+            {/* Decorative gradient blobs */}
+            <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
+            <div className="absolute -bottom-16 -left-16 h-56 w-56 rounded-full bg-secondary/10 blur-3xl" />
 
-              {/* Shine */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-tr from-white/0 via-white/10 to-white/0" />
+            {/* Shine */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-tr from-white/0 via-white/10 to-white/0" />
 
-              {/* Watermark */}
-              <img
-                src="/r-icon.svg"
-                alt=""
-                className="pointer-events-none absolute right-6 bottom-6 h-24 w-24 opacity-[0.06]"
-                draggable={false}
-              />
+            {/* Watermark */}
+            <img
+              src="/r-icon.svg"
+              alt=""
+              className="pointer-events-none absolute right-6 bottom-6 h-24 w-24 opacity-[0.06]"
+              draggable={false}
+            />
 
-              <div className="relative flex flex-col h-full">
-                <div className="flex items-start justify-between">
-                  <div className="leading-tight">
-                    <p className="text-xs sm:text-sm uppercase tracking-wider text-muted-foreground font-semibold">MY REGISTRATION CARD</p>
-                    <img
-                      src="/logo-light.svg"
-                      alt="RAISE logo"
-                      className="h-6 sm:h-7 mt-1"
-                      draggable={false}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex-1 flex flex-col justify-center">
-                  <p ref={nameRef} className="text-4xl sm:text-6xl font-bold tracking-tight text-white">{fullName}</p>
-                  <p className="text-sm sm:text-2xl text-muted-foreground mt-2">
-                    {registrantTypeLabel}{registration.schoolAffiliation ? ` • ${registration.schoolAffiliation}` : ''}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4 text-sm mb-10 sm:mb-4">
-                  <div>
-                    <p className="uppercase tracking-wider text-muted-foreground font-semibold">Valid Thru</p>
-                    <p className="font-mono text-sm sm:text-2xl">01/30</p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="uppercase tracking-wider text-muted-foreground font-semibold">Registration ID</p>
-                    <p className="font-mono text-sm sm:text-2xl break-all">{registration.id}</p>
-                  </div>
-                </div>
-
-                <div className="absolute top-4 right-4 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      'text-xs sm:text-sm px-3 py-1 rounded-full backdrop-blur-xl',
-                      'shadow-[0_0_0_1px_rgba(255,255,255,0.1)]',
-                      'flex items-center gap-2',
-                      getStatusColor(registration.status)
-                    )}
-                  >
-                    {registration.status === 'confirmed' && <CheckCircle className="w-4 h-4" />}
-                    {registration.status === 'pending' && <Clock className="w-4 h-4" />}
-                    {registration.status === 'rejected' && <XCircle className="w-4 h-4" />}
-                    <span className="font-semibold">{(registration.status || 'pending').toUpperCase()}</span>
-                  </Badge>
-                  {actions}
-                </div>
-
-                <div className="absolute bottom-4 right-4 flex items-center gap-2 text-xs text-muted-foreground">
-                  <RotateCw className="h-3 w-3" />
-                  <span>Tap to flip</span>
+            <div className="relative flex flex-col h-full">
+              <div className="flex items-start justify-between">
+                <div className="leading-tight">
+                  <p className="text-xs sm:text-sm uppercase tracking-wider text-muted-foreground font-semibold">MY REGISTRATION CARD</p>
+                  <img
+                    src="/logo-light.svg"
+                    alt="RAISE logo"
+                    className="h-6 sm:h-7 mt-1"
+                    draggable={false}
+                  />
                 </div>
               </div>
+
+              <div className="flex-1 flex flex-col justify-center">
+                <p ref={nameRef} className="text-4xl sm:text-6xl font-bold tracking-tight text-white">{fullName}</p>
+                <p className="text-sm sm:text-2xl text-muted-foreground mt-2">
+                  {registrantTypeLabel}{registration.schoolAffiliation ? ` • ${registration.schoolAffiliation}` : ''}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 text-sm mb-10 sm:mb-4">
+                <div>
+                  <p className="uppercase tracking-wider text-muted-foreground font-semibold">Valid Thru</p>
+                  <p className="font-mono text-sm sm:text-2xl">01/30</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="uppercase tracking-wider text-muted-foreground font-semibold">Registration ID</p>
+                  <p className="font-mono text-sm sm:text-2xl break-all">{registration.id}</p>
+                </div>
+              </div>
+
+              <div className="absolute top-4 right-4 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    'text-xs sm:text-sm px-3 py-1 rounded-full backdrop-blur-xl',
+                    'shadow-[0_0_0_1px_rgba(255,255,255,0.1)]',
+                    'flex items-center gap-2',
+                    getStatusColor(registration.status)
+                  )}
+                >
+                  {registration.status === 'confirmed' && <CheckCircle className="w-4 h-4" />}
+                  {registration.status === 'pending' && <Clock className="w-4 h-4" />}
+                  {registration.status === 'rejected' && <XCircle className="w-4 h-4" />}
+                  <span className="font-semibold">{(registration.status || 'pending').toUpperCase()}</span>
+                </Badge>
+                {actions}
+              </div>
+
+              <div className="absolute bottom-4 right-4 flex items-center gap-2 text-xs text-muted-foreground">
+                <RotateCw className="h-3 w-3" />
+                <span>Tap to flip</span>
+              </div>
             </div>
+          </div>
           </div>
         </div>
 
@@ -354,42 +354,93 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
                 draggable={false}
               />
 
-              <div className="h-full flex flex-col justify-center items-center p-6">
-                <div className="relative w-full max-w-xs">
-                  <div className="absolute -inset-3 rounded-3xl bg-primary/10 blur-2xl" />
-                  <div className="relative bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
-                    <div className="text-center mb-6">
-                      <h3 className="text-lg font-bold text-foreground mb-1">RAISE ID</h3>
-                      <p className="text-muted-foreground text-sm">Your unique registration code</p>
-                    </div>
-                    
-                    <div className="bg-background/50 border-border/50 rounded-lg p-4 mb-4 flex justify-center items-center">
-                      {registration.raiseId ? (
-                        <RaiseProtocolEncoderGrid grid={registration.raiseId} size={160} />
-                      ) : (
-                        <p className="font-mono text-sm text-center text-muted-foreground">ID not generated</p>
-                      )}
-                    </div>
+              <div className="h-full flex flex-col justify-center items-center p-4 sm:p-6">
+                <div className="relative w-full max-w-sm">
+                  {/* Outer glow */}
+                  <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-primary/20 via-primary/10 to-secondary/20 blur-2xl" />
 
-                    <div className="text-center">
-                      <p className="text-xs text-muted-foreground">
-                        Present this ID at the event entrance
+                  {/* Main container */}
+                  <div className="relative bg-transparent">
+                    {/* Header */}
+                    <div className="text-center mb-3 sm:mb-4">
+                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 mb-3">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
+                          <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                          </svg>
+                        </div>
+                      </div>
+                      <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
+                        RAISE ID
+                      </h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground/80 font-medium">
+                        Your unique registration code
                       </p>
                     </div>
 
+                    {/* Pattern container */}
+                    <div className="relative mb-3 sm:mb-4 w-[200px] h-[200px] mx-auto">
+                      {/* Pattern glow */}
+                      <div className="absolute -inset-2 bg-gradient-to-br from-primary/30 via-primary/20 to-secondary/30 rounded-2xl blur-xl" />
+
+                      {/* Pattern frame */}
+                      <div className="relative bg-white rounded-2xl p-1 shadow-lg">
+                        <div className="relative bg-gradient-to-br from-slate-50 to-slate-100/80 rounded-xl p-2 border border-slate-200/50">
+                          {/* Corner accents */}
+                          <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary/30 rounded-tl-xl" />
+                          <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-primary/30 rounded-tr-xl" />
+                          <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-primary/30 rounded-bl-xl" />
+                          <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary/30 rounded-br-xl" />
+
+                          {/* Pattern display */}
+                          <div className="flex justify-center items-center">
+                            {registration.raiseId ? (
+                              <RaiseProtocolEncoderGrid grid={registration.raiseId} size={150} />
+                            ) : (
+                              <div className="text-center py-4">
+                                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-200/50 mb-2">
+                                  <svg className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+                                  </svg>
+                                </div>
+                                <p className="font-mono text-xs text-slate-500">ID not generated</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Footer instruction */}
+                    <div className="text-center">
+                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20">
+                        <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p className="text-xs font-medium text-foreground/80">
+                          Present this ID at the event entrance
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Status overlays */}
                     {registration.status === 'pending' && (
-                      <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center text-center p-6">
-                        <Clock className="w-12 h-12 text-amber-500 mb-2" />
-                        <p className="text-sm font-medium text-amber-600">Pending Approval</p>
-                        <p className="text-xs text-muted-foreground mt-1">Your registration is under review</p>
+                      <div className="absolute inset-0 bg-white/95 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center text-center p-6">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-100 mb-4">
+                          <Clock className="w-8 h-8 text-amber-600" />
+                        </div>
+                        <p className="text-base font-bold text-amber-700 mb-1">Pending Approval</p>
+                        <p className="text-sm text-amber-600/80">Your registration is under review</p>
                       </div>
                     )}
-                    
+
                     {registration.status === 'rejected' && (
-                      <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center text-center p-6">
-                        <XCircle className="w-12 h-12 text-destructive mb-2" />
-                        <p className="text-sm font-medium text-destructive">Registration Rejected</p>
-                        <p className="text-xs text-muted-foreground mt-1">Please contact support for assistance</p>
+                      <div className="absolute inset-0 bg-white/95 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center text-center p-6">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
+                          <XCircle className="w-8 h-8 text-red-600" />
+                        </div>
+                        <p className="text-base font-bold text-red-700 mb-1">Registration Rejected</p>
+                        <p className="text-sm text-red-600/80">Please contact support for assistance</p>
                       </div>
                     )}
                   </div>
