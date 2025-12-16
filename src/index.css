@@ -23,8 +23,8 @@
         --popover: 224 71% 4%;
         --popover-foreground: 210 40% 98%;
 
-        --primary: 217 91% 60%;
-        /* Adjusted Brighter Blue for Contrast */
+        --primary: 217 91% 67%;
+        /* Adjusted Brighter Blue for Contrast (WCAG AAA) */
         --primary-foreground: 224 71% 4%;
 
         --secondary: 160 84% 39%;
@@ -34,11 +34,11 @@
         --muted: 217 33% 17%;
         --muted-foreground: 215 20% 75%;
 
-        --accent: 217 91% 60%;
+        --accent: 217 91% 67%;
         /* Match Primary */
         --accent-foreground: 224 71% 4%;
 
-        --destructive: 0 84% 60%;
+        --destructive: 0 84% 70%;
         --destructive-foreground: 210 40% 98%;
 
         --border: 217 33% 20%;

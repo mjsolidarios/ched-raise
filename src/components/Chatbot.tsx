@@ -140,7 +140,7 @@ export function Chatbot() {
                                     </div>
                                     <div>
                                         <CardTitle className="text-sm font-bold text-white tracking-wide">RAISE Assistant</CardTitle>
-                                        <p className="text-[10px] uppercase tracking-wider text-blue-200/70 font-medium">Event Guide</p>
+                                        <p className="text-[10px] uppercase tracking-wider text-blue-200 font-medium">Event Guide</p>
                                     </div>
                                 </div>
                                 <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full hover:bg-white/10 text-white/70 hover:text-white transition-colors" onClick={() => setIsOpen(false)}>

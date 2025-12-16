@@ -78,7 +78,7 @@ const RegistrationPage = () => {
                             <div className="text-green-500 font-bold text-xl">Registration Successful!</div>
                             <p className="text-muted-foreground">Thank you for registering. You can check your status using your email.</p>
                             <Link to="/status">
-                                <Button className="w-full h-14 text-lg font-bold bg-gradient-to-r from-primary to-accent text-white hover:from-primary/90 hover:to-accent/90 mt-4 shadow-[0_0_40px_rgba(8,52,159,0.6)] hover:shadow-[0_0_50px_rgba(8,52,159,0.8)] transition-all">Check Status</Button>
+                                <Button className="w-full h-14 text-lg font-bold bg-gradient-to-r from-primary to-accent text-primary-foreground hover:from-primary/90 hover:to-accent/90 mt-4 shadow-[0_0_40px_rgba(8,52,159,0.6)] hover:shadow-[0_0_50px_rgba(8,52,159,0.8)] transition-all">Check Status</Button>
                             </Link>
                         </div>
                     ) : (
@@ -113,7 +113,7 @@ const RegistrationPage = () => {
                             {status === 'exists' && <p className="text-destructive text-sm text-center">Reference with this email already exists.</p>}
                             {status === 'error' && <p className="text-destructive text-sm text-center">Something went wrong. Please try again.</p>}
 
-                            <Button type="submit" className="w-full h-14 text-lg font-bold bg-gradient-to-r from-primary to-accent text-white hover:from-primary/90 hover:to-accent/90 shadow-[0_0_40px_rgba(8,52,159,0.6)] hover:shadow-[0_0_50px_rgba(8,52,159,0.8)] transition-all" disabled={loading}>
+                            <Button type="submit" className="w-full h-14 text-lg font-bold bg-gradient-to-r from-primary to-accent text-primary-foreground hover:from-primary/90 hover:to-accent/90 shadow-[0_0_40px_rgba(8,52,159,0.6)] hover:shadow-[0_0_50px_rgba(8,52,159,0.8)] transition-all" disabled={loading}>
                                 {loading ? 'Submitting...' : 'Register'}
                             </Button>
                         </form>

@@ -234,7 +234,7 @@ const VenuePage = () => {
                     />
                     <div className="absolute inset-0 bg-gradient-to-br from-background/92 via-background/85 to-background/92" />
                     {/* Photo Credit */}
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-white/40 z-10 opacity-30 hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-white/70 z-10 opacity-70 hover:opacity-100 transition-opacity duration-300">
                         <CameraIcon className="inline mr-1 h-4 w-4" /> https://iloiloconventioncenter.com
                     </div>
 
@@ -443,7 +443,7 @@ const VenuePage = () => {
                     </motion.div>
                 </div>
                 {/* Photo Credit */}
-                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-white/40 z-10 opacity-30 hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-white/70 z-10 opacity-70 hover:opacity-100 transition-opacity duration-300">
                     <CameraIcon className="inline mr-1 h-4 w-4" /> Janssen Panizales via Pexels
                 </div>
             </section>
