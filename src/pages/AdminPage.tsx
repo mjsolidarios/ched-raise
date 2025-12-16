@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { db, auth } from '@/lib/firebase';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 import { onAuthStateChanged, signInWithEmailAndPassword, type User } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,15 +30,39 @@ const AdminPage = () => {
         return () => unsubscribe();
     }, []);
 
-    useEffect(() => {
-        if (user) {
-            const q = query(collection(db, 'registrations'), orderBy('timestamp', 'desc'));
-            const unsubscribe = onSnapshot(q, (snapshot) => {
-                setRegistrations(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-            });
+useEffect(() => {
+    if (user) {
+        console.log('User authenticated, fetching registrations...');
+        try {
+            const q = query(collection(db, 'registrations'));
+            console.log('Query:', q);
+            
+            const unsubscribe = onSnapshot(q, 
+                (snapshot) => {
+                    const registrationsData = snapshot.docs.map(doc => {
+                        console.log('Document data:', doc.id, doc.data());
+                        return {
+                            id: doc.id,
+                            ...doc.data()
+                        };
+                    });
+                    console.log('Fetched registrations:', registrationsData);
+                    setRegistrations(registrationsData);
+                },
+                (error) => {
+                    console.error('Error fetching registrations:', error);
+                    console.error('Error details:', error.code, error.message);
+                }
+            );
             return () => unsubscribe();
+        } catch (error) {
+            console.error('Error setting up query:', error);
         }
-    }, [user]);
+    } else {
+        console.log('No user, clearing registrations');
+        setRegistrations([]);
+    }
+}, [user]);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -65,14 +89,24 @@ const AdminPage = () => {
         return `${lastName || ''}, ${firstName || ''} ${middleName || ''}`.trim();
     };
 
-    // Filter registrations
-    const filteredRegistrations = registrations.filter(reg =>
-        reg.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        reg.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        reg.middleName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        reg.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        reg.schoolAffiliation?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+        // Filter registrations
+    const filteredRegistrations = useMemo(() => {
+        console.log('Filtering registrations with search term:', searchTerm);
+        const filtered = registrations.filter(reg => {
+            const searchLower = searchTerm.toLowerCase();
+            return (
+                reg.lastName?.toLowerCase().includes(searchLower) ||
+                reg.firstName?.toLowerCase().includes(searchLower) ||
+                reg.middleName?.toLowerCase().includes(searchLower) ||
+                reg.email?.toLowerCase().includes(searchLower) ||
+                reg.schoolAffiliation?.toLowerCase().includes(searchLower) ||
+                reg.raiseId?.toLowerCase().includes(searchLower) ||
+                reg.id?.toLowerCase().includes(searchLower)
+            );
+        });
+        console.log('Filtered registrations:', filtered);
+        return filtered;
+    }, [registrations, searchTerm]);
 
     // Calculate Stats
     const stats = {
@@ -229,13 +263,14 @@ const AdminPage = () => {
                                             <TableHead>School / Type</TableHead>
                                             <TableHead>Contact</TableHead>
                                             <TableHead>Status</TableHead>
+                                            <TableHead>RAISE Code</TableHead>
                                             <TableHead className="text-right">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {filteredRegistrations.length === 0 ? (
                                             <TableRow>
-                                                <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                                                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
                                                     No registrations found.
                                                 </TableCell>
                                             </TableRow>
@@ -265,6 +300,30 @@ const AdminPage = () => {
                                                         >
                                                             {reg.status}
                                                         </Badge>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {reg.raiseId ? (
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="font-mono text-sm">{reg.raiseId}</span>
+                                                                <Button 
+                                                                    variant="ghost" 
+                                                                    size="icon" 
+                                                                    className="h-6 w-6"
+                                                                    onClick={() => {
+                                                                        navigator.clipboard.writeText(reg.raiseId);
+                                                                        // Optional: Show a toast notification
+                                                                        // toast.success('RAISE ID copied to clipboard');
+                                                                    }}
+                                                                >
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
+                                                                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                                                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                                                                    </svg>
+                                                                </Button>
+                                                            </div>
+                                                        ) : (
+                                                            <span className="text-xs text-muted-foreground">N/A</span>
+                                                        )}
                                                     </TableCell>
                                                     <TableCell className="text-right">
                                                         <Select onValueChange={(val: string) => updateStatus(reg.id, val)} value={reg.status}>

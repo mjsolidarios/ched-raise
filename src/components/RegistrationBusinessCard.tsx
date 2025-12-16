@@ -1,4 +1,4 @@
-import { type ReactNode, useState, useEffect, useRef } from 'react';
+import { type ReactNode, useState, useRef } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { CheckCircle, Clock, RotateCw, XCircle } from 'lucide-react';
@@ -139,20 +139,6 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
   const cardRef = useRef<HTMLDivElement | null>(null);
   const nameRef = useRef<HTMLParagraphElement | null>(null);
   useFitText(nameRef, 2);
-
-  // Responsive design handling
-  const [isSmUp, setIsSmUp] = useState(() => {
-    if (typeof window === 'undefined') return true;
-    return window.matchMedia('(min-width: 640px)').matches;
-  });
-
-  useEffect(() => {
-    const mql = window.matchMedia('(min-width: 640px)');
-    const onChange = (e: MediaQueryListEvent) => setIsSmUp(e.matches);
-    
-    mql.addEventListener('change', onChange);
-    return () => mql.removeEventListener('change', onChange);
-  }, []);
 
   const middleInitial = registration.middleName ? `${registration.middleName.charAt(0)}.` : '';
   const fullName = [registration.firstName, middleInitial, registration.lastName].filter(Boolean).join(' ') || 'Registrant';

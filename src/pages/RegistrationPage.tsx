@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
+import { generateRaiseGrid } from '@/lib/raise';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,10 +10,12 @@ import { Link } from 'react-router-dom';
 
 const RegistrationPage = () => {
     const [formData, setFormData] = useState({
-        fullName: '',
+        firstName: '',
+        middleName: '',
+        lastName: '',
         email: '',
         contactNumber: '',
-        company: ''
+        schoolAffiliation: ''
     });
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState<'idle' | 'success' | 'error' | 'exists'>('idle');
@@ -37,13 +40,26 @@ const RegistrationPage = () => {
                 return;
             }
 
-            await addDoc(collection(db, 'registrations'), {
-                ...formData,
+            const docRef = await addDoc(collection(db, 'registrations'), {
+                firstName: formData.firstName,
+                middleName: formData.middleName,
+                lastName: formData.lastName,
+                email: formData.email,
+                contactNumber: formData.contactNumber,
+                schoolAffiliation: formData.schoolAffiliation,
                 status: 'pending',
                 createdAt: serverTimestamp()
             });
+
+            const qrValue = `CHED-RAISE-2026|${docRef.id}|${formData.email}`;
+            const raiseCode = generateRaiseGrid(qrValue);
+
+            await updateDoc(doc(db, 'registrations', docRef.id), {
+                raiseCode: raiseCode
+            });
+
             setStatus('success');
-            setFormData({ fullName: '', email: '', contactNumber: '', company: '' });
+            setFormData({ firstName: '', middleName: '', lastName: '', email: '', contactNumber: '', schoolAffiliation: '' });
         } catch (error) {
             console.error("Error adding registration: ", error);
             setStatus('error');
@@ -70,9 +86,19 @@ const RegistrationPage = () => {
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="firstName">First Name</Label>
+                                    <Input id="firstName" name="firstName" required value={formData.firstName} onChange={handleChange} placeholder="Juana" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="lastName">Last Name</Label>
+                                    <Input id="lastName" name="lastName" required value={formData.lastName} onChange={handleChange} placeholder="Dela Cruz" />
+                                </div>
+                            </div>
                             <div className="space-y-2">
-                                <Label htmlFor="fullName">Full Name</Label>
-                                <Input id="fullName" name="fullName" required value={formData.fullName} onChange={handleChange} placeholder="Juana Dela Cruz" />
+                                <Label htmlFor="middleName">Middle Name (Optional)</Label>
+                                <Input id="middleName" name="middleName" value={formData.middleName} onChange={handleChange} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="email">Email Address</Label>
@@ -83,8 +109,8 @@ const RegistrationPage = () => {
                                 <Input id="contactNumber" name="contactNumber" required value={formData.contactNumber} onChange={handleChange} placeholder="0912 345 6789" />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="company">Company / Institution</Label>
-                                <Input id="company" name="company" value={formData.company} onChange={handleChange} placeholder="University of the Philippines" />
+                                <Label htmlFor="schoolAffiliation">Company / Institution</Label>
+                                <Input id="schoolAffiliation" name="schoolAffiliation" value={formData.schoolAffiliation} onChange={handleChange} placeholder="University of the Philippines" />
                             </div>
 
                             {status === 'exists' && <p className="text-destructive text-sm text-center">Reference with this email already exists.</p>}
