@@ -21,6 +21,37 @@ const AdminPage = () => {
     const [loginPassword, setLoginPassword] = useState('');
     const [registrations, setRegistrations] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [eventStatus, setEventStatus] = useState<'ongoing' | 'finished'>('ongoing');
+
+    useEffect(() => {
+        // Subscribe to global settings
+        const settingsUnsub = onSnapshot(doc(db, 'settings', 'general'), (docSnap) => {
+            if (docSnap.exists()) {
+                setEventStatus(docSnap.data().eventStatus || 'ongoing');
+            } else {
+                setEventStatus('ongoing');
+            }
+        });
+        return () => settingsUnsub();
+    }, []);
+
+    const toggleEventStatus = async () => {
+        const newStatus = eventStatus === 'ongoing' ? 'finished' : 'ongoing';
+        try {
+            // Ensure document exists and update
+            await updateDoc(doc(db, 'settings', 'general'), {
+                eventStatus: newStatus
+            });
+        } catch (e) {
+            // If doc doesn't exist, create it (lazy init)
+            try {
+                const { setDoc } = await import('firebase/firestore');
+                await setDoc(doc(db, 'settings', 'general'), { eventStatus: newStatus }, { merge: true });
+            } catch (err) {
+                console.error("Error toggling status", err);
+            }
+        }
+    };
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -30,39 +61,39 @@ const AdminPage = () => {
         return () => unsubscribe();
     }, []);
 
-useEffect(() => {
-    if (user) {
-        console.log('User authenticated, fetching registrations...');
-        try {
-            const q = query(collection(db, 'registrations'));
-            console.log('Query:', q);
-            
-            const unsubscribe = onSnapshot(q, 
-                (snapshot) => {
-                    const registrationsData = snapshot.docs.map(doc => {
-                        console.log('Document data:', doc.id, doc.data());
-                        return {
-                            id: doc.id,
-                            ...doc.data()
-                        };
-                    });
-                    console.log('Fetched registrations:', registrationsData);
-                    setRegistrations(registrationsData);
-                },
-                (error) => {
-                    console.error('Error fetching registrations:', error);
-                    console.error('Error details:', error.code, error.message);
-                }
-            );
-            return () => unsubscribe();
-        } catch (error) {
-            console.error('Error setting up query:', error);
+    useEffect(() => {
+        if (user) {
+            console.log('User authenticated, fetching registrations...');
+            try {
+                const q = query(collection(db, 'registrations'));
+                console.log('Query:', q);
+
+                const unsubscribe = onSnapshot(q,
+                    (snapshot) => {
+                        const registrationsData = snapshot.docs.map(doc => {
+                            console.log('Document data:', doc.id, doc.data());
+                            return {
+                                id: doc.id,
+                                ...doc.data()
+                            };
+                        });
+                        console.log('Fetched registrations:', registrationsData);
+                        setRegistrations(registrationsData);
+                    },
+                    (error) => {
+                        console.error('Error fetching registrations:', error);
+                        console.error('Error details:', error.code, error.message);
+                    }
+                );
+                return () => unsubscribe();
+            } catch (error) {
+                console.error('Error setting up query:', error);
+            }
+        } else {
+            console.log('No user, clearing registrations');
+            setRegistrations([]);
         }
-    } else {
-        console.log('No user, clearing registrations');
-        setRegistrations([]);
-    }
-}, [user]);
+    }, [user]);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -89,7 +120,7 @@ useEffect(() => {
         return `${lastName || ''}, ${firstName || ''} ${middleName || ''}`.trim();
     };
 
-        // Filter registrations
+    // Filter registrations
     const filteredRegistrations = useMemo(() => {
         console.log('Filtering registrations with search term:', searchTerm);
         const filtered = registrations.filter(reg => {
@@ -100,7 +131,7 @@ useEffect(() => {
                 reg.middleName?.toLowerCase().includes(searchLower) ||
                 reg.email?.toLowerCase().includes(searchLower) ||
                 reg.schoolAffiliation?.toLowerCase().includes(searchLower) ||
-                reg.raiseId?.toLowerCase().includes(searchLower) ||
+                reg.ticketCode?.toLowerCase().includes(searchLower) ||
                 reg.id?.toLowerCase().includes(searchLower)
             );
         });
@@ -173,6 +204,7 @@ useEffect(() => {
         );
     }
 
+
     return (
         <div className="container mx-auto px-4 py-8 space-y-8">
             <motion.div
@@ -183,6 +215,19 @@ useEffect(() => {
                 <div>
                     <h1 className="mt-16 text-3xl font-bold tracking-tight text-foreground">Overview</h1>
                     <p className="text-muted-foreground">Welcome back, Admin.</p>
+                </div>
+
+                <div className="mt-10 flex items-center gap-4 bg-muted/30 p-4 rounded-lg border border-border/50">
+                    <div className="space-y-0.5">
+                        <Label className="text-base">Event Status: <span className={eventStatus === 'ongoing' ? 'text-emerald-500' : 'text-amber-500'}>{eventStatus.toUpperCase()}</span></Label>
+                        <p className="text-xs text-muted-foreground">Toggle to specific 'Event Finished' mode.</p>
+                    </div>
+                    <Button
+                        variant={eventStatus === 'ongoing' ? "default" : "secondary"}
+                        onClick={toggleEventStatus}
+                    >
+                        {eventStatus === 'ongoing' ? 'Finish Event' : 'Re-open Event'}
+                    </Button>
                 </div>
             </motion.div>
 
@@ -263,7 +308,7 @@ useEffect(() => {
                                             <TableHead>School / Type</TableHead>
                                             <TableHead>Contact</TableHead>
                                             <TableHead>Status</TableHead>
-                                            <TableHead>RAISE Code</TableHead>
+                                            <TableHead>Ticket ID</TableHead>
                                             <TableHead className="text-right">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
@@ -302,28 +347,24 @@ useEffect(() => {
                                                         </Badge>
                                                     </TableCell>
                                                     <TableCell>
-                                                        {reg.raiseId ? (
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="font-mono text-sm">{reg.raiseId}</span>
-                                                                <Button 
-                                                                    variant="ghost" 
-                                                                    size="icon" 
-                                                                    className="h-6 w-6"
-                                                                    onClick={() => {
-                                                                        navigator.clipboard.writeText(reg.raiseId);
-                                                                        // Optional: Show a toast notification
-                                                                        // toast.success('RAISE ID copied to clipboard');
-                                                                    }}
-                                                                >
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
-                                                                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
-                                                                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
-                                                                    </svg>
-                                                                </Button>
-                                                            </div>
-                                                        ) : (
-                                                            <span className="text-xs text-muted-foreground">N/A</span>
-                                                        )}
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="font-mono text-sm">{reg.ticketCode || reg.id}</span>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="h-6 w-6"
+                                                                onClick={() => {
+                                                                    navigator.clipboard.writeText(reg.ticketCode || reg.id);
+                                                                    // Optional: Show a toast notification
+                                                                    // toast.success('Ticket ID copied to clipboard');
+                                                                }}
+                                                            >
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
+                                                                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                                                                    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                                                                </svg>
+                                                            </Button>
+                                                        </div>
                                                     </TableCell>
                                                     <TableCell className="text-right">
                                                         <Select onValueChange={(val: string) => updateStatus(reg.id, val)} value={reg.status}>

@@ -132,9 +132,9 @@ export const ExploreIloilo = () => {
                     transition={{ duration: 0.6, delay: 0.3 }}
                     className="text-center"
                 >
-                    <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
-                        <Link to="/tourism">
-                            Discover More <ArrowRight className="ml-2 h-4 w-4" />
+                    <Button asChild size="lg" className="h-14 px-10 text-lg font-bold bg-gradient-to-r from-primary to-accent text-white hover:from-primary/90 hover:to-accent/90 shadow-[0_0_40px_rgba(8,52,159,0.6)] hover:shadow-[0_0_50px_rgba(8,52,159,0.8)] transition-all">
+                        <Link to="/venue">
+                            Discover More <ArrowRight className="ml-2 h-5 w-5" />
                         </Link>
                     </Button>
                 </motion.div>

@@ -23,27 +23,27 @@
         --popover: 224 71% 4%;
         --popover-foreground: 210 40% 98%;
 
-        --primary: 222.5 90% 32.7%;
-        /* Requested #08349f */
-        --primary-foreground: 210 40% 98%;
+        --primary: 217 91% 60%;
+        /* Adjusted Brighter Blue for Contrast */
+        --primary-foreground: 224 71% 4%;
 
         --secondary: 160 84% 39%;
         /* Vibrant Teal */
         --secondary-foreground: 210 40% 98%;
 
         --muted: 217 33% 17%;
-        --muted-foreground: 215 20% 65%;
+        --muted-foreground: 215 20% 75%;
 
-        --accent: 222.5 90% 32.7%;
-        /* Requested #08349f */
-        --accent-foreground: 210 40% 98%;
+        --accent: 217 91% 60%;
+        /* Match Primary */
+        --accent-foreground: 224 71% 4%;
 
         --destructive: 0 84% 60%;
         --destructive-foreground: 210 40% 98%;
 
         --border: 217 33% 20%;
         --input: 217 33% 17%;
-        --ring: 224 76% 48%;
+        --ring: 217 91% 60%;
 
         --radius: 0.75rem;
     }
@@ -117,19 +117,25 @@
 
 /* Custom animations */
 @keyframes gradient {
-    0%, 100% {
+
+    0%,
+    100% {
         background-position: 0% 50%;
     }
+
     50% {
         background-position: 100% 50%;
     }
 }
 
 @keyframes card-pattern-drift {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translate3d(0%, 0%, 0) scale(1.04) rotate(0deg);
         filter: hue-rotate(0deg);
     }
+
     50% {
         transform: translate3d(-2.5%, -1.5%, 0) scale(1.08) rotate(1.5deg);
         filter: hue-rotate(10deg);
@@ -137,19 +143,17 @@
 }
 
 .card-pattern-animate {
-    animation: card-pattern-drift 18s ease-in-out infinite;
+    animation: card-pattern-drift 6s ease-in-out infinite;
     will-change: transform, filter;
 }
 
 .card-spotlight {
     opacity: 0;
     transition: opacity 250ms ease;
-    background: radial-gradient(
-        520px circle at var(--spot-x, 50%) var(--spot-y, 35%),
-        hsl(var(--primary) / 0.35),
-        hsl(var(--primary) / 0.15) 22%,
-        rgba(255, 255, 255, 0.00) 58%
-    );
+    background: radial-gradient(520px circle at var(--spot-x, 50%) var(--spot-y, 35%),
+            hsl(var(--primary) / 0.35),
+            hsl(var(--primary) / 0.15) 22%,
+            rgba(255, 255, 255, 0.00) 58%);
 }
 
 .group:hover .card-spotlight {
@@ -157,10 +161,13 @@
 }
 
 @keyframes card-dot-pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 0.35;
         filter: saturate(1.2) brightness(1.0);
     }
+
     50% {
         opacity: 0.65;
         filter: saturate(1.6) brightness(1.08);
@@ -177,8 +184,8 @@
     background-position:
         var(--grid-x, 0px) var(--grid-y, 0px),
         calc(var(--grid-x, 0px) + 9px) calc(var(--grid-y, 0px) + 9px);
-    mask-image: radial-gradient(260px circle at var(--spot-x, 50%) var(--spot-y, 35%), #000 0%, rgba(0,0,0,0) 72%);
-    -webkit-mask-image: radial-gradient(260px circle at var(--spot-x, 50%) var(--spot-y, 35%), #000 0%, rgba(0,0,0,0) 72%);
+    mask-image: radial-gradient(260px circle at var(--spot-x, 50%) var(--spot-y, 35%), #000 0%, rgba(0, 0, 0, 0) 72%);
+    -webkit-mask-image: radial-gradient(260px circle at var(--spot-x, 50%) var(--spot-y, 35%), #000 0%, rgba(0, 0, 0, 0) 72%);
     animation: card-dot-pulse 3.8s ease-in-out infinite;
     will-change: background-position, opacity, filter;
 }
@@ -202,31 +209,51 @@
 
 
 @keyframes gradient-shift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
+
 @keyframes pulse-slow {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.4; }
+
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
 }
+
 .animate-gradient-shift {
-  background-size: 200% 200%;
-  animation: gradient-shift 15s ease infinite;
+    background-size: 200% 200%;
+    animation: gradient-shift 15s ease infinite;
 }
+
 .animate-pulse-slow {
-  animation: pulse-slow 8s ease-in-out infinite;
+    animation: pulse-slow 8s ease-in-out infinite;
 }
+
 .glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
 /* Ensure the card has proper 3D transform for the flip effect */
 .flip-card-face {
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  transform-style: preserve-3d;
-  transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
 }

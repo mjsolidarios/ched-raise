@@ -100,3 +100,16 @@ export const generateRaiseId = (): number[] => {
   const randomId = Math.random().toString(36).substring(2, 16);
   return encodeTextToRaiseId(randomId);
 };
+
+/**
+ * Generate a short, user-friendly ticket code (8 chars)
+ * This fits well within the 14-byte limit of the RAISE protocol payload.
+ */
+export const generateTicketCode = (): string => {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // No I, O, 0, 1 to avoid confusion
+  let result = '';
+  for (let i = 0; i < 8; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+};

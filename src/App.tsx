@@ -11,8 +11,10 @@ const LandingPage = lazy(() => import('./pages/LandingPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const UserDashboard = lazy(() => import('./pages/UserDashboard'));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
-const TourismPage = lazy(() => import('./pages/TourismPage'));
+const VenuePage = lazy(() => import('./pages/VenuePage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
+const SurveyPage = lazy(() => import('./pages/SurveyPage'));
+const AgendaPage = lazy(() => import('./pages/AgendaPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 // Loading component
@@ -38,8 +40,14 @@ const App = () => {
                             </ProtectedRoute>
                         } />
                         <Route path="/admin" element={<AdminPage />} />
-                        <Route path="/tourism" element={<TourismPage />} />
+                        <Route path="/venue" element={<VenuePage />} />
+                        <Route path="/survey" element={
+                            <ProtectedRoute>
+                                <SurveyPage />
+                            </ProtectedRoute>
+                        } />
                         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                        <Route path="/agenda" element={<AgendaPage />} />
                         <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                 </Suspense>

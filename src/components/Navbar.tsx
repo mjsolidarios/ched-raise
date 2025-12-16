@@ -88,8 +88,8 @@ export function Navbar() {
                         {item}
                     </a>
                 ))}
-                <NavLink href="/tourism">
-                    Host City
+                <NavLink href="/venue">
+                    Venue
                 </NavLink>
             </div>
 

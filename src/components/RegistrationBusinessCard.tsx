@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { CheckCircle, Clock, RotateCw, XCircle } from 'lucide-react';
 import RaiseProtocolEncoderGrid from './RaiseProtocolEncoderGrid';
 import { useFitText } from '@/hooks/use-fit-text';
+import { encodeTextToRaiseId } from '@/lib/raiseCodeUtils';
 
 const hashStringToUint32 = (str: string) => {
   // FNV-1a 32-bit
@@ -42,7 +43,7 @@ const makeIdPatternDataUrl = (registrationId: string, variant: 'front' | 'back')
     return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="hsl(${h} 80% 60% / ${a})" />`;
   });
 
-  const paths = Array.from({ length: 2 }).map(() => {
+  const paths = Array.from({ length: 12 }).map(() => {
     const x1 = Math.floor(rand() * 1200);
     const y1 = Math.floor(rand() * 700);
     const x2 = Math.floor(rand() * 1200);
@@ -115,7 +116,7 @@ type Registration = {
   schoolAffiliation?: string;
   registrantType?: string;
   registrantTypeOther?: string;
-  raiseId?: number[];
+  ticketCode?: string;
 };
 
 type RegistrationBusinessCardProps = {
@@ -285,7 +286,7 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
                 </div>
                 <div className="col-span-2">
                   <p className="uppercase tracking-wider text-muted-foreground font-semibold">Registration ID</p>
-                  <p className="font-mono text-sm sm:text-2xl break-all">{registration.id}</p>
+                  <p className="font-mono text-sm sm:text-2xl break-all">{registration.ticketCode || registration.id}</p>
                 </div>
               </div>
 
@@ -364,17 +365,15 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
                     {/* Header */}
                     <div className="text-center mb-3 sm:mb-4">
                       <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 mb-3">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
-                          <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-                          </svg>
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center">
+                          <img src="/r-icon.svg" alt="" className="w-6 h-6" />
                         </div>
                       </div>
                       <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
                         RAISE ID
                       </h3>
                       <p className="text-xs sm:text-sm text-muted-foreground/80 font-medium">
-                        Your unique registration code
+                        Present this code for attendance.
                       </p>
                     </div>
 
@@ -394,18 +393,18 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
 
                           {/* Pattern display */}
                           <div className="flex justify-center items-center">
-                            {registration.raiseId ? (
-                              <RaiseProtocolEncoderGrid grid={registration.raiseId} size={150} />
-                            ) : (
-                              <div className="text-center py-4">
-                                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-200/50 mb-2">
-                                  <svg className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
-                                  </svg>
+                            {(() => {
+                              const code = registration.ticketCode || registration.id;
+                              const grid = encodeTextToRaiseId(code);
+                              return grid ? (
+                                <RaiseProtocolEncoderGrid grid={grid} size={150} />
+                              ) : (
+                                // This fallback usually won't be hit unless encode fails, but kept for safety
+                                <div className="text-center py-4">
+                                  <p className="font-mono text-xs text-slate-500">Error generating pattern</p>
                                 </div>
-                                <p className="font-mono text-xs text-slate-500">ID not generated</p>
-                              </div>
-                            )}
+                              )
+                            })()}
                           </div>
                         </div>
                       </div>
@@ -418,7 +417,7 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <p className="text-xs font-medium text-foreground/80">
-                          Present this ID at the event entrance
+                          {registration.ticketCode || registration.id}
                         </p>
                       </div>
                     </div>

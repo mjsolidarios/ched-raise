@@ -34,7 +34,7 @@ import { RegistrationProgress } from '@/components/RegistrationProgress';
 import { SchoolAutocomplete } from '@/components/SchoolAutocomplete';
 import { RegistrationBusinessCard } from '@/components/RegistrationBusinessCard';
 import { toTitleCase } from '@/lib/utils/format';
-import { encodeTextToRaiseId } from '@/lib/raiseCodeUtils';
+import { generateTicketCode } from '@/lib/raiseCodeUtils';
 
 const UserDashboard = () => {
     const [user, setUser] = useState<User | null>(auth.currentUser);
@@ -82,8 +82,23 @@ const UserDashboard = () => {
             console.log('📡 onSnapshot triggered, empty:', snapshot.empty, 'size:', snapshot.size);
             if (!snapshot.empty) {
                 const docData = snapshot.docs[0];
-                const regData = { id: docData.id, ...docData.data() };
+                const data = docData.data() as any;
+                const regData = { id: docData.id, ...data };
                 console.log('✅ Registration data:', regData);
+
+                // Migration: Generate ticketCode if missing
+                if (!data.ticketCode) {
+                    const ticketCode = generateTicketCode();
+                    console.log('⚠️ Migrating registration to use ticketCode:', ticketCode);
+
+                    updateDoc(doc(db, 'registrations', docData.id), {
+                        ticketCode
+                    }).catch(err => console.error("Migration failed:", err));
+
+                    // Optimistic update for UI
+                    regData.ticketCode = ticketCode;
+                }
+
                 setRegistration(regData);
             } else {
                 console.log('❌ No registration found');
@@ -153,9 +168,10 @@ const UserDashboard = () => {
                 schoolAffiliation: toTitleCase(editFormData.schoolAffiliation)
             };
 
-            if (!registration.raiseId) {
-                updatedData.raiseId = encodeTextToRaiseId(registration.id);
-            }
+            // No need to save raiseId anymore
+            // if (!registration.raiseId) {
+            //      ...
+            // }
 
             await updateDoc(doc(db, "registrations", registration.id), updatedData);
             console.log('✏️ Registration updated successfully');
@@ -195,7 +211,10 @@ const UserDashboard = () => {
                 return;
             }
 
-            // Create registration document first to get the ID
+            // Generate Ticket Code
+            const ticketCode = generateTicketCode();
+
+            // Create registration document
             const docRef = await addDoc(collection(db, 'registrations'), {
                 ...formData,
                 lastName: toTitleCase(formData.lastName),
@@ -204,17 +223,10 @@ const UserDashboard = () => {
                 schoolAffiliation: toTitleCase(formData.schoolAffiliation),
                 uid: user?.uid,
                 status: 'pending',
+                ticketCode: ticketCode,
                 timestamp: serverTimestamp()
             });
             console.log('✨ New registration created with ID:', docRef.id);
-
-            // Generate RAISE ID based on the document ID
-            const raiseId = encodeTextToRaiseId(docRef.id);
-
-            // Update the document with the RAISE ID
-            await updateDoc(doc(db, 'registrations', docRef.id), {
-                raiseId
-            });
 
             // Reset form (optional, as we redirect or show status)
         } catch (error) {
@@ -256,6 +268,18 @@ const UserDashboard = () => {
         show: { opacity: 1, y: 0 }
     };
 
+    const [eventStatus, setEventStatus] = useState<'ongoing' | 'finished'>('ongoing');
+
+    useEffect(() => {
+        // Subscribe to global settings for event status
+        const settingsUnsub = onSnapshot(doc(db, 'settings', 'general'), (docSnap) => {
+            if (docSnap.exists()) {
+                setEventStatus(docSnap.data().eventStatus || 'ongoing');
+            }
+        });
+        return () => settingsUnsub();
+    }, []);
+
     if (loading) return (
         <div className="flex h-[calc(100vh-64px)] items-center justify-center">
             <div className="flex flex-col items-center gap-4">
@@ -264,6 +288,74 @@ const UserDashboard = () => {
             </div>
         </div>
     );
+
+    // Event Finished State
+    if (eventStatus === 'finished' && registration) {
+        return (
+            <div className="mt-12 container mx-auto px-4 py-8 min-h-[calc(100vh-64px)] flex flex-col items-center justify-center">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="max-w-2xl w-full space-y-8 text-center"
+                >
+                    <div className="space-y-4">
+                        <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                            CHED RAISE 2026 has Concluded!
+                        </h1>
+                        <p className="text-lg text-muted-foreground">
+                            Thank you for participating in our event. We hope you had a fruitful experience.
+                        </p>
+                    </div>
+
+                    <Card className="glass-card border-primary/20 shadow-2xl relative overflow-hidden">
+                        <div className="absolute inset-0 bg-primary/5" />
+                        <CardHeader>
+                            <CardTitle className="text-2xl">
+                                {registration.surveyCompleted ? "Certificate of Participation" : "Claim Your Certificate"}
+                            </CardTitle>
+                            <CardDescription>
+                                {registration.surveyCompleted
+                                    ? "You have successfully completed the event requirements."
+                                    : "Please complete the feedback survey to generate your certificate."}
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="relative z-10 flex flex-col items-center gap-6 py-8">
+                            {registration.surveyCompleted ? (
+                                <div className="space-y-6">
+                                    <div className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto border border-emerald-500/20">
+                                        <CheckCircle2 className="w-12 h-12 text-emerald-500" />
+                                    </div>
+                                    <div className="p-6 bg-background/50 border border-border rounded-lg max-w-sm mx-auto">
+                                        <p className="font-mono text-sm text-muted-foreground mb-2">CERTIFICATE ID</p>
+                                        <p className="text-xl font-bold tracking-wider">{registration.ticketCode || registration.id}</p>
+                                    </div>
+                                    <Button size="lg" className="gap-2" onClick={() => alert("Certificate Download Started...")}>
+                                        <CheckCircle2 className="w-4 h-4" /> Download Certificate
+                                    </Button>
+                                </div>
+                            ) : (
+                                <div className="space-y-6">
+                                    <div className="w-24 h-24 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto border border-amber-500/20">
+                                        <Pencil className="w-10 h-10 text-amber-500" />
+                                    </div>
+                                    <Button size="lg" className="w-full sm:w-auto text-lg px-8" onClick={() => window.location.href = '/survey'}>
+                                        Take Feedback Survey
+                                    </Button>
+                                    <p className="text-xs text-muted-foreground">Takes approximately 2 minutes</p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Show limited registration details for reference */}
+                    <div className="opacity-70 pointer-events-none filter grayscale hover:grayscale-0 transition-all duration-500">
+                        <RegistrationBusinessCard registration={registration} />
+                    </div>
+
+                </motion.div>
+            </div>
+        );
+    }
 
     return (
         <div className="container mx-auto px-4 py-6 sm:py-8 lg:py-12 min-h-[calc(100vh-64px)]">
@@ -286,31 +378,32 @@ const UserDashboard = () => {
                 >
                     {registration && (
                         <motion.div
-                            key={`registration-card-${registration.id}-${registration.timestamp?.seconds || Date.now()}`}
-                            variants={item}
+                            key={registration.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
                             className="lg:col-span-3"
                         >
-                            <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-                                <div className="max-w-3xl mx-auto">
-                                    <RegistrationBusinessCard
-                                        registration={registration}
-                                        actions={
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8 text-muted-foreground hover:text-white hover:bg-white/10"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleEditOpen();
-                                                }}
-                                            >
-                                                <Pencil className="h-4 w-4" />
-                                            </Button>
-                                        }
-                                    />
-                                </div>
+                            <div className="max-w-3xl mx-auto">
+                                <RegistrationBusinessCard
+                                    registration={registration}
+                                    actions={
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-8 w-8 text-muted-foreground hover:text-white hover:bg-white/10"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleEditOpen();
+                                            }}
+                                        >
+                                            <Pencil className="h-4 w-4" />
+                                        </Button>
+                                    }
+                                />
+                            </div>
 
+                            <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
                                 <DialogContent className="sm:max-w-[425px]">
                                     <DialogHeader>
                                         <DialogTitle>Edit Registration Details</DialogTitle>
@@ -550,7 +643,7 @@ const UserDashboard = () => {
                                 <p>If you have any questions about your registration status or need to make changes, please contact support.</p>
                                 <div className="mt-4 pt-4 border-t border-primary/10 flex items-center gap-2">
                                     <Mail className="h-4 w-4 text-primary" />
-                                    <a href="mailto:mjsolidarios@wvsu.edu.ph" className="text-primary hover:underline">helpdesk.chedraise@gmail.com</a>
+                                    <a href="helpdesk.chedraise@gmail.com" className="text-primary hover:underline">helpdesk.chedraise@gmail.com</a>
                                 </div>
                             </CardContent>
                         </Card>

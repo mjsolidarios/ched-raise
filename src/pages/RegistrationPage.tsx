@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, serverTimestamp, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
-import { encodeTextToRaiseId } from '@/lib/raiseCodeUtils';
+import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
+import { generateTicketCode } from '@/lib/raiseCodeUtils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -40,7 +40,10 @@ const RegistrationPage = () => {
                 return;
             }
 
-            const docRef = await addDoc(collection(db, 'registrations'), {
+            // Generate Ticket Code and RAISE ID beforehand
+            const ticketCode = generateTicketCode();
+
+            await addDoc(collection(db, 'registrations'), {
                 firstName: formData.firstName,
                 middleName: formData.middleName,
                 lastName: formData.lastName,
@@ -48,15 +51,8 @@ const RegistrationPage = () => {
                 contactNumber: formData.contactNumber,
                 schoolAffiliation: formData.schoolAffiliation,
                 status: 'pending',
+                ticketCode: ticketCode,
                 createdAt: serverTimestamp()
-            });
-
-            // Generate RAISE ID for the registration
-            const raiseId = encodeTextToRaiseId(docRef.id);
-
-            // Update the registration with the generated RAISE ID
-            await updateDoc(doc(db, 'registrations', docRef.id), {
-                raiseId: raiseId
             });
 
             setStatus('success');
@@ -82,7 +78,7 @@ const RegistrationPage = () => {
                             <div className="text-green-500 font-bold text-xl">Registration Successful!</div>
                             <p className="text-muted-foreground">Thank you for registering. You can check your status using your email.</p>
                             <Link to="/status">
-                                <Button className="w-full mt-4">Check Status</Button>
+                                <Button className="w-full h-14 text-lg font-bold bg-gradient-to-r from-primary to-accent text-white hover:from-primary/90 hover:to-accent/90 mt-4 shadow-[0_0_40px_rgba(8,52,159,0.6)] hover:shadow-[0_0_50px_rgba(8,52,159,0.8)] transition-all">Check Status</Button>
                             </Link>
                         </div>
                     ) : (
@@ -117,7 +113,7 @@ const RegistrationPage = () => {
                             {status === 'exists' && <p className="text-destructive text-sm text-center">Reference with this email already exists.</p>}
                             {status === 'error' && <p className="text-destructive text-sm text-center">Something went wrong. Please try again.</p>}
 
-                            <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={loading}>
+                            <Button type="submit" className="w-full h-14 text-lg font-bold bg-gradient-to-r from-primary to-accent text-white hover:from-primary/90 hover:to-accent/90 shadow-[0_0_40px_rgba(8,52,159,0.6)] hover:shadow-[0_0_50px_rgba(8,52,159,0.8)] transition-all" disabled={loading}>
                                 {loading ? 'Submitting...' : 'Register'}
                             </Button>
                         </form>
