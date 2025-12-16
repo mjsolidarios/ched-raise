@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
-import { generateRaiseGrid } from '@/lib/raise';
+import { encodeTextToRaiseId } from '@/lib/raiseCodeUtils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -51,11 +51,12 @@ const RegistrationPage = () => {
                 createdAt: serverTimestamp()
             });
 
-            const qrValue = `CHED-RAISE-2026|${docRef.id}|${formData.email}`;
-            const raiseCode = generateRaiseGrid(qrValue);
+            // Generate RAISE ID for the registration
+            const raiseId = encodeTextToRaiseId(docRef.id);
 
+            // Update the registration with the generated RAISE ID
             await updateDoc(doc(db, 'registrations', docRef.id), {
-                raiseCode: raiseCode
+                raiseId: raiseId
             });
 
             setStatus('success');

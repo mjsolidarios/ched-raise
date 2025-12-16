@@ -3,16 +3,17 @@ import { Navbar } from './components/Navbar';
 import { Chatbot } from './components/Chatbot';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Suspense, lazy } from 'react';
-import AdminPage from './pages/AdminPage'; // Direct import to fix potential lazy loading issue
-import NotFoundPage from './pages/NotFoundPage';
+// import AdminPage from './pages/AdminPage'; // Direct import to fix potential lazy loading issue
+// import NotFoundPage from './pages/NotFoundPage';
 
-// Lazy load pages for code splitting optimization
+// Lazy load all pages for code splitting optimization
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const UserDashboard = lazy(() => import('./pages/UserDashboard'));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TourismPage = lazy(() => import('./pages/TourismPage'));
-// const AdminPage = lazy(() => import('./pages/AdminPage'));
+const AdminPage = lazy(() => import('./pages/AdminPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 // Loading component
 const PageLoader = () => (
