@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { MapPin, Hotel, Lightbulb, ArrowRight, Building2, Utensils, Car, CameraIcon, Compass, Coffee, Users, Crown, MonitorPlay } from 'lucide-react';
+import { MapPin, Hotel, Lightbulb, ArrowRight, Building2, Utensils, Car, CameraIcon, Compass, Coffee, Users, Crown, MonitorPlay, Palmtree, CloudSun, Armchair } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -84,6 +84,20 @@ const VenuePage = () => {
             icon: MonitorPlay, // Need to import MonitorPlay
             category: 'Tech',
             highlight: 'World-Class AV'
+        },
+        {
+            name: 'Outdoor Roof Deck',
+            description: 'A 1,500-square-meter open-air venue on the roof deck, perfect for cocktail receptions and evening events under the stars.',
+            icon: CloudSun,
+            category: 'Outdoor Venue',
+            highlight: 'City Skyline Views'
+        },
+        {
+            name: 'Grand Lobby',
+            description: 'Spacious and elegant pre-function area designed for fluid crowd movement, networking, and seamless registration processes.',
+            icon: Armchair,
+            category: 'Reception',
+            highlight: 'Expansive Space'
         }
     ];
 
@@ -136,7 +150,7 @@ const VenuePage = () => {
         {
             icon: Car,
             title: 'Getting Around',
-            description: 'Jeepneys (₱9-12 fare) are the iconic public transport. Download Grab app for convenient taxis and private cars. Tricycles available for short distances.',
+            description: 'Jeepneys (₱13-15 fare) are the iconic public transport. Download Grab app for convenient taxis and private cars. Tricycles available for short distances.',
             tip: 'Pro Tip: Negotiate tricycle fares before riding'
         },
         {
@@ -334,6 +348,138 @@ const VenuePage = () => {
                 </section>
             </div>
 
+            {/* Tourist Spots Section */}
+            <section className="py-16 lg:py-24 relative overflow-hidden group/discover">
+                <div className="absolute inset-0">
+                    <img
+                        src="/sail.webp"
+                        alt="Iloilo Paraw Regatta Sails"
+                        className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-background/50" />
+                </div>
+                <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.03]" />
+                <div className="container mx-auto px-4 relative z-10">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-12"
+                    >
+                        <MapPin className="h-12 w-12 mx-auto mb-4 text-primary" />
+                        <h2 className="text-3xl md:text-5xl font-bold mb-4">Discover Iloilo</h2>
+                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                            Immerse yourself in the rich history, culture, and natural beauty of the "Heart of the Philippines"
+                        </p>
+                    </motion.div>
+
+                    <motion.div
+                        variants={container}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true }}
+                        className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto"
+                    >
+                        {[
+                            {
+                                name: 'Islas de Gigantes',
+                                category: 'Nature',
+                                description: 'A remote group of islands famous for pristine white sand beaches, clear waters, and fresh seafood.',
+                                icon: Crown, // Using Crown as a placeholder for "Jewel" of tourism; could substitute if specific icon available
+                                highlight: 'Must-visit Paradise'
+                            },
+                            {
+                                name: 'Miagao Church',
+                                category: 'Heritage',
+                                description: 'A UNESCO World Heritage Site known for its intricate baroque architectural design and sculptural relief.',
+                                icon: Building2,
+                                highlight: 'UNESCO Heritage Site'
+                            },
+                            {
+                                name: 'Iloilo River Esplanade',
+                                category: 'Leisure',
+                                description: 'A scenic riverside park perfect for jogging, dining, and enjoying sunset views along the Iloilo River.',
+                                icon: Users,
+                                highlight: 'Urban Oasis'
+                            },
+                            {
+                                name: 'Calle Real',
+                                category: 'Heritage',
+                                description: 'The historic district of Iloilo City, lined with restored colonial-era commercial buildings.',
+                                icon: CameraIcon,
+                                highlight: 'Historic Walk'
+                            },
+                            {
+                                name: 'Molo Church',
+                                category: 'Culture',
+                                description: 'Known as the "Feminist Church" because of the all-female ensemble of saints residing in it.',
+                                icon: Building2,
+                                highlight: 'Gothic-Renaissance'
+                            },
+                            {
+                                name: 'Garin Farm',
+                                category: 'Agri-Tourism',
+                                description: 'An inland resort combining agriculture, leisure, and pilgrimage with a famous "Stairway to Heaven".',
+                                icon: Lightbulb, // Symbolic for "enlightenment"/pilgrimage
+                                highlight: 'Pilgrimage Site'
+                            },
+                            {
+                                name: 'Jaro Plaza',
+                                category: 'Heritage',
+                                description: 'A historic plaza with a bell tower across the street and the cathedral nearby, known for its community vibe.',
+                                icon: Compass,
+                                highlight: 'Cultural Center'
+                            },
+                            {
+                                name: 'Plazuela de Iloilo',
+                                category: 'Lifestyle',
+                                description: 'A Spanish-Italian inspired dining and entertainment hub with open courtyards and landscaped gardens.',
+                                icon: Coffee,
+                                highlight: 'Dining & Entertainment'
+                            },
+                            {
+                                name: 'Bucari Pine Forest',
+                                category: 'Nature',
+                                description: 'Known as the "Summer Capital of Iloilo", offering cool weather, pine trees, and scenic mountain views.',
+                                icon: Palmtree, // Using Palmtree as nature proxy if Pine is unavailable
+                                highlight: 'Little Baguio'
+                            }
+                        ].map((spot, index) => (
+                            <SpotlightCard key={index}>
+                                <Card className="glass-card h-full border-white/10 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-primary/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                                    <CardHeader className="relative z-10">
+                                        <div className="flex items-start justify-between mb-3">
+                                            <motion.div
+                                                whileHover={{ scale: 1.1, rotate: 5 }}
+                                                className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5"
+                                            >
+                                                <spot.icon className="h-6 w-6 text-primary" />
+                                            </motion.div>
+                                            <Badge variant="outline" className="border-primary/30 text-primary text-xs">
+                                                {spot.category}
+                                            </Badge>
+                                        </div>
+                                        <CardTitle className="text-xl group-hover:text-primary transition-colors">{spot.name}</CardTitle>
+                                        <p className="text-xs text-accent font-semibold">{spot.highlight}</p>
+                                    </CardHeader>
+                                    <CardContent className="relative z-10">
+                                        <CardDescription className="text-sm leading-relaxed">
+                                            {spot.description}
+                                        </CardDescription>
+                                    </CardContent>
+                                </Card>
+                            </SpotlightCard>
+                        ))}
+                    </motion.div>
+                </div>
+
+                {/* Photo Credit */}
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-white/70 z-10 opacity-70 hover:opacity-100 transition-opacity duration-300">
+                    <CameraIcon className="inline mr-1 h-4 w-4" /> June Famur Jr. via Pexels
+                </div>
+            </section>
+
             {/* Hotels Section */}
             <section className="py-16 lg:py-24 bg-muted/30 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.03]" />
@@ -360,24 +506,34 @@ const VenuePage = () => {
                     >
                         {hotels.map((hotel, index) => (
                             <SpotlightCard key={index}>
-                                <Card className="glass-card h-full border-white/10 hover:border-accent/40 hover:shadow-xl hover:shadow-accent/10 transition-all duration-300 relative overflow-hidden">
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-accent/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                                    <CardHeader className="relative z-10">
-                                        <div className="flex items-start justify-between mb-2">
-                                            <span className="text-3xl font-bold text-accent">{hotel.price}</span>
-                                            <Badge variant="outline" className="border-accent/30 text-accent text-xs">
-                                                {hotel.category}
-                                            </Badge>
-                                        </div>
-                                        <CardTitle className="text-xl group-hover:text-accent transition-colors">{hotel.name}</CardTitle>
-                                        <p className="text-xs text-muted-foreground font-medium mt-1">{hotel.amenities}</p>
-                                    </CardHeader>
-                                    <CardContent className="relative z-10">
-                                        <CardDescription className="text-sm leading-relaxed">
-                                            {hotel.description}
-                                        </CardDescription>
-                                    </CardContent>
-                                </Card>
+                                <a
+                                    href={`https://www.agoda.com/search?text=${encodeURIComponent(hotel.name)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block h-full"
+                                >
+                                    <Card className="glass-card h-full border-white/10 hover:border-accent/40 hover:shadow-xl hover:shadow-accent/10 transition-all duration-300 relative overflow-hidden group/card">
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-accent/5 to-transparent -translate-x-full group-hover/card:translate-x-full transition-transform duration-1000" />
+                                        <CardHeader className="relative z-10">
+                                            <div className="flex items-start justify-between mb-2">
+                                                <span className="text-3xl font-bold text-accent">{hotel.price}</span>
+                                                <Badge variant="outline" className="border-accent/30 text-accent text-xs">
+                                                    {hotel.category}
+                                                </Badge>
+                                            </div>
+                                            <CardTitle className="text-xl group-hover/card:text-accent transition-colors flex items-center gap-2">
+                                                {hotel.name}
+                                                <ArrowRight className="h-4 w-4 opacity-0 -translate-x-2 group-hover/card:opacity-100 group-hover/card:translate-x-0 transition-all duration-300" />
+                                            </CardTitle>
+                                            <p className="text-xs text-muted-foreground font-medium mt-1">{hotel.amenities}</p>
+                                        </CardHeader>
+                                        <CardContent className="relative z-10">
+                                            <CardDescription className="text-sm leading-relaxed">
+                                                {hotel.description}
+                                            </CardDescription>
+                                        </CardContent>
+                                    </Card>
+                                </a>
                             </SpotlightCard>
                         ))}
                     </motion.div>
@@ -392,9 +548,9 @@ const VenuePage = () => {
                         alt="Iloilo City"
                         className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-background/80" />
+                    <div className="absolute inset-0 bg-background/50" />
                 </div>
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] opacity-50" />
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] opacity-30" />
                 <div className="container mx-auto px-4 relative z-10">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
