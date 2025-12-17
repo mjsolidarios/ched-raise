@@ -1,15 +1,19 @@
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowRight, Calendar, MapPin } from "lucide-react"
 import { motion } from "framer-motion"
 import { Link } from "react-router-dom"
 import Typewriter from 'typewriter-effect';
+import Lottie from 'lottie-react';
 
 import { CountdownTimer } from "@/components/CountdownTimer"
+import raiseLogo from '@/animations/raise-logo.json';
 
 export function Hero() {
     const containerRef = useRef<HTMLElement>(null);
+    const logoRef = useRef<HTMLDivElement>(null);
+    const [animationKey, setAnimationKey] = useState(0);
 
     useEffect(() => {
         const container = containerRef.current;
@@ -25,6 +29,25 @@ export function Hero() {
 
         container.addEventListener("mousemove", handleMouseMove);
         return () => container.removeEventListener("mousemove", handleMouseMove);
+    }, []);
+
+    useEffect(() => {
+        const logo = logoRef.current;
+        if (!logo) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        setAnimationKey(prev => prev + 1);
+                    }
+                });
+            },
+            { threshold: 0.5 }
+        );
+
+        observer.observe(logo);
+        return () => observer.disconnect();
     }, []);
 
     return (
@@ -109,13 +132,19 @@ export function Hero() {
                 <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 mb-2 max-w-5xl mx-auto">
                     {/* Logo Side */}
                     <motion.div
+                        ref={logoRef}
                         initial={{ opacity: 0, scale: 0.8, x: -50 }}
                         animate={{ opacity: 1, scale: 1, x: 0 }}
                         transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
                         className="flex-shrink-0 relative"
                     >
                         <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
-                        <img src="/r-icon.svg" alt="R Icon" className="h-48 md:h-64 w-auto drop-shadow-[0_0_50px_rgba(8,52,159,0.5)] relative z-10" />
+                        <Lottie
+                            key={animationKey}
+                            animationData={raiseLogo}
+                            loop={false}
+                            className="h-48 md:h-64 w-auto drop-shadow-[0_0_50px_rgba(8,52,159,0.5)] relative z-10"
+                        />
                     </motion.div>
 
                     {/* Text Side */}
