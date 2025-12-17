@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Menu, LogOut } from "lucide-react"
+import { Menu, LogOut, LogIn } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useState, useEffect } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
@@ -150,8 +150,12 @@ export function Navbar() {
                         </div>
                     ) : (
                         <Link to="/login" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-                            <Button className="bg-accent text-accent-foreground hover:bg-accent/90 font-bold">
-                                Sign In / Register
+                            <Button className="relative overflow-hidden bg-gradient-to-r from-primary via-accent to-secondary text-white font-bold shadow-lg hover:shadow-xl hover:shadow-primary/50 transition-all duration-300 hover:scale-105 group">
+                                <span className="absolute inset-0 bg-gradient-to-r from-secondary via-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+                                <span className="relative flex items-center gap-2">
+                                    <LogIn className="w-4 h-4" />
+                                    Sign In / Register
+                                </span>
                             </Button>
                         </Link>
                     )}
@@ -184,8 +188,12 @@ export function Navbar() {
                                         window.scrollTo({ top: 0, behavior: 'smooth' });
                                         setIsOpen(false);
                                     }}>
-                                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90 w-full">
-                                            Sign In / Register
+                                        <Button className="relative overflow-hidden bg-gradient-to-r from-primary via-accent to-secondary text-white font-bold shadow-lg hover:shadow-xl hover:shadow-primary/50 transition-all duration-300 hover:scale-105 w-full group">
+                                            <span className="absolute inset-0 bg-gradient-to-r from-secondary via-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+                                            <span className="relative flex items-center justify-center gap-2">
+                                                <LogIn className="w-4 h-4" />
+                                                Sign In / Register
+                                            </span>
                                         </Button>
                                     </Link>
                                 )}
