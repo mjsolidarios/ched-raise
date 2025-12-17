@@ -150,8 +150,7 @@ export function Navbar() {
                         </div>
                     ) : (
                         <Link to="/login" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-                            <Button className="relative overflow-hidden bg-gradient-to-r from-primary via-accent to-secondary text-white font-bold shadow-lg hover:shadow-xl hover:shadow-primary/50 transition-all duration-300 hover:scale-105 group">
-                                <span className="absolute inset-0 bg-gradient-to-r from-secondary via-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+                            <Button className="bg-primary text-white font-bold shadow-lg hover:shadow-xl hover:shadow-primary/50 transition-all duration-300 hover:scale-105 group">
                                 <span className="relative flex items-center gap-2">
                                     <LogIn className="w-4 h-4" />
                                     Sign In / Register
@@ -188,8 +187,7 @@ export function Navbar() {
                                         window.scrollTo({ top: 0, behavior: 'smooth' });
                                         setIsOpen(false);
                                     }}>
-                                        <Button className="relative overflow-hidden bg-gradient-to-r from-primary via-accent to-secondary text-white font-bold shadow-lg hover:shadow-xl hover:shadow-primary/50 transition-all duration-300 hover:scale-105 w-full group">
-                                            <span className="absolute inset-0 bg-gradient-to-r from-secondary via-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+                                        <Button className="bg-primary text-white font-bold shadow-lg hover:shadow-xl hover:shadow-primary/50 transition-all duration-300 hover:scale-105 w-full group">
                                             <span className="relative flex items-center justify-center gap-2">
                                                 <LogIn className="w-4 h-4" />
                                                 Sign In / Register

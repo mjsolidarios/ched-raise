@@ -129,7 +129,7 @@ export function Hero() {
                     </Badge>
                 </motion.div>
 
-                <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 mb-2 max-w-5xl mx-auto">
+                <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-4 mb-2 max-w-5xl mx-auto">
                     {/* Logo Side */}
                     <motion.div
                         ref={logoRef}
@@ -153,15 +153,15 @@ export function Hero() {
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.2 }}
-                            className="text-4xl mt-8 md:text-5xl font-light text-white tracking-tight font-rubik"
-                        >&nbsp;CHED&nbsp;
+                            className="text-4xl md:text-5xl font-light text-white tracking-tight font-heading"
+                        >CHED
                         </motion.h2>
                         <motion.h1
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.3 }}
-                            className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-0 leading-tight py-2 relative font-rubik"
-                        >&nbsp;RAISE&nbsp;
+                            className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-0 leading-tight py-2 relative font-heading"
+                        >RAISE
                             <motion.span
                                 className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-cyan-400/20 to-teal-400/20 blur-2xl -z-10"
                                 animate={{ opacity: [0.3, 0.6, 0.3] }}
@@ -172,8 +172,8 @@ export function Hero() {
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.3 }}
-                            className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-4 leading-tight py-0 relative font-rubik"
-                        > <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#08349f] via-cyan-400 to-teal-400 animate-gradient">&nbsp;2026&nbsp;</span>
+                            className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-4 leading-tight py-0 relative font-heading"
+                        > <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#08349f] via-cyan-400 to-teal-400 animate-gradient pr-0 md:pr-4">2026</span>
                         </motion.h1>
                     </div>
                 </div>
@@ -238,13 +238,12 @@ export function Hero() {
                     className="flex flex-col sm:flex-row items-center justify-center gap-4"
                 >
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Button size="lg" className="bg-gradient-to-r from-primary to-accent text-white hover:from-primary/90 hover:to-accent/90 h-14 px-8 text-lg font-bold shadow-[0_0_40px_rgba(8,52,159,0.6)] hover:shadow-[0_0_50px_rgba(8,52,159,0.8)] transition-all relative overflow-hidden group" asChild>
+                        <Button size="lg" className="bg-primary text-white hover:bg-primary/90 h-14 px-8 text-lg font-bold shadow-[0_0_40px_rgba(8,52,159,0.6)] hover:shadow-[0_0_50px_rgba(8,52,159,0.8)] transition-all relative overflow-hidden group" asChild>
                             <Link to="/login">
                                 <span className="relative z-10 flex items-center">
                                     Register Now
                                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                                 </span>
-                                <span className="absolute inset-0 bg-gradient-to-r from-teal-400/20 to-cyan-400/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                             </Link>
                         </Button>
                     </motion.div>

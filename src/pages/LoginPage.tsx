@@ -84,7 +84,7 @@ const LoginPage = () => {
                     <CardContent className="space-y-6">
                         <Button
                             variant="outline"
-                            className="w-full h-12 text-base font-medium relative hover:bg-white/5 border-white/10 gap-3"
+                            className="w-full h-12 text-base font-medium relative hover:bg-white/5 border-white/10 gap-3 hover:text-white"
                             onClick={handleGoogleLogin}
                             disabled={loading}
                         >
@@ -157,7 +157,7 @@ const LoginPage = () => {
                                 </div>
                             )}
 
-                            <Button type="submit" className="w-full h-14 text-lg font-bold bg-gradient-to-r from-primary to-accent text-white hover:from-primary/90 hover:to-accent/90 mt-2 shadow-[0_0_40px_rgba(8,52,159,0.6)] hover:shadow-[0_0_50px_rgba(8,52,159,0.8)] transition-all" disabled={loading}>
+                            <Button type="submit" className="w-full h-14 text-lg font-bold bg-primary text-white hover:bg-primary/90 mt-2 shadow-[0_0_40px_rgba(8,52,159,0.6)] hover:shadow-[0_0_50px_rgba(8,52,159,0.8)] transition-all" disabled={loading}>
                                 {loading ? (
                                     <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Please wait...</>
                                 ) : (isLogin ? (
