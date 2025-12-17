@@ -173,7 +173,7 @@ export function Hero() {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.3 }}
                             className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-4 leading-tight py-0 relative font-heading"
-                        > <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#08349f] via-cyan-400 to-teal-400 animate-gradient pr-0 md:pr-4">2026</span>
+                        > <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#08349f] via-cyan-400 to-teal-400 animate-gradient px-4 sm:pr-4 sm:pl-0 md:pr-4 md:pl-0 lg:pr-4 lg:pl-0">2026</span>
                         </motion.h1>
                     </div>
                 </div>
