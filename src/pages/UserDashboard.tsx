@@ -28,7 +28,7 @@ import {
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { onAuthStateChanged, type User } from 'firebase/auth';
-import { Loader2, CalendarDays, Mail, Phone, CheckCircle2, XCircle, Clock, Pencil } from 'lucide-react';
+import { Loader2, CalendarDays, Mail, Phone, CheckCircle2, XCircle, Clock, Pencil, InfoIcon, EditIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { RegistrationProgress } from '@/components/RegistrationProgress';
 import { SchoolAutocomplete } from '@/components/SchoolAutocomplete';
@@ -369,7 +369,9 @@ const UserDashboard = () => {
                 </div>
 
                 <RegistrationProgress status={registration ? registration.status : null} />
-
+                <div className="flex items-center justify-center">
+                    <p className="text-sm sm:text-base text-muted-foreground mt-1 flex items-center"><InfoIcon className="w-4 h-4 mr-2" /> Tap the card to view your code or <EditIcon className="w-4 h-4 mx-2" /> to update your registration details.</p>
+                </div>                
                 <motion.div
                     variants={container}
                     initial="hidden"
@@ -482,6 +484,7 @@ const UserDashboard = () => {
                             </Dialog>
                         </motion.div>
                     )}
+
 
                     {/* Main Status / Form Card */}
                     <motion.div variants={item} className="lg:col-span-2 space-y-6">
