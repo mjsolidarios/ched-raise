@@ -9,6 +9,7 @@ import Lottie from 'lottie-react';
 
 import { CountdownTimer } from "@/components/CountdownTimer"
 import raiseLogo from '@/animations/raise-logo.json';
+import { TextDecode } from "./TextDecode"
 
 export function Hero() {
     const containerRef = useRef<HTMLElement>(null);
@@ -148,20 +149,32 @@ export function Hero() {
                     </motion.div>
 
                     {/* Text Side */}
-                    <div className="flex flex-col text-center md:text-left items-center md:items-start">
+                    <div className="w-[200px] flex flex-col text-center md:text-left items-center md:items-start">
                         <motion.h2
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.2 }}
                             className="text-4xl md:text-5xl font-light text-white tracking-tight font-heading"
-                        >CHED
+                        >
+                            <TextDecode
+                                text="CHED"
+                                delay={200}
+                                duration={500}
+                                trigger={animationKey}
+                            />
                         </motion.h2>
                         <motion.h1
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.3 }}
                             className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-0 leading-tight py-2 relative font-heading"
-                        >RAISE
+                        >
+                            <TextDecode
+                                text="RAISE"
+                                delay={400}
+                                duration={700}
+                                trigger={animationKey}
+                            />
                             <motion.span
                                 className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-cyan-400/20 to-teal-400/20 blur-2xl -z-10"
                                 animate={{ opacity: [0.3, 0.6, 0.3] }}
@@ -173,7 +186,14 @@ export function Hero() {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.3 }}
                             className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-4 leading-tight py-0 relative font-heading"
-                        > <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#08349f] via-cyan-400 to-teal-400 animate-gradient px-4 sm:pr-4 sm:pl-0 md:pr-4 md:pl-0 lg:pr-4 lg:pl-0">2026</span>
+                        > <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#08349f] via-cyan-400 to-teal-400 animate-gradient px-4 sm:pr-4 sm:pl-0 md:pr-4 md:pl-0 lg:pr-4 lg:pl-0">
+                                <TextDecode
+                                    text="2026"
+                                    delay={800}
+                                    duration={600}
+                                    trigger={animationKey}
+                                />
+                            </span>
                         </motion.h1>
                     </div>
                 </div>
@@ -260,6 +280,6 @@ export function Hero() {
                     </motion.div>
                 </motion.div>
             </div>
-        </section>
+        </section >
     )
 }
