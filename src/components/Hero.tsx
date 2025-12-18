@@ -33,9 +33,6 @@ export function Hero() {
     }, []);
 
     useEffect(() => {
-        const logo = logoRef.current;
-        if (!logo) return;
-
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
@@ -44,11 +41,22 @@ export function Hero() {
                     }
                 });
             },
-            { threshold: 0.5 }
+            { threshold: 0.1 } // Trigger even if only a small part is visible
         );
 
-        observer.observe(logo);
+        if (containerRef.current) observer.observe(containerRef.current);
         return () => observer.disconnect();
+    }, []);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY === 0) {
+                setAnimationKey(prev => prev + 1);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
     return (
