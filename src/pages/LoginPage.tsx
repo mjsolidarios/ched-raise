@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Mail, Lock, LogIn, Loader2, AlertCircle, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const LoginPage = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -15,6 +16,7 @@ const LoginPage = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [privacyPolicyAccepted, setPrivacyPolicyAccepted] = useState(false);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -24,6 +26,12 @@ const LoginPage = () => {
         e.preventDefault();
         setLoading(true);
         setError('');
+
+        if (!isLogin && !privacyPolicyAccepted) {
+            setError('Please accept the privacy policy to create an account.');
+            setLoading(false);
+            return;
+        }
 
         try {
             if (isLogin) {
@@ -149,6 +157,17 @@ const LoginPage = () => {
                                     />
                                 </div>
                             </div>
+                            {!isLogin && (
+                                <div className="flex items-center space-x-2">
+                                    <Checkbox id="privacy-policy" checked={privacyPolicyAccepted} onCheckedChange={(checked: boolean) => setPrivacyPolicyAccepted(checked)} />
+                                    <label
+                                        htmlFor="privacy-policy"
+                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                    >
+                                        I agree to the <Link to="/privacy-policy" className="text-primary hover:underline">Privacy Policy</Link>
+                                    </label>
+                                </div>
+                            )}
 
                             {error && (
                                 <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm flex items-center gap-2 justify-center">

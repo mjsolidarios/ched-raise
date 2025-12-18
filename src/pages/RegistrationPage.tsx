@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Link } from 'react-router-dom';
 
 const RegistrationPage = () => {
@@ -19,6 +20,7 @@ const RegistrationPage = () => {
     });
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState<'idle' | 'success' | 'error' | 'exists'>('idle');
+    const [privacyPolicyAccepted, setPrivacyPolicyAccepted] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -26,6 +28,12 @@ const RegistrationPage = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!privacyPolicyAccepted) {
+            alert('Please accept the privacy policy to proceed.');
+            return;
+        }
+
         setLoading(true);
         setStatus('idle');
 
@@ -108,6 +116,15 @@ const RegistrationPage = () => {
                             <div className="space-y-2">
                                 <Label htmlFor="schoolAffiliation">Company / Institution</Label>
                                 <Input id="schoolAffiliation" name="schoolAffiliation" value={formData.schoolAffiliation} onChange={handleChange} placeholder="University of the Philippines" />
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <Checkbox id="privacy-policy" checked={privacyPolicyAccepted} onCheckedChange={(checked) => setPrivacyPolicyAccepted(checked as boolean)} />
+                                <label
+                                    htmlFor="privacy-policy"
+                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                >
+                                    I agree to the <Link to="/privacy-policy" className="text-primary hover:underline">Privacy Policy</Link>
+                                </label>
                             </div>
 
                             {status === 'exists' && <p className="text-destructive text-sm text-center">Reference with this email already exists.</p>}

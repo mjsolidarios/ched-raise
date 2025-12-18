@@ -261,14 +261,14 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
 
             <div className="relative flex flex-col h-full">
               <div className="flex items-start justify-between">
-                <div className="leading-tight">
-                  <p className="text-xs sm:text-sm uppercase tracking-wider text-muted-foreground font-semibold">MY REGISTRATION CARD</p>
+                <div className="flex items-center gap-2 content-center">
                   <img
                     src="/logo-light.svg"
                     alt="RAISE logo"
-                    className="h-6 sm:h-7 mt-1"
+                    className="h-6 sm:h-7"
                     draggable={false}
                   />
+                  <p className="mt-2 text-xl sm:text-2xl tracking-wider text-muted-foreground font-semibold">Card</p>
                 </div>
               </div>
 
@@ -285,8 +285,8 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
                   <p className="font-mono text-sm sm:text-2xl">01/30</p>
                 </div>
                 <div className="col-span-2">
-                  <p className="uppercase tracking-wider text-muted-foreground font-semibold">Registration ID</p>
-                  <p className="font-mono text-sm sm:text-2xl break-all">{registration.ticketCode || registration.id}</p>
+                  <p className="uppercase tracking-wider text-muted-foreground font-semibold">Email</p>
+                  <p className="font-mono text-sm sm:text-2xl break-all">{registration.email  || ""}</p>
                 </div>
               </div>
 
