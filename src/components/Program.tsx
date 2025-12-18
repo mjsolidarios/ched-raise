@@ -1,9 +1,11 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Clock } from "lucide-react"
+import { Clock, ArrowRight } from "lucide-react"
 import { motion } from "framer-motion"
 import { useRef } from "react"
+import { Button } from "@/components/ui/button"
+import { Link } from "react-router-dom"
 
 export function Program() {
     return (
@@ -103,6 +105,22 @@ export function Program() {
                         />
                     </TabsContent>
                 </Tabs>
+
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.5 }}
+                    className="flex justify-center mt-12"
+                >
+                    <Button asChild size="lg" className="bg-gradient-to-r from-primary to-accent text-white hover:from-primary/90 hover:to-accent/90 h-14 px-10 text-lg font-bold shadow-[0_0_40px_rgba(8,52,159,0.4)] hover:shadow-[0_0_50px_rgba(8,52,159,0.6)] transition-all relative overflow-hidden group rounded-xl">
+                        <Link to="/agenda">
+                            <span className="relative z-10 flex items-center">
+                                View Full Agenda <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                            </span>
+                        </Link>
+                    </Button>
+                </motion.div>
             </div>
         </section>
     )

@@ -42,6 +42,10 @@ const VenuePage = () => {
         return () => section.removeEventListener("mousemove", handleMouseMove);
     }, []);
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     const venueHighlights = [
         {
             name: 'Grand Ballroom',

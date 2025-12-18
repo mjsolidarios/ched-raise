@@ -61,7 +61,10 @@ export function Navbar() {
                         ? "bg-primary text-white shadow-none ring-0 outline-none"
                         : "text-slate-300 hover:text-white hover:bg-white/5"
                 )}
-                onClick={() => setIsOpen(false)}
+                onClick={() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    setIsOpen(false);
+                }}
             >
                 {children}
             </Link>
