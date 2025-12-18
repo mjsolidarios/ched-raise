@@ -118,7 +118,7 @@ const RegistrationPage = () => {
                                 <Input id="schoolAffiliation" name="schoolAffiliation" value={formData.schoolAffiliation} onChange={handleChange} placeholder="University of the Philippines" />
                             </div>
                             <div className="flex items-center space-x-2">
-                                <Checkbox id="privacy-policy" checked={privacyPolicyAccepted} onCheckedChange={(checked) => setPrivacyPolicyAccepted(checked as boolean)} />
+                                <Checkbox id="privacy-policy" checked={privacyPolicyAccepted} onCheckedChange={(checked: boolean | "indeterminate") => setPrivacyPolicyAccepted(checked === true)} />
                                 <label
                                     htmlFor="privacy-policy"
                                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
