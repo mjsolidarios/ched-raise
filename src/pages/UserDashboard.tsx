@@ -247,9 +247,9 @@ const UserDashboard = () => {
 
     const getStatusIcon = (status: string) => {
         switch (status) {
-            case 'confirmed': return <CheckCircle2 className="h-10 w-10 sm:h-12 sm:w-12 text-emerald-500 mb-2" />;
-            case 'rejected': return <XCircle className="h-10 w-10 sm:h-12 sm:w-12 text-destructive mb-2" />;
-            default: return <Clock className="h-10 w-10 sm:h-12 sm:w-12 text-amber-500 mb-2" />;
+            case 'confirmed': return <CheckCircle2 className="h-8 w-8 sm:h-10 sm:w-10 text-emerald-500 mb-2" />;
+            case 'rejected': return <XCircle className="h-8 w-8 sm:h-10 sm:w-10 text-destructive mb-2" />;
+            default: return <Clock className="h-8 w-8 sm:h-10 sm:w-10 text-amber-500 mb-2" />;
         }
     };
 
@@ -371,7 +371,7 @@ const UserDashboard = () => {
                 <RegistrationProgress status={registration ? registration.status : null} />
                 <div className="flex items-center justify-center">
                     <p className="text-sm sm:text-base text-muted-foreground mt-1 flex items-center"><InfoIcon className="w-4 h-4 mr-2" /> Tap the card to view your code or <EditIcon className="w-4 h-4 mx-2" /> to update your registration details.</p>
-                </div>                
+                </div>
                 <motion.div
                     variants={container}
                     initial="hidden"
@@ -505,17 +505,17 @@ const UserDashboard = () => {
                                 {registration ? (
                                     <div className="space-y-6">
                                         {/* Status Display */}
-                                        <div className="flex flex-col items-center justify-center p-4 sm:p-8 bg-background/50 rounded-xl border border-border/50 text-center">
+                                        <div className="flex flex-col items-center justify-center p-3 sm:p-5 bg-background/50 rounded-xl border border-border/50 text-center">
                                             {getStatusIcon(registration.status)}
-                                            <h3 className="text-lg sm:text-xl font-semibold mb-2 capitalize">
+                                            <h3 className="text-lg sm:text-xl font-semibold mb-1 capitalize">
                                                 Registration {registration.status}
                                             </h3>
-                                            <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mx-auto mb-5 sm:mb-6">
+                                            <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mx-auto mb-3 sm:mb-4">
                                                 {registration.status === 'pending' && "We have received your details. Our team is reviewing your application."}
                                                 {registration.status === 'confirmed' && "You are all set! Present your QR code or ID at the venue entrance."}
                                                 {registration.status === 'rejected' && "Unfortunately, we cannot accommodate your registration at this time. Please check your email for details."}
                                             </p>
-                                            <div className="flex flex-col gap-4">
+                                            <div className="flex flex-col gap-2">
                                                 <Badge variant="outline" className={`text-sm sm:text-base px-4 sm:px-6 py-2 h-auto mx-auto ${getStatusColor(registration.status)}`}>
                                                     {registration.status.toUpperCase()}
                                                 </Badge>

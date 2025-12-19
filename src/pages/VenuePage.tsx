@@ -632,7 +632,7 @@ const VenuePage = () => {
                             whileTap={{ scale: 0.95 }}
                         >
                             <Button asChild size="lg" className="bg-gradient-to-r from-primary to-accent text-white hover:from-primary/90 hover:to-accent/90 h-14 px-10 text-lg font-bold shadow-[0_0_40px_rgba(8,52,159,0.6)] hover:shadow-[0_0_50px_rgba(8,52,159,0.8)] transition-all relative overflow-hidden group">
-                                <Link to="/login">
+                                <Link to="/login" onClick={() => window.scrollTo(0, 0)}>
                                     <span className="relative z-10 flex items-center">
                                         Register Now <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                                     </span>

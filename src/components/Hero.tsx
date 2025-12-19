@@ -267,7 +267,7 @@ export function Hero() {
                 >
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Button size="lg" className="bg-primary text-white hover:bg-primary/90 h-14 px-8 text-lg font-bold shadow-[0_0_40px_rgba(8,52,159,0.6)] hover:shadow-[0_0_50px_rgba(8,52,159,0.8)] transition-all relative overflow-hidden group" asChild>
-                            <Link to="/login">
+                            <Link to="/login" onClick={() => window.scrollTo(0, 0)}>
                                 <span className="relative z-10 flex items-center">
                                     Register Now
                                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
