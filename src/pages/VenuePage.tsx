@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import { useRef, useEffect } from 'react';
 import { Footer } from '@/components/Footer';
+import { ProgressiveImage } from '@/components/ui/ProgressiveImage';
 
 const VenuePage = () => {
     const heroRef = useRef<HTMLDivElement>(null);
@@ -246,10 +247,11 @@ const VenuePage = () => {
             <div ref={heroRef} className="relative overflow-hidden group/hero">
                 {/* Background Image */}
                 <div className="absolute inset-0">
-                    <img
+                    <ProgressiveImage
                         src="/icc.webp"
                         alt="Iloilo Convention Center"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full"
+                        priority={true}
                     />
                     <div className="absolute inset-0 bg-gradient-to-br from-background/92 via-background/85 to-background/92" />
                     {/* Photo Credit */}
@@ -356,10 +358,10 @@ const VenuePage = () => {
             {/* Tourist Spots Section */}
             <section className="py-16 lg:py-24 relative overflow-hidden group/discover">
                 <div className="absolute inset-0">
-                    <img
+                    <ProgressiveImage
                         src="/sail.webp"
                         alt="Iloilo Paraw Regatta Sails"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full"
                     />
                     <div className="absolute inset-0 bg-background/50" />
                 </div>
@@ -548,10 +550,10 @@ const VenuePage = () => {
             {/* Travel Tips Section */}
             <section className="py-16 lg:py-24 relative overflow-hidden group/tips">
                 <div className="absolute inset-0">
-                    <img
+                    <ProgressiveImage
                         src="/iloilo.webp"
                         alt="Iloilo City"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full"
                     />
                     <div className="absolute inset-0 bg-background/50" />
                 </div>

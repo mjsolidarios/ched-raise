@@ -45,14 +45,14 @@ export function RegistrationProgress({ status }: RegistrationProgressProps) {
     const getStepStyles = (buttonStep: typeof steps[0]) => {
         // Special case for Confirm and Finish steps when completed/current to be green
         if ((buttonStep.id === 'confirm' || buttonStep.id === 'finish') && (buttonStep.status === 'completed' || buttonStep.status === 'current')) {
-            return "bg-green-500 border-green-500 text-white ring-green-500/20";
+            return "bg-green-500 border-green-500 text-white";
         }
 
         switch (buttonStep.status) {
             case 'completed':
                 return "bg-primary text-primary-foreground border-primary";
             case 'current':
-                return "bg-background border-primary text-primary ring-2 ring-primary/20 ring-offset-2";
+                return "bg-background border-primary text-primary";
             case 'error':
                 return "bg-destructive text-destructive-foreground border-destructive";
             default:
@@ -83,7 +83,23 @@ export function RegistrationProgress({ status }: RegistrationProgressProps) {
                             <div className="relative flex flex-col items-center group">
                                 <motion.div
                                     initial={false}
-                                    animate={{ scale: step.status === 'current' ? 1.1 : 1 }}
+                                    animate={step.status === 'current' ? {
+                                        scale: 1.1,
+                                        boxShadow: (step.id === 'confirm' || step.id === 'finish')
+                                            ? ["0 0 10px rgba(34, 197, 94, 0.4)", "0 0 25px rgba(34, 197, 94, 0.7)", "0 0 10px rgba(34, 197, 94, 0.4)"]
+                                            : ["0 0 10px hsl(var(--primary) / 0.3)", "0 0 25px hsl(var(--primary) / 0.6)", "0 0 10px hsl(var(--primary) / 0.3)"]
+                                    } : {
+                                        scale: 1,
+                                        boxShadow: "0 0 0px rgba(0,0,0,0)"
+                                    }}
+                                    transition={{
+                                        boxShadow: {
+                                            duration: 2,
+                                            repeat: Infinity,
+                                            ease: "easeInOut"
+                                        },
+                                        scale: { duration: 0.2 }
+                                    }}
                                     className={cn(
                                         "relative z-10 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 transition-all duration-300",
                                         !isIconOnly && "rounded-full border-2 shadow-sm",
