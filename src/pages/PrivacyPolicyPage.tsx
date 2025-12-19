@@ -30,7 +30,6 @@ const PrivacyPolicyPage = () => {
                             </p>
                             <ul className="list-disc pl-6 space-y-2">
                                 <li><strong>Personal Information:</strong> Names, email addresses, phone numbers, institutional affiliations, and job titles.</li>
-                                <li><strong>Log Data:</strong> Information about your device, browser, IP address, and how you interact with our website.</li>
                             </ul>
                         </section>
 
@@ -72,7 +71,7 @@ const PrivacyPolicyPage = () => {
                         <section>
                             <h2 className="text-2xl font-semibold text-white mb-4">6. Contact Us</h2>
                             <p>
-                                If you have questions or comments about this policy, you may email us at <a href="mailto:privacy@ched.gov.ph" className="text-primary hover:underline">privacy@ched.gov.ph</a> or contact the Commission on Higher Education directly.
+                                If you have questions or comments about this policy, you may email us at <a href="mailto:helpdesk.chedraise@gmail.com" className="text-primary hover:underline">helpdesk.chedraise@gmail.com</a> or contact the Commission on Higher Education directly.
                             </p>
                         </section>
                     </div>

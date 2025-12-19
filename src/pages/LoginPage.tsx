@@ -9,6 +9,8 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Mail, Lock, LogIn, Loader2, AlertCircle, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Checkbox } from '@/components/ui/checkbox';
+import Lottie from 'lottie-react';
+import logoAnimation from '@/animations/raise-logo.json';
 
 const LoginPage = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -79,8 +81,8 @@ const LoginPage = () => {
             >
                 <Card className="mt-10 w-full glass-card border-white/10 relative z-10 shadow-2xl">
                     <CardHeader className="text-center space-y-2 pb-6">
-                        <div className="mx-auto w-24 h-24 rounded-2xl flex items-center justify-center p-4">
-                            <img src="/r-icon.svg" alt="CHED RAISE Logo" className="w-full h-full object-contain" />
+                        <div className="mx-auto w-24 h-24 flex items-center justify-center">
+                            <Lottie animationData={logoAnimation} loop={false} className="w-full h-full" />
                         </div>
                         <CardTitle className="text-3xl font-bold tracking-tight">
                             {isLogin ? 'RAISE Up!' : 'RAISE Go!'}
@@ -187,13 +189,16 @@ const LoginPage = () => {
                             </Button>
                         </form>
                     </CardContent>
-                    <CardFooter className="justify-center border-t border-white/5 py-4">
+                    <CardFooter className="flex-col gap-2 justify-center border-t border-white/5 py-6">
                         <p className="text-sm text-muted-foreground">
                             {isLogin ? "Don't have an account?" : "Already have an account?"}
                             <Button variant="link" onClick={() => setIsLogin(!isLogin)} className="px-1.5 font-semibold text-primary hover:text-primary/80">
                                 {isLogin ? "Sign up" : "Sign in"}
                             </Button>
                         </p>
+                        <Link to="/privacy-policy" className="text-xs text-muted-foreground/60 hover:text-primary transition-colors">
+                            Privacy Policy
+                        </Link>
                     </CardFooter>
                 </Card>
             </motion.div>

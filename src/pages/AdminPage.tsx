@@ -1,16 +1,19 @@
 import { useState, useEffect, useMemo } from 'react';
 import { db, auth } from '@/lib/firebase';
 import { collection, query, onSnapshot, doc, updateDoc } from 'firebase/firestore';
-import { onAuthStateChanged, signInWithEmailAndPassword, type User } from 'firebase/auth';
+import { onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, type User } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Users, Clock, CheckCircle2, XCircle, Search, Loader2, Shield } from 'lucide-react';
+import { Users, Clock, CheckCircle2, XCircle, Search, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import Lottie from 'lottie-react';
+import logoAnimation from '@/animations/raise-logo.json';
 
 
 
@@ -105,6 +108,19 @@ const AdminPage = () => {
         }
     };
 
+    const handleGoogleLogin = async () => {
+        setLoading(true);
+        const provider = new GoogleAuthProvider();
+        try {
+            await signInWithPopup(auth, provider);
+        } catch (err: any) {
+            console.error("Google Auth error:", err);
+            alert(err.message || 'Google Sign-In failed');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const updateStatus = async (id: string, newStatus: string) => {
         try {
             const ref = doc(db, 'registrations', id);
@@ -170,7 +186,7 @@ const AdminPage = () => {
 
     if (!user) {
         return (
-            <div className="container mx-auto px-4 py-10 flex justify-center items-center min-h-[calc(100vh-64px)]">
+            <div className="container mt-10 mx-auto px-4 py-10 flex justify-center items-center min-h-[calc(100vh-64px)]">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -179,25 +195,66 @@ const AdminPage = () => {
                 >
                     <Card className="glass-card border-primary/20 shadow-2xl">
                         <CardHeader className="text-center pb-2">
-                            <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-2">
-                                <Shield className="h-6 w-6 text-primary" />
+                            <div className="mx-auto w-20 h-20 flex items-center justify-center mb-2">
+                                <Lottie animationData={logoAnimation} loop={false} className="w-full h-full" />
                             </div>
                             <CardTitle>Admin Portal</CardTitle>
-                            <CardDescription>Secure access for specialized staff</CardDescription>
+                            <CardDescription>Manage RAISE Registrations</CardDescription>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="space-y-6">
+                            <Button
+                                variant="outline"
+                                className="w-full h-12 text-base font-medium relative hover:bg-white/5 border-white/10 gap-3 hover:text-white mt-4"
+                                onClick={handleGoogleLogin}
+                                disabled={loading}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" className="h-5 w-5">
+                                    <path
+                                        fill="#4285F4"
+                                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                                    />
+                                    <path
+                                        fill="#34A853"
+                                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                                    />
+                                    <path
+                                        fill="#FBBC05"
+                                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+                                    />
+                                    <path
+                                        fill="#EA4335"
+                                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                                    />
+                                </svg>
+                                Continue with Google
+                            </Button>
+
+                            <div className="relative">
+                                <div className="absolute inset-0 flex items-center">
+                                    <span className="w-full border-t border-white/10" />
+                                </div>
+                                <div className="relative flex justify-center text-xs uppercase">
+                                    <span className="bg-[#0b1221] px-2 text-muted-foreground border border-white/10 rounded-full">Or continue with email</span>
+                                </div>
+                            </div>
+
                             <form onSubmit={handleLogin} className="space-y-4">
                                 <div className="space-y-2">
                                     <Label>Email</Label>
-                                    <Input type="email" value={loginEmail} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLoginEmail(e.target.value)} required placeholder="admin@ched.gov.ph" className="bg-background/50" />
+                                    <Input type="email" value={loginEmail} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLoginEmail(e.target.value)} required placeholder="admin@ched.gov.ph" className="bg-background/50 h-11" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Password</Label>
-                                    <Input type="password" value={loginPassword} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLoginPassword(e.target.value)} required className="bg-background/50" />
+                                    <Input type="password" value={loginPassword} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLoginPassword(e.target.value)} required className="bg-background/50 h-11" />
                                 </div>
-                                <Button type="submit" className="w-full bg-primary hover:bg-primary/90">Sign In</Button>
+                                <Button type="submit" className="w-full h-11 bg-primary hover:bg-primary/90 mt-2 shadow-[0_0_20px_rgba(8,52,159,0.3)] hover:shadow-[0_0_30px_rgba(8,52,159,0.5)] transition-all">Sign In</Button>
                             </form>
                         </CardContent>
+                        <CardFooter className="justify-center border-t border-white/5 py-4">
+                            <Link to="/privacy-policy" className="text-xs text-muted-foreground/60 hover:text-primary transition-colors">
+                                Privacy Policy
+                            </Link>
+                        </CardFooter>
                     </Card>
                 </motion.div>
             </div>

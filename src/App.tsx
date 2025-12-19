@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Chatbot } from './components/Chatbot';
+import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Suspense, lazy } from 'react';
 // import AdminPage from './pages/AdminPage'; // Direct import to fix potential lazy loading issue
@@ -27,6 +28,7 @@ const PageLoader = () => (
 const App = () => {
     return (
         <Router>
+            <ScrollToTop />
             <div className="min-h-screen bg-background text-foreground font-sans selection:bg-accent selection:text-white">
                 <Navbar />
                 <Chatbot />
