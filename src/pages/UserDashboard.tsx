@@ -35,6 +35,7 @@ import { SchoolAutocomplete } from '@/components/SchoolAutocomplete';
 import { RegistrationBusinessCard } from '@/components/RegistrationBusinessCard';
 import { toTitleCase } from '@/lib/utils/format';
 import { generateTicketCode } from '@/lib/raiseCodeUtils';
+import { Link } from 'react-router-dom';
 
 const UserDashboard = () => {
     const [user, setUser] = useState<User | null>(auth.currentUser);
@@ -652,6 +653,12 @@ const UserDashboard = () => {
                         </Card>
                     </motion.div>
                 </motion.div>
+
+                <div className="mt-12 pt-8 border-t border-border/40 text-center">
+                    <Link to="/privacy-policy" className="text-xs text-muted-foreground/60 hover:text-primary transition-colors">
+                        Privacy Policy
+                    </Link>
+                </div>
             </div>
         </div>
     );

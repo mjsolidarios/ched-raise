@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import { useRef, useEffect } from 'react';
+import { Footer } from '@/components/Footer';
 
 const VenuePage = () => {
     const heroRef = useRef<HTMLDivElement>(null);
@@ -643,6 +644,7 @@ const VenuePage = () => {
                     </motion.div>
                 </div>
             </section>
+            <Footer />
         </div>
     );
 };
