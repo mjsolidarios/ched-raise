@@ -1,20 +1,15 @@
-import { useRef, useEffect, useState } from "react"
+import { useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowRight, Calendar, MapPin } from "lucide-react"
 import { motion } from "framer-motion"
 import { Link } from "react-router-dom"
 import Typewriter from 'typewriter-effect';
-import Lottie from 'lottie-react';
 
 import { CountdownTimer } from "@/components/CountdownTimer"
-import raiseLogo from '@/animations/raise-logo.json';
-import { TextDecode } from "./TextDecode"
 
 export function Hero() {
     const containerRef = useRef<HTMLElement>(null);
-    const logoRef = useRef<HTMLDivElement>(null);
-    const [animationKey, setAnimationKey] = useState(0);
 
     useEffect(() => {
         const container = containerRef.current;
@@ -30,33 +25,6 @@ export function Hero() {
 
         container.addEventListener("mousemove", handleMouseMove);
         return () => container.removeEventListener("mousemove", handleMouseMove);
-    }, []);
-
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        setAnimationKey(prev => prev + 1);
-                    }
-                });
-            },
-            { threshold: 0.1 } // Trigger even if only a small part is visible
-        );
-
-        if (containerRef.current) observer.observe(containerRef.current);
-        return () => observer.disconnect();
-    }, []);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            if (window.scrollY === 0) {
-                setAnimationKey(prev => prev + 1);
-            }
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
     return (
