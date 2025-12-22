@@ -138,73 +138,7 @@ export function Hero() {
                     </Badge>
                 </motion.div>
 
-                <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-4 mb-2 max-w-5xl mx-auto">
-                    {/* Logo Side */}
-                    <motion.div
-                        ref={logoRef}
-                        initial={{ opacity: 0, scale: 0.8, x: -50 }}
-                        animate={{ opacity: 1, scale: 1, x: 0 }}
-                        transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
-                        className="flex-shrink-0 relative"
-                    >
-                        <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
-                        <Lottie
-                            key={animationKey}
-                            animationData={raiseLogo}
-                            loop={false}
-                            className="h-48 md:h-64 w-auto drop-shadow-[0_0_50px_rgba(8,52,159,0.5)] relative z-10"
-                        />
-                    </motion.div>
-
-                    {/* Text Side */}
-                    <div className="w-[200px] flex flex-col text-center md:text-left items-center md:items-start">
-                        <motion.h2
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.5, delay: 0.2 }}
-                            className="text-4xl md:text-5xl font-light text-white tracking-tight font-heading"
-                        >
-                            <TextDecode
-                                text="CHED"
-                                delay={200}
-                                duration={500}
-                                trigger={animationKey}
-                            />
-                        </motion.h2>
-                        <motion.h1
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.5, delay: 0.3 }}
-                            className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-0 leading-tight py-2 relative font-heading"
-                        >
-                            <TextDecode
-                                text="RAISE"
-                                delay={400}
-                                duration={700}
-                                trigger={animationKey}
-                            />
-                            <motion.span
-                                className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-cyan-400/20 to-teal-400/20 blur-2xl -z-10"
-                                animate={{ opacity: [0.3, 0.6, 0.3] }}
-                                transition={{ duration: 3, repeat: Infinity }}
-                            />
-                        </motion.h1>
-                        <motion.h1
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.5, delay: 0.3 }}
-                            className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-4 leading-tight py-0 relative font-heading"
-                        > <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#08349f] via-cyan-400 to-teal-400 animate-gradient px-4 sm:pr-4 sm:pl-0 md:pr-4 md:pl-0 lg:pr-4 lg:pl-0">
-                                <TextDecode
-                                    text="2026"
-                                    delay={800}
-                                    duration={600}
-                                    trigger={animationKey}
-                                />
-                            </span>
-                        </motion.h1>
-                    </div>
-                </div>
+                <img src="/logo-dark.svg" alt="CHED RAISE" className="w-128 mb-12" />
 
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}

@@ -268,7 +268,6 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
                     className="h-6 sm:h-7"
                     draggable={false}
                   />
-                  <p className="mt-2 text-xl sm:text-2xl tracking-wider text-muted-foreground font-semibold">Card</p>
                 </div>
               </div>
 
@@ -286,7 +285,7 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
                 </div>
                 <div className="col-span-2">
                   <p className="uppercase tracking-wider text-muted-foreground font-semibold">Email</p>
-                  <p className="font-mono text-sm sm:text-2xl break-all">{registration.email  || ""}</p>
+                  <p className="font-mono text-sm sm:text-2xl break-all">{registration.email || ""}</p>
                 </div>
               </div>
 
