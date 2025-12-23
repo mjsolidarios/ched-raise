@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Users, Clock, CheckCircle2, XCircle, Search, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { UserAvatar } from '@/components/UserAvatar';
 import {
     Dialog,
     DialogContent,
@@ -416,8 +417,13 @@ const AdminPage = () => {
                                             filteredRegistrations.map((reg) => (
                                                 <TableRow key={reg.id} className="hover:bg-muted/30 transition-colors">
                                                     <TableCell>
-                                                        <div className="font-medium">{formatFullName(reg.lastName, reg.firstName, reg.middleName)}</div>
-                                                        <div className="text-xs text-muted-foreground/70 font-mono">{reg.id.slice(0, 8)}...</div>
+                                                        <div className="flex items-center gap-3">
+                                                            <UserAvatar seed={reg.avatarSeed || reg.ticketCode || reg.id} size={40} className="shadow-sm" color={reg.avatarColor} />
+                                                            <div>
+                                                                <div className="font-medium">{formatFullName(reg.lastName, reg.firstName, reg.middleName)}</div>
+                                                                <div className="text-xs text-muted-foreground/70 font-mono">{reg.id.slice(0, 8)}...</div>
+                                                            </div>
+                                                        </div>
                                                     </TableCell>
                                                     <TableCell>
                                                         <div className="text-sm">{reg.schoolAffiliation || 'N/A'}</div>

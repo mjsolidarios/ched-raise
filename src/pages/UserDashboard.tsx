@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from 'react';
+import { Colorful } from '@uiw/react-color';
 import { db, auth } from '@/lib/firebase';
 import { collection, addDoc, deleteDoc, updateDoc, doc, serverTimestamp, query, where, onSnapshot, getDocs } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
@@ -28,7 +29,7 @@ import {
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { onAuthStateChanged, type User } from 'firebase/auth';
-import { Loader2, CalendarDays, Mail, Phone, CheckCircle2, XCircle, Clock, Pencil, InfoIcon, EditIcon } from 'lucide-react';
+import { Loader2, CalendarDays, Mail, Phone, CheckCircle2, XCircle, Clock, Pencil, InfoIcon, EditIcon, RefreshCcw, Circle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { RegistrationProgress } from '@/components/RegistrationProgress';
 import { SchoolAutocomplete } from '@/components/SchoolAutocomplete';
@@ -36,6 +37,7 @@ import { RegistrationBusinessCard } from '@/components/RegistrationBusinessCard'
 import { toTitleCase } from '@/lib/utils/format';
 import { generateTicketCode } from '@/lib/raiseCodeUtils';
 import { Link } from 'react-router-dom';
+import { UserAvatar } from '@/components/UserAvatar';
 
 const UserDashboard = () => {
     const [user, setUser] = useState<User | null>(auth.currentUser);
@@ -58,6 +60,11 @@ const UserDashboard = () => {
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [editFormData, setEditFormData] = useState<any>(null);
     const [editing, setEditing] = useState(false);
+
+    // Avatar State
+    const [avatarSeed, setAvatarSeed] = useState<string>('');
+    const [avatarColor, setAvatarColor] = useState<string>('#5b8def'); // Default primary color
+    const [showColorPicker, setShowColorPicker] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -87,7 +94,6 @@ const UserDashboard = () => {
                 const regData = { id: docData.id, ...data };
                 console.log('✅ Registration data:', regData);
 
-                // Migration: Generate ticketCode if missing
                 if (!data.ticketCode) {
                     const ticketCode = generateTicketCode();
                     console.log('⚠️ Migrating registration to use ticketCode:', ticketCode);
@@ -100,7 +106,20 @@ const UserDashboard = () => {
                     regData.ticketCode = ticketCode;
                 }
 
+                // Initialize Avatar Seed if not present
+                if (!data.avatarSeed) {
+                    const seed = data.ticketCode || data.id;
+                    updateDoc(doc(db, 'registrations', docData.id), {
+                        avatarSeed: seed
+                    }).catch(err => console.error("Avatar seed init failed", err));
+                    regData.avatarSeed = seed;
+                }
+
                 setRegistration(regData);
+                setAvatarSeed(regData.avatarSeed || regData.ticketCode || regData.id);
+                if (regData.avatarColor) {
+                    setAvatarColor(regData.avatarColor);
+                }
             } else {
                 console.log('❌ No registration found');
                 setRegistration(null);
@@ -238,6 +257,38 @@ const UserDashboard = () => {
         }
     };
 
+    const handleRegenerateAvatar = async () => {
+        if (!registration?.id) return;
+
+        // Generate a new random seed
+        const newSeed = Math.random().toString(36).substring(7);
+        setAvatarSeed(newSeed);
+
+        try {
+            await updateDoc(doc(db, 'registrations', registration.id), {
+                avatarSeed: newSeed
+            });
+            // Snapshot listener will update 'registration' state
+        } catch (error) {
+            console.error("Error updating avatar:", error);
+            // Revert on error (optional, or just alert)
+            setAvatarSeed(registration.avatarSeed);
+            alert("Failed to update avatar.");
+        }
+    };
+
+    const handleColorChange = (newColor: { hex: string }) => {
+        const hexColor = newColor.hex;
+        setAvatarColor(hexColor);
+        if (registration?.id) {
+            updateDoc(doc(db, 'registrations', registration.id), {
+                avatarColor: hexColor
+            }).catch(error => {
+                console.error("Error updating avatar color:", error);
+            });
+        }
+    };
+
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'confirmed': return 'bg-emerald-500/15 text-emerald-500 border-emerald-500/20';
@@ -370,9 +421,6 @@ const UserDashboard = () => {
                 </div>
 
                 <RegistrationProgress status={registration ? registration.status : null} />
-                <div className="flex items-center justify-center">
-                    <p className="text-sm sm:text-base text-muted-foreground mt-1 flex items-center"><InfoIcon className="w-4 h-4 mr-2" /> Tap the card to view your code or <EditIcon className="w-4 h-4 mx-2" /> to update your registration details.</p>
-                </div>
                 <motion.div
                     variants={container}
                     initial="hidden"
@@ -386,7 +434,61 @@ const UserDashboard = () => {
                             animate={{ opacity: 1, y: 0 }}
                             className="lg:col-span-3"
                         >
-                            <div className="max-w-3xl mx-auto">
+                            <div className="max-w-3xl mx-auto space-y-6">
+                                <Card className="glass-card border-primary/20">
+                                    <CardContent className="p-6 flex flex-col sm:flex-row items-center gap-6">
+                                        <div className="flex flex-col items-center gap-2">
+                                            <div className="relative">
+                                                <UserAvatar
+                                                    seed={avatarSeed || registration.ticketCode || registration.id}
+                                                    size={120}
+                                                    className="shadow-xl"
+                                                    interactive
+                                                    onRegenerate={handleRegenerateAvatar}
+                                                    color={avatarColor}
+                                                />
+                                                {/* Color picker circle */}
+                                                <div className="absolute -bottom-2 -left-2">
+                                                    <button
+                                                        onClick={() => setShowColorPicker(!showColorPicker)}
+                                                        className="w-6 h-6 rounded-full border-2 border-background shadow-lg hover:scale-110 transition-transform"
+                                                        style={{ backgroundColor: avatarColor }}
+                                                        title="Pick color"
+                                                    />
+                                                    {showColorPicker && (
+                                                        <div className="absolute top-full left-0 mt-2 z-[99999]">
+                                                            <div
+                                                                className="fixed inset-0 z-[99998]"
+                                                                onClick={() => setShowColorPicker(false)}
+                                                            />
+                                                            <div className="absolute" style={{ left: '150px', top: '-160px' }}>
+                                                                <Colorful
+                                                                    color={avatarColor}
+                                                                    onChange={handleColorChange}
+                                                                    disableAlpha={true} />
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">Tap <Circle className='w-4 h-4' /> or <RefreshCcw className='w-4 h-4' /> to customize</p>
+                                        </div>
+
+                                        <div className="flex-1 text-center sm:text-left space-y-1">
+                                            <h2 className="text-2xl font-bold tracking-tight">Hello, {registration.firstName}!</h2>
+                                            <p className="text-muted-foreground">Ready for the CHED RAISE 2026 Summit?</p>
+                                            <div className="flex flex-wrap justify-center sm:justify-start gap-2 pt-2">
+                                                <Badge variant="secondary" className="font-mono text-xs">{registration.ticketCode || registration.id}</Badge>
+                                                <Badge variant="outline" className="capitalize text-xs">{registration.registrantType}</Badge>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+
+                                <div className="flex items-center justify-center">
+                                    <p className="text-sm sm:text-base text-muted-foreground mt-1 flex items-center"><InfoIcon className="w-4 h-4 mr-2" /> Tap the card to view your code or <EditIcon className="w-4 h-4 mx-2" /> to update your registration details.</p>
+                                </div>
+
                                 <RegistrationBusinessCard
                                     registration={registration}
                                     actions={
