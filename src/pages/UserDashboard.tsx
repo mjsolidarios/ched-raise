@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
-import { Colorful } from '@uiw/react-color';
+import { Github } from '@uiw/react-color';
+import { GithubPlacement } from '@uiw/react-color-github';
 import { db, auth } from '@/lib/firebase';
 import { collection, addDoc, deleteDoc, updateDoc, doc, serverTimestamp, query, where, onSnapshot, getDocs } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
@@ -287,6 +288,7 @@ const UserDashboard = () => {
                 console.error("Error updating avatar color:", error);
             });
         }
+        setShowColorPicker(false);
     };
 
     const getStatusColor = (status: string) => {
@@ -456,18 +458,11 @@ const UserDashboard = () => {
                                                         title="Pick color"
                                                     />
                                                     {showColorPicker && (
-                                                        <div className="absolute top-full left-0 mt-2 z-[99999]">
-                                                            <div
-                                                                className="fixed inset-0 z-[99998]"
-                                                                onClick={() => setShowColorPicker(false)}
-                                                            />
-                                                            <div className="absolute" style={{ left: '150px', top: '-160px' }}>
-                                                                <Colorful
-                                                                    color={avatarColor}
-                                                                    onChange={handleColorChange}
-                                                                    disableAlpha={true} />
-                                                            </div>
-                                                        </div>
+                                                        <Github
+                                                            color={avatarColor}
+                                                            onChange={handleColorChange}
+                                                            placement={GithubPlacement.Right}
+                                                        />
                                                     )}
                                                 </div>
                                             </div>
