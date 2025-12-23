@@ -9,8 +9,6 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Mail, Lock, LogIn, Loader2, AlertCircle, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Checkbox } from '@/components/ui/checkbox';
-import Lottie from 'lottie-react';
-import logoAnimation from '@/animations/raise-logo.json';
 
 const LoginPage = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -81,8 +79,8 @@ const LoginPage = () => {
             >
                 <Card className="mt-10 w-full glass-card border-white/10 relative z-10 shadow-2xl">
                     <CardHeader className="text-center space-y-2 pb-6">
-                        <div className="mx-auto w-24 h-24 flex items-center justify-center">
-                            <Lottie animationData={logoAnimation} loop={false} className="w-full h-full" />
+                        <div className="mx-auto w-auto h-24 flex items-center justify-center">
+                            <img className='h-16 w-64' src="/r-icon.svg" alt="" />
                         </div>
                         <CardTitle className="text-3xl font-bold tracking-tight">
                             {isLogin ? 'RAISE Up!' : 'RAISE Go!'}

@@ -133,7 +133,7 @@ export function Navbar() {
                             setIsOpen(false);
                         }}
                     >
-                        <img src="/logo-dark.svg" alt="CHED RAISE Logo" className="h-8 w-auto" />
+                        <img src="/raise-only.svg" alt="CHED RAISE Logo" className="h-8 w-auto" />
                     </Link>
                 </div>
 

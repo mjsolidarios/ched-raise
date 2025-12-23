@@ -12,8 +12,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Users, Clock, CheckCircle2, XCircle, Search, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import Lottie from 'lottie-react';
-import logoAnimation from '@/animations/raise-logo.json';
 
 
 
@@ -196,7 +194,7 @@ const AdminPage = () => {
                     <Card className="glass-card border-primary/20 shadow-2xl">
                         <CardHeader className="text-center pb-2">
                             <div className="mx-auto w-20 h-20 flex items-center justify-center mb-2">
-                                <Lottie animationData={logoAnimation} loop={false} className="w-full h-full" />
+                                <img className='h-16 w-64' src="/r-icon.svg" alt="" />
                             </div>
                             <CardTitle>Admin Portal</CardTitle>
                             <CardDescription>Manage RAISE Registrations</CardDescription>
