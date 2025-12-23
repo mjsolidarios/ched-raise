@@ -12,7 +12,7 @@ const MEDIA_ASSETS = [
         id: 0,
         title: "CHED Memo",
         type: "document",
-        thumbnail: "https://images.unsplash.com/photo-1544396821-4dd40b938ad3?q=80&w=2073&auto=format&fit=crop",
+        thumbnail: "/thumb-default.svg",
         date: "Dec 22, 2025",
         description: "CHED Memo for RAISE Summit 2025."
     },
@@ -20,7 +20,7 @@ const MEDIA_ASSETS = [
         id: 1,
         title: "Event Brochure",
         type: "document",
-        thumbnail: "https://images.unsplash.com/photo-1544396821-4dd40b938ad3?q=80&w=2073&auto=format&fit=crop",
+        thumbnail: "/thumb-default.svg",
         date: "Dec 10, 2025",
         description: "Download the official event brochure with schedule and speaker info."
     },
@@ -28,7 +28,7 @@ const MEDIA_ASSETS = [
         id: 2,
         title: "Press Kit",
         type: "document",
-        thumbnail: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=2070&auto=format&fit=crop",
+        thumbnail: "/thumb-default.svg",
         date: "Nov 28, 2025",
         description: "Assets and information for media partners."
     }

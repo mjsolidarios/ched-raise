@@ -11,7 +11,7 @@ export function Footer() {
                     <img src="/logo-light.svg" alt="Logo" className="h-8 w-auto opacity-90" />
                 </div>
                 <p className="text-lg md:text-xl text-slate-300 font-medium mb-8 italic">
-                    "Raising Education. Empowering Society."
+                    "Raising AI Education. Empowering Society."
                 </p>
 
                 <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm text-slate-500 mb-10 font-medium">
