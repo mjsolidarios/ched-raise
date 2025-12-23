@@ -94,6 +94,9 @@ export function Navbar() {
                 <NavLink href="/venue">
                     Venue
                 </NavLink>
+                <NavLink href="/media">
+                    Media
+                </NavLink>
             </div>
 
             <div className={cn(

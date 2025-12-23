@@ -17,6 +17,7 @@ const AdminPage = lazy(() => import('./pages/AdminPage'));
 const SurveyPage = lazy(() => import('./pages/SurveyPage'));
 const AgendaPage = lazy(() => import('./pages/AgendaPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const MediaAssetsPage = lazy(() => import('./pages/MediaAssetsPage'));
 
 // Loading component
 const PageLoader = () => (
@@ -50,6 +51,7 @@ const App = () => {
                         } />
                         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                         <Route path="/agenda" element={<AgendaPage />} />
+                        <Route path="/media" element={<MediaAssetsPage />} />
                         <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                 </Suspense>
