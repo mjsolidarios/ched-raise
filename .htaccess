@@ -1,0 +1,8 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Force-allow Facebook
+    RewriteCond %{HTTP_USER_AGENT} ^facebookexternalhit [NC,OR]
+    RewriteCond %{HTTP_USER_AGENT} ^facebookcatalog [NC,OR]
+    RewriteCond %{HTTP_USER_AGENT} ^Facebot [NC]
+    RewriteRule .* - [L]
+</IfModule>

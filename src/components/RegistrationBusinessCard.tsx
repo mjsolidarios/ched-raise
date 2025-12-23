@@ -221,7 +221,7 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
       <div className="flip-card-inner aspect-[3/2] w-full min-h-[380px] sm:min-h-[260px]">
         {/* Front */}
         <div className="flip-card-face absolute inset-0">
-          <div className="relative h-full rounded-2xl p-[1px] bg-gradient-to-br from-primary/35 via-white/10 to-secondary/35 shadow-[0_18px_60px_-22px_hsl(222.5_90%_32.7%_/_0.7)]">          <div className="glass-card relative overflow-hidden rounded-2xl p-4 sm:p-5 h-full">
+          <div className="relative h-full rounded-2xl p-[1px] bg-gradient-to-br from-primary/35 via-white/10 to-secondary/35 shadow-[0_18px_60px_-22px_hsl(222.5_90%_32.7%_/_0.7)]">          <div className="glass-card relative overflow-hidden rounded-2xl p-6 sm:p-5 h-full">
             {/* ID-seeded abstract pattern (slow animated drift) */}
             <div
               className="pointer-events-none absolute inset-0 card-pattern-animate opacity-[0.42] mix-blend-screen saturate-150 contrast-125"
@@ -289,7 +289,7 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
                 </div>
               </div>
 
-              <div className="absolute top-4 right-4 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+              <div className="absolute top-0 sm:top-4 right-0 sm:right-2 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                 <Badge
                   variant="outline"
                   className={cn(
@@ -319,7 +319,7 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
         {/* Back */}
         <div className="flip-card-face flip-card-back absolute inset-0">
           <div className="relative h-full rounded-2xl p-[1px] bg-gradient-to-br from-secondary/35 via-white/10 to-primary/35 shadow-[0_18px_60px_-22px_hsl(222.5_90%_32.7%_/_0.45)]">
-            <div className="glass-card relative overflow-hidden rounded-2xl p-4 sm:p-5 h-full">
+            <div className="glass-card relative overflow-hidden rounded-2xl p-6 sm:p-5 h-full">
               {/* ID-seeded abstract pattern (slow animated drift) */}
               <div
                 className="pointer-events-none absolute inset-0 card-pattern-animate opacity-[0.42] mix-blend-screen saturate-150 contrast-125"

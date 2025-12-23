@@ -417,7 +417,7 @@ const UserDashboard = () => {
                 {/* Header Welcome Section */}
                 <div className="mt-6 sm:mt-10 flex items-center justify-between pb-4 sm:pb-6 border-b border-border/40">
                     <div>
-                        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">My Registration</h1>
+                        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mt-10">My Registration</h1>
                         <p className="text-sm sm:text-base text-muted-foreground mt-1">Manage your event registration and view status.</p>
                     </div>
                 </div>
