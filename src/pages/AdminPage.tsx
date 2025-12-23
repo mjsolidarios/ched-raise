@@ -12,6 +12,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Users, Clock, CheckCircle2, XCircle, Search, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
 
 
@@ -23,6 +31,11 @@ const AdminPage = () => {
     const [registrations, setRegistrations] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [eventStatus, setEventStatus] = useState<'ongoing' | 'finished'>('ongoing');
+
+    // Rejection Dialog State
+    const [rejectingId, setRejectingId] = useState<string | null>(null);
+    const [rejectionReason, setRejectionReason] = useState('');
+    const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
 
     useEffect(() => {
         // Subscribe to global settings
@@ -120,11 +133,36 @@ const AdminPage = () => {
     };
 
     const updateStatus = async (id: string, newStatus: string) => {
+        if (newStatus === 'rejected') {
+            setRejectingId(id);
+            setRejectionReason('');
+            setIsRejectDialogOpen(true);
+            return;
+        }
+
         try {
             const ref = doc(db, 'registrations', id);
             await updateDoc(ref, { status: newStatus });
         } catch (error) {
             console.error("Error updating status", error);
+        }
+    };
+
+    const handleConfirmReject = async () => {
+        if (!rejectingId) return;
+
+        try {
+            const ref = doc(db, 'registrations', rejectingId);
+            await updateDoc(ref, {
+                status: 'rejected',
+                rejectionReason: rejectionReason
+            });
+            setIsRejectDialogOpen(false);
+            setRejectingId(null);
+            setRejectionReason('');
+        } catch (error) {
+            console.error("Error rejecting registration", error);
+            alert("Failed to reject registration");
         }
     };
 
@@ -449,7 +487,32 @@ const AdminPage = () => {
                     </Card>
                 </motion.div>
             </motion.div>
-        </div>
+
+            <Dialog open={isRejectDialogOpen} onOpenChange={setIsRejectDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Reject Registration</DialogTitle>
+                        <DialogDescription>
+                            Please provide a reason for rejecting this registration. This will be visible to the user.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <Label htmlFor="rejection-reason" className="mb-2 block">Reason for Rejection</Label>
+                        <textarea
+                            id="rejection-reason"
+                            className="flex min-h-[80px] w-full rounded-md border border-input bg-background/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            placeholder="e.g., Invalid ID uploaded, Duplicate entry..."
+                            value={rejectionReason}
+                            onChange={(e) => setRejectionReason(e.target.value)}
+                        />
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsRejectDialogOpen(false)}>Cancel</Button>
+                        <Button variant="destructive" onClick={handleConfirmReject} disabled={!rejectionReason.trim()}>Confirm Rejection</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </div >
     );
 };
 

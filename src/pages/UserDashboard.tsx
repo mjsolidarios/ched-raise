@@ -511,11 +511,20 @@ const UserDashboard = () => {
                                             <h3 className="text-lg sm:text-xl font-semibold mb-1 capitalize">
                                                 Registration {registration.status}
                                             </h3>
-                                            <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mx-auto mb-3 sm:mb-4">
-                                                {registration.status === 'pending' && "We have received your details. Our team is reviewing your application."}
-                                                {registration.status === 'confirmed' && "You are all set! Present your QR code or ID at the venue entrance."}
-                                                {registration.status === 'rejected' && "Unfortunately, we cannot accommodate your registration at this time. Please check your email for details."}
-                                            </p>
+                                            <div className="text-xs sm:text-sm text-muted-foreground max-w-sm mx-auto mb-3 sm:mb-4 space-y-2">
+                                                {registration.status === 'pending' && <p>We have received your details. Our team is reviewing your application.</p>}
+                                                {registration.status === 'confirmed' && <p>You are all set! Present your QR code or ID at the venue entrance.</p>}
+                                                {registration.status === 'rejected' && (
+                                                    <>
+                                                        <p>Unfortunately, we cannot accommodate your registration at this time.</p>
+                                                        {registration.rejectionReason && (
+                                                            <div className="p-2 bg-destructive/10 border border-destructive/20 rounded-md text-destructive font-medium">
+                                                                Reason: {registration.rejectionReason}
+                                                            </div>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
                                             <div className="flex flex-col gap-2">
                                                 <Badge variant="outline" className={`text-sm sm:text-base px-4 sm:px-6 py-2 h-auto mx-auto ${getStatusColor(registration.status)}`}>
                                                     {registration.status.toUpperCase()}
