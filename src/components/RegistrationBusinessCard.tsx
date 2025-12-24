@@ -1,10 +1,13 @@
 import { type ReactNode, useState, useRef } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { CheckCircle, Clock, RotateCw, XCircle } from 'lucide-react';
+import { CheckCircle, Clock, RotateCw, XCircle, Download } from 'lucide-react';
+import { toPng } from 'html-to-image';
+import { Button } from '@/components/ui/button';
 import RaiseProtocolEncoderGrid from './RaiseProtocolEncoderGrid';
 import { useFitText } from '@/hooks/use-fit-text';
 import { encodeTextToRaiseId } from '@/lib/raiseCodeUtils';
+import { UserAvatar } from './UserAvatar';
 
 const hashStringToUint32 = (str: string) => {
   // FNV-1a 32-bit
@@ -117,6 +120,8 @@ type Registration = {
   registrantType?: string;
   registrantTypeOther?: string;
   ticketCode?: string;
+  avatarSeed?: string;
+  avatarColor?: string;
 };
 
 type RegistrationBusinessCardProps = {
@@ -138,8 +143,52 @@ const getStatusColor = (status?: string) => {
 export const RegistrationBusinessCard = ({ registration, actions }: RegistrationBusinessCardProps) => {
   const [flipped, setFlipped] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
+  const frontRef = useRef<HTMLDivElement>(null);
+  const backRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLParagraphElement | null>(null);
   useFitText(nameRef, 2);
+
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (frontRef.current && backRef.current) {
+      try {
+        const { offsetWidth, offsetHeight } = frontRef.current;
+        const options = {
+          cacheBust: true,
+          pixelRatio: 2,
+          width: offsetWidth,
+          height: offsetHeight,
+          fontEmbedCSS: '',
+          backgroundColor: '#0f172a', // Dark blue background (slate-900)
+        };
+
+        const dataUrlFront = await toPng(frontRef.current, options);
+        const link = document.createElement('a');
+        link.download = `raise-id-${registration.id}-front.png`;
+        link.href = dataUrlFront;
+        link.click();
+
+        // Small delay to ensure browser handles first download
+        setTimeout(async () => {
+          if (backRef.current) {
+            // Remove transform for capture to ensure it's not mirrored
+            const dataUrlBack = await toPng(backRef.current, {
+              ...options,
+              style: { transform: 'none' }
+            });
+            const linkBack = document.createElement('a');
+            linkBack.download = `raise-id-${registration.id}-back.png`;
+            linkBack.href = dataUrlBack;
+            linkBack.click();
+          }
+        }, 500);
+
+      } catch (err) {
+        console.error('Could not generate image', err);
+      }
+    }
+  };
 
   const middleInitial = registration.middleName ? `${registration.middleName.charAt(0)}.` : '';
   const fullName = [registration.firstName, middleInitial, registration.lastName].filter(Boolean).join(' ') || 'Registrant';
@@ -220,7 +269,7 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
     >
       <div className="flip-card-inner aspect-[3/2] w-full min-h-[380px] sm:min-h-[260px]">
         {/* Front */}
-        <div className="flip-card-face absolute inset-0">
+        <div ref={frontRef} className="flip-card-face absolute inset-0">
           <div className="relative h-full rounded-2xl p-[1px] bg-gradient-to-br from-primary/35 via-white/10 to-secondary/35 shadow-[0_18px_60px_-22px_hsl(222.5_90%_32.7%_/_0.7)]">          <div className="glass-card relative overflow-hidden rounded-2xl p-6 sm:p-5 h-full">
             {/* ID-seeded abstract pattern (slow animated drift) */}
             <div
@@ -261,7 +310,7 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
 
             <div className="relative flex flex-col h-full">
               <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2 content-center">
+                <div className="mt-1 flex items-center gap-2 content-center">
                   <img
                     src="/logo-light.svg"
                     alt="RAISE logo"
@@ -272,6 +321,15 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
               </div>
 
               <div className="flex-1 flex flex-col justify-center">
+                <div className="flex flex-col mt-6 sm:mt-0 items-start mb-0 sm:mb-3">
+                  <UserAvatar
+                    seed={registration.avatarSeed || registration.ticketCode || registration.id}
+                    size={48}
+                    className="mb-2"
+                    color={registration.avatarColor}
+                    transparent
+                  />
+                </div>
                 <p ref={nameRef} className="text-4xl sm:text-6xl font-bold tracking-tight text-white">{fullName}</p>
                 <p className="text-sm sm:text-2xl text-muted-foreground mt-2">
                   {registrantTypeLabel}{registration.schoolAffiliation ? ` • ${registration.schoolAffiliation}` : ''}
@@ -317,7 +375,7 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
         </div>
 
         {/* Back */}
-        <div className="flip-card-face flip-card-back absolute inset-0">
+        <div ref={backRef} className="flip-card-face flip-card-back absolute inset-0">
           <div className="relative h-full rounded-2xl p-[1px] bg-gradient-to-br from-secondary/35 via-white/10 to-primary/35 shadow-[0_18px_60px_-22px_hsl(222.5_90%_32.7%_/_0.45)]">
             <div className="glass-card relative overflow-hidden rounded-2xl p-6 sm:p-5 h-full">
               {/* ID-seeded abstract pattern (slow animated drift) */}
@@ -423,22 +481,26 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
 
                     {/* Status overlays */}
                     {registration.status === 'pending' && (
-                      <div className="absolute inset-0 bg-white/95 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center text-center p-6">
-                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-100 mb-4">
+                      <div className="absolute inset-0 z-10 bg-white/95 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center text-center p-6 gap-2">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-100 mb-2">
                           <Clock className="w-8 h-8 text-amber-600" />
                         </div>
-                        <p className="text-base font-bold text-amber-700 mb-1">Pending Approval</p>
-                        <p className="text-sm text-amber-600/80">Your registration is under review</p>
+                        <div className="flex flex-col gap-1">
+                          <p className="text-base font-bold text-amber-700 leading-tight">Pending Approval</p>
+                          <p className="text-sm text-amber-600/80 leading-tight">Your registration is under review</p>
+                        </div>
                       </div>
                     )}
 
                     {registration.status === 'rejected' && (
-                      <div className="absolute inset-0 bg-white/95 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center text-center p-6">
-                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
+                      <div className="absolute inset-0 z-10 bg-white/95 backdrop-blur-md rounded-3xl flex flex-col items-center justify-center text-center p-6 gap-2">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-2">
                           <XCircle className="w-8 h-8 text-red-600" />
                         </div>
-                        <p className="text-base font-bold text-red-700 mb-1">Registration Rejected</p>
-                        <p className="text-sm text-red-600/80">Please contact support for assistance</p>
+                        <div className="flex flex-col gap-1">
+                          <p className="text-base font-bold text-red-700 leading-tight">Registration Rejected</p>
+                          <p className="text-sm text-red-600/80 leading-tight">Please contact support for assistance</p>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -448,6 +510,17 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
           </div>
         </div>
       </div>
-    </div>
+
+      <div className="flex justify-center mt-4 sm:mt-6">
+        <Button
+          onClick={handleDownload}
+          variant="outline"
+          className="group/btn gap-2 shadow-sm hover:shadow-md transition-all rounded-full bg-white/50 backdrop-blur-sm border-white/20 hover:bg-white/80"
+        >
+          <Download className="w-4 h-4 text-foreground/70 group-hover/btn:text-primary transition-colors" />
+          <span className="text-foreground/80 group-hover/btn:text-foreground">Download ID</span>
+        </Button>
+      </div>
+    </div >
   );
 };

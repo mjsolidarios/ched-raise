@@ -1,8 +1,17 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    # Force-allow Facebook
-    RewriteCond %{HTTP_USER_AGENT} ^facebookexternalhit [NC,OR]
-    RewriteCond %{HTTP_USER_AGENT} ^facebookcatalog [NC,OR]
-    RewriteCond %{HTTP_USER_AGENT} ^Facebot [NC]
-    RewriteRule .* - [L]
+    RewriteBase /
+    
+    # 1. If the request is for index.html, stop here.
+    RewriteRule ^index\.html$ - [L]
+    
+    # 2. If the request is NOT for a real file...
+    RewriteCond %{REQUEST_FILENAME} !-f
+    # ...and NOT for a real directory...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    # ...and NOT for a symbolic link...
+    RewriteCond %{REQUEST_FILENAME} !-l
+    
+    # 3. ...then redirect everything to index.html so React can handle it.
+    RewriteRule . /index.html [L]
 </IfModule>

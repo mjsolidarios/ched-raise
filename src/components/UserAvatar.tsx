@@ -10,6 +10,7 @@ interface UserAvatarProps {
     interactive?: boolean;
     onRegenerate?: () => void;
     color?: string;
+    transparent?: boolean;
 }
 
 export const AVATAR_COLORS = [
@@ -38,7 +39,8 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     className,
     interactive = false,
     onRegenerate,
-    color: overrideColor
+    color: overrideColor,
+    transparent = false
 }) => {
     const { grid, color } = useMemo(() => {
         const hash = hashCode(seed);
@@ -70,11 +72,14 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     return (
         <div className={cn("relative group", className)} style={{ width: size, height: size }}>
             <div
-                className="overflow-hidden rounded-lg bg-muted/30 shadow-sm border border-border/50"
+                className={cn(
+                    "overflow-hidden rounded-lg",
+                    !transparent && "bg-muted/30 shadow-sm border border-border/50"
+                )}
                 style={{ width: '100%', height: '100%' }}
             >
                 <svg viewBox="0 0 5 5" xmlns="http://www.w3.org/2000/svg" shapeRendering="crispEdges" width="100%" height="100%">
-                    <rect width="5" height="5" fill="#1e293b" /> {/* Background - slate-800 equivalent */}
+                    <rect width="5" height="5" fill={transparent ? "transparent" : "#1e293b"} /> {/* Background - slate-800 equivalent */}
                     {grid.map((row, rIndex) => (
                         row.map((active, cIndex) => (
                             active ? (

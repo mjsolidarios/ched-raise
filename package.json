@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "node deploy.js"
   },
   "devDependencies": {
     "@types/node": "^25.0.1",
@@ -14,6 +15,8 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.2",
     "autoprefixer": "^10.4.22",
+    "basic-ftp": "^5.0.5",
+    "dotenv": "^17.2.3",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
     "typescript": "~5.9.3",
@@ -36,6 +39,7 @@
     "clsx": "^2.1.1",
     "firebase": "^12.6.0",
     "framer-motion": "^12.23.26",
+    "html-to-image": "^1.11.13",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.561.0",
     "react": "^19.2.3",
