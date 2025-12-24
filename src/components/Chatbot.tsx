@@ -18,9 +18,84 @@ Event Details:
 - Full Name: National Industry–Academe Collaborative Conference
 - Theme: Responding through AI for Societal Empowerment
 - Date: January 28-30, 2026
-- Venue: Iloilo Convention Center, Iloilo City
+- Venue: Iloilo Convention Center, Iloilo City, Philippines
+- Location: Iloilo Business Park, Mandurriao, Iloilo City
 - Registration Link: /login
-- Key Topics: Connecting ASEAN Through Knowledge & Play, Building a Future-Ready Region.
+
+Venue Highlights:
+- Grand Ballroom: Main hall with 3,700 seating capacity for plenary sessions
+- Function Rooms: Seven versatile rooms on the second floor for breakout sessions (50-100 delegates each)
+- VIP Facilities: Dedicated VIP lounges and preparation rooms
+- Modern Technology: State-of-the-art AV equipment and high-speed internet
+- Outdoor Roof Deck: 1,500 sqm open-air venue for cocktail receptions
+- Architectural Design: Inspired by Paraw Regatta sails and Dinagyang warriors
+
+Accommodation Options:
+Luxury Hotels:
+- Richmonde Hotel Iloilo: 5-star with rooftop infinity pool, international dining
+- Iloilo Business Hotel: Elegant with conference facilities and fine dining
+
+Upscale:
+- Seda Atria: Modern hotel adjacent to Atria Park District
+
+Mid-range:
+- Circle Inn: Comfortable rooms with consistent service
+
+Budget:
+- Go Hotels Iloilo: Clean, efficient, affordable with modern design
+- RedDoorz Hotels: Budget-friendly with free WiFi, multiple locations
+
+All hotels are within walking distance or short drive from the venue.
+
+Key Topics & Program Focus:
+- AI for Societal Empowerment
+- Industry-Academe Collaboration
+- Connecting ASEAN Through Knowledge & Play
+- Building a Future-Ready Region
+- Innovation and Technology Integration
+- Sustainable Development
+
+FAQs:
+
+Q: How do I register for the event?
+A: Visit our registration page at /login to create an account and complete your registration.
+
+Q: What is the registration fee?
+A: Please check the registration page for current pricing and early bird discounts.
+
+Q: Is there a dress code?
+A: Business casual or smart casual attire is recommended for the conference.
+
+Q: Will there be certificates?
+A: Yes, certificates of participation will be provided to all registered attendees.
+
+Q: Can I attend virtually?
+A: The venue is equipped for hybrid events. Please check the registration page for virtual attendance options.
+
+Q: What's the best way to get to the venue?
+A: The Iloilo Convention Center is located in Iloilo Business Park. You can take jeepneys (₱13-15), Grab taxis, or tricycles from your hotel.
+
+Q: Are meals included?
+A: Please refer to your registration package details for information about included meals and refreshments.
+
+Q: What should I bring?
+A: Bring your registration confirmation, valid ID, business cards for networking, and any personal items you may need.
+
+Q: Is there parking available?
+A: Yes, the Iloilo Convention Center has parking facilities available for attendees.
+
+Q: What time does registration open?
+A: Registration typically opens early morning on the first day. Specific times will be communicated closer to the event date.
+
+Travel Tips:
+- Best time to visit: December to May for ideal weather
+- Local transport: Jeepneys, Grab app, tricycles
+- Must-try food: La Paz Batchoy, Pancit Molo, KBL, fresh seafood
+- Local greeting: "Maayong adlaw" (Good day)
+- Day trips: 15-minute ferry to Guimaras for mangoes and beaches
+- Tourist spots: Miagao Church (UNESCO), Iloilo River Esplanade, Calle Real
+
+For any other questions, please visit our website or contact the organizing committee.
 `;
 
 interface Message {
