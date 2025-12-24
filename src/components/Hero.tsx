@@ -106,7 +106,15 @@ export function Hero() {
                     </Badge>
                 </motion.div>
 
-                <img src="/logo-dark.svg" alt="CHED RAISE" className="w-128 mb-12" />
+                <motion.div
+                    className="group relative mb-12"
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ duration: 0.3 }}
+                >
+                    {/* Glow effect */}
+                    <div className="absolute inset-0 bg-primary/30 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out" />
+                    <img src="/logo-dark.svg" alt="CHED RAISE" className="w-128 relative z-10 transition-all duration-500 group-hover:drop-shadow-[0_0_20px_rgba(91,141,239,0.8)]" />
+                </motion.div>
 
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}

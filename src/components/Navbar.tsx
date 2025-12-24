@@ -132,8 +132,11 @@ export function Navbar() {
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                             setIsOpen(false);
                         }}
+                        className="group relative"
                     >
-                        <img src="/raise-only.svg" alt="CHED RAISE Logo" className="h-8 w-auto" />
+                        {/* Glow effect */}
+                        <div className="absolute inset-0 bg-primary/30 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out" />
+                        <img src="/raise-only.svg" alt="CHED RAISE Logo" className="h-8 w-auto relative z-10 transition-all duration-500 group-hover:drop-shadow-[0_0_12px_rgba(91,141,239,0.8)]" />
                     </Link>
                 </div>
 
