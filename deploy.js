@@ -6,10 +6,14 @@
  * Credentials are loaded from .env.local
  */
 
-const ftp = require('basic-ftp');
-const fs = require('fs');
-const path = require('path');
-const dotenv = require('dotenv');
+import ftp from 'basic-ftp';
+import fs from 'fs';
+import path from 'path';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Load environment variables from .env.local
 const envPath = path.join(__dirname, '.env.local');
@@ -42,6 +46,7 @@ const config = {
     password: process.env.FTP_PASSWORD,
     port: parseInt(process.env.FTP_PORT || '21'),
     secure: process.env.FTP_SECURE === 'true',
+    secureOptions: { rejectUnauthorized: false }, // Allow self-signed or mismatched certs (Bluehost common issue)
 };
 
 const remotePath = process.env.FTP_REMOTE_PATH || '/';
