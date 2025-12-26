@@ -253,9 +253,10 @@ const UserDashboard = () => {
             });
 
             //Email the user
-            axios.post('/api/email/', {
+            await axios.post('/api/email/', {
                 from: 'noreply.chedraise@wvsu.edu.ph',
                 to: formData.email,
+                firstName: toTitleCase(formData.firstName),
                 ticketCode: ticketCode,
                 type: 'registration_confirmation'
             });

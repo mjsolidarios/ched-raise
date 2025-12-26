@@ -67,6 +67,7 @@ $from = $input['from'] ?? null;
 $to = $input['to'] ?? null;
 $type = $input['type'] ?? null;
 $ticketCode = $input['ticketCode'] ?? null;
+$name = $input['firstName'] ?? $input['name'] ?? 'User';
 
 if (!$from || !$to || !$type || !$ticketCode) {
     respondJson(400, ['error' => 'Missing required fields: from, to, type, ticketCode']);
@@ -78,11 +79,34 @@ $subject = '';
 
 switch ($type) {
     case 'registration_confirmation':
-        $templatePath = __DIR__ . '/RegistrationEmail.php';
+        $templatePath = __DIR__ . '/templates/RegistrationEmail.html';
         if (file_exists($templatePath)) {
             $htmlContent = file_get_contents($templatePath);
             $subject = 'Registration Confirmation';
             $htmlContent = str_replace('{{ticketCode}}', $ticketCode, $htmlContent);
+            $htmlContent = str_replace('{{name}}', $name, $htmlContent);
+        } else {
+            respondJson(500, ['error' => 'Template file not found.']);
+        }
+        break;
+    case 'registration_rejected':
+        $templatePath = __DIR__ . '/templates/RegistrationRejectedEmail.html';
+        if (file_exists($templatePath)) {
+            $htmlContent = file_get_contents($templatePath);
+            $subject = 'Registration Rejected';
+            $htmlContent = str_replace('{{ticketCode}}', $ticketCode, $htmlContent);
+            $htmlContent = str_replace('{{name}}', $name, $htmlContent);
+        } else {
+            respondJson(500, ['error' => 'Template file not found.']);
+        }
+        break;
+    case 'registration_approved':
+        $templatePath = __DIR__ . '/templates/RegistrationApprovedEmail.html';
+        if (file_exists($templatePath)) {
+            $htmlContent = file_get_contents($templatePath);
+            $subject = 'Registration Approved';
+            $htmlContent = str_replace('{{ticketCode}}', $ticketCode, $htmlContent);
+            $htmlContent = str_replace('{{name}}', $name, $htmlContent);
         } else {
             respondJson(500, ['error' => 'Template file not found.']);
         }

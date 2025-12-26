@@ -16,6 +16,7 @@ import { UserAvatar } from '@/components/UserAvatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AttendanceScanner } from '@/components/AttendanceScanner';
 import { getAttendanceRecords, getAttendanceStats, type AttendanceRecord, type AttendanceStats } from '@/lib/attendanceService';
+import axios from 'axios';
 import {
     Dialog,
     DialogContent,
@@ -178,6 +179,19 @@ const AdminPage = () => {
         try {
             const ref = doc(db, 'registrations', id);
             await updateDoc(ref, { status: newStatus });
+
+            if (newStatus === 'confirmed') {
+                const reg = registrations.find(r => r.id === id);
+                if (reg) {
+                    axios.post('/api/email/', {
+                        from: 'noreply.chedraise@wvsu.edu.ph',
+                        to: reg.email,
+                        firstName: reg.firstName,
+                        ticketCode: reg.ticketCode || reg.id,
+                        type: 'registration_approved'
+                    }).catch(err => console.error("Error sending approval email:", err));
+                }
+            }
         } catch (error) {
             console.error("Error updating status", error);
         }
@@ -192,6 +206,18 @@ const AdminPage = () => {
                 status: 'rejected',
                 rejectionReason: rejectionReason
             });
+
+            const reg = registrations.find(r => r.id === rejectingId);
+            if (reg) {
+                axios.post('/api/email/', {
+                    from: 'noreply.chedraise@wvsu.edu.ph',
+                    to: reg.email,
+                    firstName: reg.firstName,
+                    ticketCode: reg.ticketCode || reg.id,
+                    type: 'registration_rejected'
+                }).catch(err => console.error("Error sending rejection email:", err));
+            }
+
             setIsRejectDialogOpen(false);
             setRejectingId(null);
             setRejectionReason('');
