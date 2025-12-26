@@ -11,6 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
+import readline from 'readline/promises';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -51,16 +52,42 @@ const config = {
 
 const remotePath = process.env.FTP_REMOTE_PATH || '/';
 const localDistPath = path.join(__dirname, 'dist');
+const localApiPath = path.join(__dirname, 'src/api/email');
 
 async function deploy() {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+    console.log('--- Deployment Target ---');
+    console.log('1. Frontend (dist)');
+    console.log('2. Backend API (src/api/email)');
+    console.log('3. Both');
+    console.log('0. Exit');
+
+    const choice = await rl.question('\nSelect deployment target [1-3, 0]: ');
+    rl.close();
+
+    if (choice === '0') {
+        process.exit(0);
+    }
+
+    if (!['1', '2', '3'].includes(choice)) {
+        console.error('❌ Invalid selection');
+        process.exit(1);
+    }
+
+    const deployFrontend = choice === '1' || choice === '3';
+    const deployBackend = choice === '2' || choice === '3';
+
     const client = new ftp.Client();
     client.ftp.verbose = true;
 
     try {
         console.log('🚀 Starting deployment...\n');
 
-        // Check if dist folder exists
-        if (!fs.existsSync(localDistPath)) {
+        if (deployFrontend && !fs.existsSync(localDistPath)) {
             console.error('❌ Error: dist folder not found');
             console.error('Please run "npm run build" first');
             process.exit(1);
@@ -79,10 +106,21 @@ async function deploy() {
         await client.ensureDir(remotePath);
         console.log('✅ Directory ready\n');
 
-        // Upload dist folder contents
-        console.log('📤 Uploading files...');
-        await client.uploadFromDir(localDistPath);
-        console.log('\n✅ Upload complete!\n');
+        if (deployFrontend) {
+            // Upload dist folder contents
+            console.log('📤 Uploading frontend files (dist)...');
+            await client.uploadFromDir(localDistPath);
+            console.log('✅ Frontend upload complete!\n');
+        }
+
+        if (deployBackend) {
+            // Upload API folder contents
+            console.log('📤 Uploading backend API (src/api/email)...');
+            const remoteApiPath = remotePath.endsWith('/') ? `${remotePath}api/email` : `${remotePath}/api/email`;
+            await client.ensureDir(remoteApiPath);
+            await client.uploadFromDir(localApiPath);
+            console.log('\n✅ Backend API upload complete!\n');
+        }
 
         console.log('🎉 Deployment successful!');
 

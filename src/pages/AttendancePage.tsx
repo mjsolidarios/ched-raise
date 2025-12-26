@@ -7,7 +7,7 @@ import { getAttendanceRecords, getAttendanceStats, type AttendanceRecord, type A
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Users, CheckCircle, Clock, XCircle, Scan, Keyboard, Search } from 'lucide-react';
+import { Users, CheckCircle, Scan, Keyboard, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function AttendancePage() {

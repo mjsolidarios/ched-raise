@@ -23,7 +23,7 @@ export const AVATAR_COLORS = [
 ];
 
 // Simple hash function to generate deterministic numbers from string
-const hashCode = (str: string) => {
+export const hashCode = (str: string) => {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
         const char = str.charCodeAt(i);
@@ -31,6 +31,11 @@ const hashCode = (str: string) => {
         hash = hash & hash; // Convert to 32bit integer
     }
     return Math.abs(hash);
+};
+
+export const getDeterministicAvatarColor = (seed: string) => {
+    const hash = hashCode(seed);
+    return AVATAR_COLORS[hash % AVATAR_COLORS.length];
 };
 
 export const UserAvatar: React.FC<UserAvatarProps> = ({
@@ -44,7 +49,6 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 }) => {
     const { grid, color } = useMemo(() => {
         const hash = hashCode(seed);
-        const colorIndex = hash % AVATAR_COLORS.length;
 
         // Generate 5x5 grid (symmetric)
         // We only need to generate 3 columns (0, 1, 2) and mirror them to 4, 3
@@ -65,7 +69,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 
         return {
             grid: gridData,
-            color: overrideColor || AVATAR_COLORS[colorIndex]
+            color: overrideColor || getDeterministicAvatarColor(seed)
         };
     }, [seed, overrideColor]);
 
