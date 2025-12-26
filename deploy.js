@@ -6,6 +6,7 @@
  * Credentials are loaded from .env.local
  */
 
+import { execSync } from 'child_process';
 import ftp from 'basic-ftp';
 import fs from 'fs';
 import path from 'path';
@@ -87,9 +88,19 @@ async function deploy() {
     try {
         console.log('🚀 Starting deployment...\n');
 
+        if (deployFrontend) {
+            console.log('🔨 Building frontend...');
+            try {
+                execSync('npm run build', { stdio: 'inherit', cwd: __dirname });
+                console.log('✅ Build successful\n');
+            } catch (error) {
+                console.error('❌ Build failed');
+                process.exit(1);
+            }
+        }
+
         if (deployFrontend && !fs.existsSync(localDistPath)) {
-            console.error('❌ Error: dist folder not found');
-            console.error('Please run "npm run build" first');
+            console.error('❌ Error: dist folder not found after build');
             process.exit(1);
         }
 
