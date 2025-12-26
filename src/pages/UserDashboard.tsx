@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import axios from 'axios';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
     AlertDialog,
@@ -31,7 +32,7 @@ import {
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { onAuthStateChanged, type User } from 'firebase/auth';
-import { Loader2, CalendarDays, Mail, Phone, CheckCircle2, XCircle, Clock, Pencil, InfoIcon, EditIcon, RefreshCcw, Circle } from 'lucide-react';
+import { Loader2, CalendarDays, Mail, Phone, CheckCircle2, XCircle, Clock, Pencil, InfoIcon, EditIcon, RefreshCcw, Circle, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { RegistrationProgress } from '@/components/RegistrationProgress';
 import { SchoolAutocomplete } from '@/components/SchoolAutocomplete';
@@ -57,6 +58,7 @@ const UserDashboard = () => {
         registrantTypeOther: ''
     });
     const [submitting, setSubmitting] = useState(false);
+    const [dashboardAlert, setDashboardAlert] = useState<{ show: boolean, message: string, variant?: 'default' | 'destructive', title?: string } | null>(null);
 
     // Edit State
     const [isEditOpen, setIsEditOpen] = useState(false);
@@ -154,7 +156,12 @@ const UserDashboard = () => {
             // State will automatically update via onSnapshot
         } catch (error) {
             console.error("Error cancelling registration:", error);
-            alert("Failed to cancel registration.");
+            setDashboardAlert({
+                show: true,
+                message: "Failed to cancel registration.",
+                variant: "destructive",
+                title: "Error"
+            });
         }
     };
 
@@ -203,7 +210,12 @@ const UserDashboard = () => {
             setIsEditOpen(false);
         } catch (error) {
             console.error("Error updating registration:", error);
-            alert("Failed to update registration.");
+            setDashboardAlert({
+                show: true,
+                message: "Failed to update registration.",
+                variant: "destructive",
+                title: "Error"
+            });
         } finally {
             setEditing(false);
         }
@@ -214,13 +226,23 @@ const UserDashboard = () => {
         setSubmitting(true);
 
         if (!formData.lastName || !formData.firstName || !formData.middleName || !formData.contactNumber || !formData.schoolAffiliation || !formData.registrantType) {
-            alert("Please fill in all required fields.");
+            setDashboardAlert({
+                show: true,
+                message: "Please fill in all required fields.",
+                variant: "destructive",
+                title: "Incomplete Form"
+            });
             setSubmitting(false);
             return;
         }
 
         if (formData.registrantType === 'others' && !formData.registrantTypeOther) {
-            alert("Please specify your registrant type.");
+            setDashboardAlert({
+                show: true,
+                message: "Please specify your registrant type.",
+                variant: "destructive",
+                title: "Incomplete Form"
+            });
             setSubmitting(false);
             return;
         }
@@ -231,7 +253,12 @@ const UserDashboard = () => {
             const querySnapshot = await getDocs(q);
 
             if (!querySnapshot.empty) {
-                alert("You have already registered.");
+                setDashboardAlert({
+                    show: true,
+                    message: "You have already registered.",
+                    variant: "destructive",
+                    title: "Notice"
+                });
                 setSubmitting(false);
                 return;
             }
@@ -254,11 +281,11 @@ const UserDashboard = () => {
 
             //Email the user
             await axios.post('/api/email/', {
-                from: 'noreply.chedraise@wvsu.edu.ph',
+                from: 'noreply@ched-raise.wvsu.edu.ph',
                 to: formData.email,
                 firstName: toTitleCase(formData.firstName),
                 ticketCode: ticketCode,
-                type: 'registration_confirmation'
+                type: 'registration_confirmation',
             });
 
             console.log('✨ New registration created with ID:', docRef.id);
@@ -266,7 +293,13 @@ const UserDashboard = () => {
             // Reset form (optional, as we redirect or show status)
         } catch (error) {
             console.error("Error submitting registration:", error);
-            alert("Failed to submit registration.");
+            setDashboardAlert({
+                show: true,
+                title: "Error",
+                message: "Failed to submit registration. Please try again.",
+                variant: "destructive"
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } finally {
             setSubmitting(false);
         }
@@ -288,7 +321,12 @@ const UserDashboard = () => {
             console.error("Error updating avatar:", error);
             // Revert on error (optional, or just alert)
             setAvatarSeed(registration.avatarSeed);
-            alert("Failed to update avatar.");
+            setDashboardAlert({
+                show: true,
+                message: "Failed to update avatar.",
+                variant: "destructive",
+                title: "Error"
+            });
         }
     };
 
@@ -397,7 +435,12 @@ const UserDashboard = () => {
                                         <p className="font-mono text-sm text-muted-foreground mb-2">CERTIFICATE ID</p>
                                         <p className="text-xl font-bold tracking-wider">{registration.ticketCode || registration.id}</p>
                                     </div>
-                                    <Button size="lg" className="gap-2" onClick={() => alert("Certificate Download Started...")}>
+                                    <Button size="lg" className="gap-2" onClick={() => setDashboardAlert({
+                                        show: true,
+                                        message: "Certificate Download Started...",
+                                        variant: "default",
+                                        title: "Success"
+                                    })}>
                                         <CheckCircle2 className="w-4 h-4" /> Download Certificate
                                     </Button>
                                 </div>
@@ -435,6 +478,29 @@ const UserDashboard = () => {
                         <p className="text-sm sm:text-base text-muted-foreground mt-1">Manage your event registration and view status.</p>
                     </div>
                 </div>
+
+                {/* Alert Display */}
+                {dashboardAlert?.show && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="max-w-4xl mx-auto"
+                    >
+                        <Alert variant={dashboardAlert.variant} className="relative">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertTitle>{dashboardAlert.title}</AlertTitle>
+                            <AlertDescription>
+                                {dashboardAlert.message}
+                            </AlertDescription>
+                            <button
+                                onClick={() => setDashboardAlert(null)}
+                                className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
+                            >
+                                <XCircle className="h-4 w-4" />
+                            </button>
+                        </Alert>
+                    </motion.div>
+                )}
 
                 <RegistrationProgress status={registration ? registration.status : null} />
                 <motion.div
