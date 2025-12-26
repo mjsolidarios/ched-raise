@@ -184,7 +184,7 @@ const AdminPage = () => {
                 const reg = registrations.find(r => r.id === id);
                 if (reg) {
                     axios.post('/api/email/', {
-                        from: 'noreply.chedraise@wvsu.edu.ph',
+                        from: 'noreply@ched-raise.wvsu.edu.ph',
                         to: reg.email,
                         firstName: reg.firstName,
                         ticketCode: reg.ticketCode || reg.id,
@@ -210,7 +210,7 @@ const AdminPage = () => {
             const reg = registrations.find(r => r.id === rejectingId);
             if (reg) {
                 axios.post('/api/email/', {
-                    from: 'noreply.chedraise@wvsu.edu.ph',
+                    from: 'noreply@ched-raise.wvsu.edu.ph',
                     to: reg.email,
                     firstName: reg.firstName,
                     ticketCode: reg.ticketCode || reg.id,

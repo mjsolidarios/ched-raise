@@ -7,7 +7,7 @@ import { Link } from "react-router-dom"
 import Typewriter from 'typewriter-effect';
 
 import { CountdownTimer } from "@/components/CountdownTimer"
-import { Robot } from "@/components/Robot"
+// import { Robot } from "@/components/Robot"
 
 export function Hero() {
     const containerRef = useRef<HTMLElement>(null);
@@ -201,7 +201,7 @@ export function Hero() {
             </div>
 
             {/* 3D Robot Floating at the Bottom */}
-            <Robot />
+            {/* <Robot /> */}
         </section >
     )
 }
