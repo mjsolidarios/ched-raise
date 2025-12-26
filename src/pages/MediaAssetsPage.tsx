@@ -14,7 +14,8 @@ const MEDIA_ASSETS = [
         type: "document",
         thumbnail: "/thumb-default.svg",
         date: "Dec 22, 2025",
-        description: "CHED Memo for RAISE Summit 2025."
+        description: "CHED Memo for RAISE Summit 2025.",
+        file: "/downloads/ched-memo.pdf"
     },
     {
         id: 1,
@@ -22,7 +23,8 @@ const MEDIA_ASSETS = [
         type: "document",
         thumbnail: "/thumb-default.svg",
         date: "Dec 10, 2025",
-        description: "Download the official event brochure with schedule and speaker info."
+        description: "Download the official event brochure with schedule and speaker info.",
+        file: "/downloads/event-brochure.pdf"
     },
     {
         id: 2,
@@ -30,9 +32,23 @@ const MEDIA_ASSETS = [
         type: "document",
         thumbnail: "/thumb-default.svg",
         date: "Nov 28, 2025",
-        description: "Assets and information for media partners."
+        description: "Assets and information for media partners.",
+        file: "/downloads/press-kit.zip"
+    },
+    {
+        id: 3,
+        title: "Brand Guidelines",
+        type: "document",
+        thumbnail: "/thumb-default.svg",
+        date: "Nov 28, 2025",
+        description: "Brand Guidelines for RAISE Summit 2025.",
+        file: "/downloads/ched-raise-brand-guidelines.pdf"
     }
 ];
+
+const handleDownload = (asset: any) => {
+    window.open(asset.file, '_blank');
+};
 
 const MediaAssetsPage = () => {
     return (
@@ -106,7 +122,7 @@ const MediaAssetsPage = () => {
                                                 {asset.description}
                                             </p>
                                         )}
-                                        <Button className="w-full mt-auto bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-primary/50 group-hover:shadow-lg group-hover:shadow-primary/10 transition-all">
+                                        <Button className="w-full mt-auto bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-primary/50 group-hover:shadow-lg group-hover:shadow-primary/10 transition-all" onClick={() => handleDownload(asset)}>
                                             {asset.type === 'document' ? (
                                                 <>
                                                     <Download className="w-4 h-4 mr-2" /> Download Asset
