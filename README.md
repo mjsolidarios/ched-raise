@@ -92,4 +92,4 @@ npm run build
 ```
 
 ## License
-[License Name]
+MIT License
