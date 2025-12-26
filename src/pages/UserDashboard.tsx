@@ -39,7 +39,7 @@ import { RegistrationBusinessCard } from '@/components/RegistrationBusinessCard'
 import { toTitleCase } from '@/lib/utils/format';
 import { generateTicketCode } from '@/lib/raiseCodeUtils';
 import { Link } from 'react-router-dom';
-import { UserAvatar } from '@/components/UserAvatar';
+import { UserAvatar, getDeterministicAvatarColor } from '@/components/UserAvatar';
 import RegistrationEmail from '@/components/RegistrationEmail';
 
 const resend = new Resend(import.meta.env.VITE_RESEND_API_KEY);
@@ -121,9 +121,12 @@ const UserDashboard = () => {
                 }
 
                 setRegistration(regData);
-                setAvatarSeed(regData.avatarSeed || regData.ticketCode || regData.id);
+                const seed = regData.avatarSeed || regData.ticketCode || regData.id;
+                setAvatarSeed(seed);
                 if (regData.avatarColor) {
                     setAvatarColor(regData.avatarColor);
+                } else {
+                    setAvatarColor(getDeterministicAvatarColor(seed));
                 }
             } else {
                 console.log('❌ No registration found');
