@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { motion } from 'framer-motion';
 import { Loader2, Send, Star } from 'lucide-react';
 import { toast } from 'sonner';
+import axios from 'axios';
 
 const SurveyPage = () => {
     const navigate = useNavigate();
@@ -17,6 +18,7 @@ const SurveyPage = () => {
     const [rating, setRating] = useState(0);
     const [feedback, setFeedback] = useState('');
     const [registrationId, setRegistrationId] = useState<string | null>(null);
+    const [registrationData, setRegistrationData] = useState<any>(null);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -25,7 +27,9 @@ const SurveyPage = () => {
                     const q = query(collection(db, 'registrations'), where('uid', '==', user.uid));
                     const querySnapshot = await getDocs(q);
                     if (!querySnapshot.empty) {
-                        setRegistrationId(querySnapshot.docs[0].id);
+                        const docData = querySnapshot.docs[0];
+                        setRegistrationId(docData.id);
+                        setRegistrationData(docData.data());
                     } else {
                         toast.error("No registration found.");
                         navigate('/dashboard');
@@ -43,7 +47,7 @@ const SurveyPage = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!registrationId) return;
+        if (!registrationId || !registrationData) return;
 
         if (rating === 0) {
             toast.error("Please provide a rating.");
@@ -58,7 +62,20 @@ const SurveyPage = () => {
                 surveyFeedback: feedback,
                 surveyTimestamp: new Date()
             });
-            toast.success("Survey submitted! Thank you.");
+
+            // Send Participation Certificate Email
+            await axios.post('/api/email/', {
+                type: 'participation_certificate',
+                to: registrationData.email,
+                name: registrationData.firstName,
+                middleName: registrationData.middleName,
+                lastName: registrationData.lastName,
+                ticketCode: registrationData.ticketCode,
+                // Pass a fallback from if needed, or let API handle it
+                from: 'noreply@ched-raise.wvsu.edu.ph',
+            });
+
+            toast.success("Survey submitted! Your certificate has been sent to your email.");
             navigate('/dashboard');
         } catch (error) {
             console.error("Error submitting survey:", error);

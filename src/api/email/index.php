@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Set JSON response headers
+// Set JSON response headers for non-PDF responses
 header('Content-Type: application/json');
 
 // Check request method
@@ -62,12 +62,119 @@ if (!is_array($input)) {
     }
 }
 
-// Validate input
+// Check if this is a PDF generation request
+$type = $input['type'] ?? null;
+
+if ($type === 'generate_certificate') {
+    $certType = $input['certificateType'] ?? null;
+    $name = $input['name'] ?? null;
+    $middleName = $input['middleName'] ?? '';
+    $lastName = $input['lastName'] ?? '';
+
+    // Construct full name
+    $fullNameParts = array_filter([$name, $middleName, $lastName]);
+    $fullName = implode(' ', $fullNameParts);
+    if (empty($fullName)) {
+        $fullName = "Participant";
+    }
+
+    if (!$certType) {
+        respondJson(400, ['error' => 'Missing certificate type.']);
+    }
+
+    // Create PDF
+    $pdf = new FPDF('L', 'mm', 'A4'); // Landscape
+    $pdf->AddPage();
+    
+    // Add Border
+    $pdf->SetLineWidth(2);
+    $pdf->Rect(10, 10, 277, 190);
+    
+    // Basic Branding
+    $pdf->SetFont('Arial', 'B', 24);
+    $pdf->SetXY(0, 40);
+    $pdf->Cell(297, 10, 'CHED RAISE', 0, 1, 'C');
+    
+    $pdf->SetFont('Arial', '', 14);
+    $pdf->Cell(297, 10, 'Technical Assistance and Monitoring', 0, 1, 'C');
+    
+    $pdf->Ln(20);
+    
+    if ($certType === 'appearance') {
+        $pdf->SetFont('Arial', 'B', 30);
+        $pdf->Cell(297, 15, 'CERTIFICATE OF APPEARANCE', 0, 1, 'C');
+        
+        $pdf->Ln(20);
+        
+        $pdf->SetFont('Arial', '', 16);
+        $pdf->Cell(297, 10, 'This is to certify that', 0, 1, 'C');
+        
+        $pdf->Ln(10);
+        
+        $pdf->SetFont('Times', 'B', 32);
+        $pdf->Cell(297, 15, strtoupper($fullName), 0, 1, 'C');
+        // Underline effect
+        $pdf->Line(70, $pdf->GetY(), 227, $pdf->GetY());
+        
+        $pdf->Ln(20);
+        
+        $pdf->SetFont('Arial', '', 16);
+        $purpose = "has personally appeared to facilitate the Technical Assistance.";
+        $pdf->SetXY(48, $pdf->GetY());
+        $pdf->MultiCell(200, 10, $purpose, 0, 'C');
+
+    } elseif ($certType === 'participation') {
+        $pdf->SetFont('Arial', 'B', 30);
+        $pdf->Cell(297, 15, 'CERTIFICATE OF PARTICIPATION', 0, 1, 'C');
+        
+        $pdf->Ln(20);
+        
+        $pdf->SetFont('Arial', '', 16);
+        $pdf->Cell(297, 10, 'This is to certify that', 0, 1, 'C');
+        
+        $pdf->Ln(10);
+        
+        $pdf->SetFont('Times', 'B', 32);
+        $pdf->Cell(297, 15, strtoupper($fullName), 0, 1, 'C');
+        // Underline effect
+        $pdf->Line(70, $pdf->GetY(), 227, $pdf->GetY());
+        
+        $pdf->Ln(20);
+        
+        $pdf->SetFont('Arial', '', 16);
+        $text = "has actively participated in the CHED RAISE Program activities.";
+        $pdf->SetXY(48, $pdf->GetY());
+        $pdf->MultiCell(200, 10, $text, 0, 'C');
+    }
+
+    $pdf->Ln(20);
+    
+    $pdf->SetFont('Arial', '', 12);
+    $dateStr = "Given this " . date('jS') . " day of " . date('F, Y') . ".";
+    $pdf->Cell(297, 10, $dateStr, 0, 1, 'C');
+
+    // Output PDF
+    // Clear any previous output
+    if (ob_get_length()) ob_clean();
+    
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: attachment; filename="certificate.pdf"');
+    $pdf->Output('D', 'ched-raise-certificate.pdf');
+    exit;
+}
+
+// Validate input for email sending
 $from = $input['from'] ?? null;
 $to = $input['to'] ?? null;
-$type = $input['type'] ?? null;
 $ticketCode = $input['ticketCode'] ?? null;
 $name = $input['firstName'] ?? $input['name'] ?? 'User';
+$middleName = $input['middleName'] ?? null;
+$lastName = $input['lastName'] ?? null;
+$certificateType = $input['certificateType'] ?? null;
+
+// Determine API URL for certificate generation
+// This assumes the API is reachable publicly or locally where the user clicks the link
+$apiUrl = $_ENV['API_BASE_URL'] ?? 'http://localhost/api/email'; // Fallback needs to be adjusted by user
 
 if (!$from || !$to || !$type || !$ticketCode) {
     respondJson(400, ['error' => 'Missing required fields: from, to, type, ticketCode']);
@@ -107,6 +214,33 @@ switch ($type) {
             $subject = 'Registration Approved';
             $htmlContent = str_replace('{{ticketCode}}', $ticketCode, $htmlContent);
             $htmlContent = str_replace('{{name}}', $name, $htmlContent);
+        } else {
+            respondJson(500, ['error' => 'Template file not found.']);
+        }
+        break;
+    case 'participation_certificate':
+        $templatePath = __DIR__ . '/certificates/ParticipationCertificate.html';
+        if (file_exists($templatePath)) {
+            $htmlContent = file_get_contents($templatePath);
+            $subject = 'Participation Certificate';
+            $htmlContent = str_replace('{{name}}', $name, $htmlContent);
+            $htmlContent = str_replace('{{middleName}}', $middleName, $htmlContent);
+            $htmlContent = str_replace('{{lastName}}', $lastName, $htmlContent);
+            $htmlContent = str_replace('{{apiUrl}}', $apiUrl, $htmlContent);
+        } else {
+            respondJson(500, ['error' => 'Template file not found.']);
+        }
+        break;
+    case 'appearance_certificate':
+        $templatePath = __DIR__ . '/certificates/AppearanceCertificate.html';
+        if (file_exists($templatePath)) {
+            $htmlContent = file_get_contents($templatePath);
+            $subject = 'Appearance Certificate';
+            $htmlContent = str_replace('{{name}}', $name, $htmlContent);
+            $htmlContent = str_replace('{{middleName}}', $middleName, $htmlContent);
+            $htmlContent = str_replace('{{lastName}}', $lastName, $htmlContent);
+            $htmlContent = str_replace('{{certificateType}}', $certificateType, $htmlContent);
+            $htmlContent = str_replace('{{apiUrl}}', $apiUrl, $htmlContent);
         } else {
             respondJson(500, ['error' => 'Template file not found.']);
         }
