@@ -9,6 +9,17 @@ $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 // Use safeLoad to avoid exception if .env is missing
 $dotenv->safeLoad();
 
+// CORS Headers
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+
+// Handle Preflight OPTIONS Request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204);
+    exit;
+}
+
 // Set JSON response headers
 header('Content-Type: application/json');
 
@@ -26,6 +37,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 $from = $input['from'] ?? null;
 $to = $input['to'] ?? null;
 $type = $input['type'] ?? null;
+$ticketCode = $input['ticketCode'] ?? null;
 
 if (!$from || !$to || !$type) {
     http_response_code(400);
@@ -43,6 +55,7 @@ switch ($type) {
         if (file_exists($templatePath)) {
             $htmlContent = file_get_contents($templatePath);
             $subject = 'Registration Confirmation';
+            $htmlContent = str_replace('{{ticketCode}}', $ticketCode, $htmlContent);
         } else {
             http_response_code(500);
             echo json_encode(['error' => 'Template file not found.']);

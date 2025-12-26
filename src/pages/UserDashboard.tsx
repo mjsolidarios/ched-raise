@@ -7,7 +7,6 @@ import { collection, addDoc, deleteDoc, updateDoc, doc, serverTimestamp, query, 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Resend } from 'resend';
 import axios from 'axios';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
@@ -41,9 +40,6 @@ import { toTitleCase } from '@/lib/utils/format';
 import { generateTicketCode } from '@/lib/raiseCodeUtils';
 import { Link } from 'react-router-dom';
 import { UserAvatar, getDeterministicAvatarColor } from '@/components/UserAvatar';
-import RegistrationEmail from '@/components/RegistrationEmail';
-
-const resend = new Resend(import.meta.env.VITE_RESEND_API_KEY);
 
 const UserDashboard = () => {
     const [user, setUser] = useState<User | null>(auth.currentUser);
@@ -260,6 +256,7 @@ const UserDashboard = () => {
             axios.post('/api/email', {
                 from: 'ched.raise@ched.edu.ph',
                 to: formData.email,
+                ticketCode: ticketCode,
                 type: 'registration_confirmation'
             });
 

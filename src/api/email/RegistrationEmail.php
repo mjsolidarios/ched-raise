@@ -20,6 +20,7 @@
             <p>Hello,</p>
             <p>Thank you for registering with our service. We are excited to have you on board.</p>
             <p>Please keep this email for your records.</p>
+            <p>Your ticket code is: {{ticketCode}}</p>
         </div>
         <div class="footer">
             <p>&copy; 2025 CHED RAISE. All rights reserved.</p>
