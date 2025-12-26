@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Resend } from 'resend';
+import axios from 'axios';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
     AlertDialog,
@@ -256,11 +257,10 @@ const UserDashboard = () => {
             });
 
             //Email the user
-            await resend.emails.send({
+            axios.post('/api/email', {
                 from: 'ched.raise@ched.edu.ph',
                 to: formData.email,
-                subject: 'CHED RAISE 2026 Registration',
-                react: <RegistrationEmail ticketCode={ticketCode} />
+                type: 'registration_confirmation'
             });
 
             console.log('✨ New registration created with ID:', docRef.id);

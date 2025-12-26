@@ -51,6 +51,7 @@ const config = {
 
 const remotePath = process.env.FTP_REMOTE_PATH || '/';
 const localDistPath = path.join(__dirname, 'dist');
+const localApiPath = path.join(__dirname, 'src/api/email');
 
 async function deploy() {
     const client = new ftp.Client();
@@ -80,9 +81,16 @@ async function deploy() {
         console.log('✅ Directory ready\n');
 
         // Upload dist folder contents
-        console.log('📤 Uploading files...');
+        console.log('📤 Uploading frontend files (dist)...');
         await client.uploadFromDir(localDistPath);
-        console.log('\n✅ Upload complete!\n');
+        console.log('✅ Frontend upload complete!\n');
+
+        // Upload API folder contents
+        console.log('📤 Uploading backend API (src/api/email)...');
+        const remoteApiPath = remotePath.endsWith('/') ? `${remotePath}api/email` : `${remotePath}/api/email`;
+        await client.ensureDir(remoteApiPath);
+        await client.uploadFromDir(localApiPath);
+        console.log('\n✅ Backend API upload complete!\n');
 
         console.log('🎉 Deployment successful!');
 

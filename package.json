@@ -37,6 +37,7 @@
     "@react-email/components": "^1.0.2",
     "@react-email/render": "^2.0.0",
     "@uiw/react-color": "^2.9.2",
+    "axios": "^1.13.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "firebase": "^12.6.0",
