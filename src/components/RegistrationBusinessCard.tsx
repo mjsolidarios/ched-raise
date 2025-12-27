@@ -1,4 +1,4 @@
-import { type ReactNode, useState, useRef } from 'react';
+import { type ReactNode, useState, useRef, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { CheckCircle, Clock, RotateCw, XCircle, Download } from 'lucide-react';
@@ -145,7 +145,18 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
   const frontRef = useRef<HTMLDivElement>(null);
   const backRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLParagraphElement | null>(null);
-  useFitText(nameRef, 2);
+
+  const [maxLines, setMaxLines] = useState(1);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 640px)');
+    const updateLines = () => setMaxLines(mq.matches ? 2 : 1);
+    updateLines();
+    mq.addEventListener('change', updateLines);
+    return () => mq.removeEventListener('change', updateLines);
+  }, []);
+
+  useFitText(nameRef, maxLines);
 
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -249,11 +260,11 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
         el.style.setProperty('--tilt-y', '0deg');
       }}
       className={cn(
-        'flip-card group w-full max-w-[90vw] mx-auto cursor-pointer select-none',
+        'flip-card group w-full max-w-[90vw] sm:max-w-none mx-auto cursor-pointer select-none',
         'transition-transform duration-300 hover:scale-[1.01] active:scale-[0.995]',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         flipped && 'is-flipped',
-        'scale-90 sm:scale-100'
+        'scale-100'
       )}
       onClick={toggle}
       onKeyDown={(e) => {
@@ -266,117 +277,122 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
       tabIndex={0}
       aria-label={flipped ? 'Flip card to front' : 'Flip card to back'}
     >
-      <div className="flip-card-inner aspect-[3/2] w-full min-h-[380px] sm:min-h-[260px]">
+      <div className="flip-card-inner aspect-[1.586/1] w-full">
         {/* Front */}
         <div ref={frontRef} className="flip-card-face absolute inset-0">
-          <div className="relative h-full rounded-2xl p-[1px] bg-gradient-to-br from-primary/35 via-white/10 to-secondary/35 shadow-[0_18px_60px_-22px_hsl(222.5_90%_32.7%_/_0.7)]">          <div className="glass-card relative overflow-hidden rounded-2xl p-6 sm:p-5 h-full">
-            {/* ID-seeded abstract pattern (slow animated drift) */}
-            <div
-              className="pointer-events-none absolute inset-0 card-pattern-animate opacity-[0.42] mix-blend-screen saturate-150 contrast-125"
-              style={{
-                backgroundImage: `url(\"${patternFront}\")`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-            />
+          <div className="relative h-full rounded-xl sm:rounded-2xl p-[1px] bg-gradient-to-br from-primary/35 via-white/10 to-secondary/35 shadow-[0_18px_60px_-22px_hsl(222.5_90%_32.7%_/_0.7)]">
+            <div className="glass-card relative overflow-hidden rounded-xl sm:rounded-2xl p-4 sm:p-5 h-full">
+              {/* ID-seeded abstract pattern (slow animated drift) */}
+              <div
+                className="pointer-events-none absolute inset-0 card-pattern-animate opacity-[0.42] mix-blend-screen saturate-150 contrast-125"
+                style={{
+                  backgroundImage: `url(\"${patternFront}\")`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              />
 
-            {/* Spotlight (follows cursor) */}
-            <div className="pointer-events-none absolute inset-0 card-spotlight mix-blend-screen" />
+              {/* Spotlight (follows cursor) */}
+              <div className="pointer-events-none absolute inset-0 card-spotlight mix-blend-screen" />
 
-            {/* Dot grid (follows cursor) */}
-            <div className="pointer-events-none absolute inset-0 card-dot-grid mix-blend-screen" />
+              {/* Dot grid (follows cursor) */}
+              <div className="pointer-events-none absolute inset-0 card-dot-grid mix-blend-screen" />
 
-            {/* Subtle grid pattern */}
-            <div
-              className="absolute inset-0 opacity-[0.05]"
-              style={{ backgroundImage: 'url(/grid-pattern.svg)', backgroundSize: 'cover', backgroundPosition: 'center' }}
-            />
+              {/* Subtle grid pattern */}
+              <div
+                className="absolute inset-0 opacity-[0.05]"
+                style={{ backgroundImage: 'url(/grid-pattern.svg)', backgroundSize: 'cover', backgroundPosition: 'center' }}
+              />
 
-            {/* Decorative gradient blobs */}
-            <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
-            <div className="absolute -bottom-16 -left-16 h-56 w-56 rounded-full bg-secondary/10 blur-3xl" />
+              {/* Decorative gradient blobs */}
+              <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
+              <div className="absolute -bottom-16 -left-16 h-56 w-56 rounded-full bg-secondary/10 blur-3xl" />
 
-            {/* Shine */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-tr from-white/0 via-white/10 to-white/0" />
+              {/* Shine */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-tr from-white/0 via-white/10 to-white/0" />
 
-            {/* Watermark */}
-            <img
-              src="/r-icon.svg"
-              alt=""
-              className="pointer-events-none absolute right-6 bottom-6 h-24 w-24 opacity-[0.06]"
-              draggable={false}
-            />
+              {/* Watermark */}
+              <img
+                src="/r-icon.svg"
+                alt=""
+                className="pointer-events-none absolute right-6 bottom-6 h-24 w-24 opacity-[0.06]"
+                draggable={false}
+              />
 
-            <div className="relative flex flex-col h-full">
-              <div className="flex items-start justify-between">
-                <div className="mt-1 flex items-center gap-2 content-center">
-                  <img
-                    src="/logo-light.svg"
-                    alt="RAISE logo"
-                    className="h-6 sm:h-7"
-                    draggable={false}
-                  />
+              <div className="relative flex flex-col h-full">
+                <div className="flex items-start justify-between gap-2 sm:gap-4">
+                  <div className="mt-0.5 sm:mt-1 flex items-center gap-2 content-center shrink-0">
+                    <img
+                      src="/logo-light.svg"
+                      alt="RAISE logo"
+                      className="h-3.5 sm:h-7"
+                      draggable={false}
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        'text-[8px] sm:text-sm px-1.5 sm:px-3 py-0 sm:py-1 rounded-full backdrop-blur-xl',
+                        'shadow-[0_0_0_1px_rgba(255,255,255,0.1)]',
+                        'flex items-center gap-1 sm:gap-1.5',
+                        getStatusColor(registration.status)
+                      )}
+                    >
+                      {registration.status === 'confirmed' && <CheckCircle className="w-2.5 h-2.5 sm:w-4 sm:h-4" />}
+                      {registration.status === 'pending' && <Clock className="w-2.5 h-2.5 sm:w-4 sm:h-4" />}
+                      {registration.status === 'rejected' && <XCircle className="w-2.5 h-2.5 sm:w-4 sm:h-4" />}
+                      <span className="font-semibold">{(registration.status || 'pending').toUpperCase()}</span>
+                    </Badge>
+                    {actions}
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex-1 flex flex-col justify-center">
-                <div className="flex flex-col mt-6 sm:mt-0 items-start mb-0 sm:mb-3">
-                  <UserAvatar
-                    seed={registration.avatarSeed || registration.ticketCode || registration.id}
-                    size={48}
-                    className="mb-2"
-                    color={registration.avatarColor}
-                    transparent
-                  />
+                <div className="flex-1 flex flex-col justify-center">
+                  <div className="flex flex-col mt-1 sm:mt-0 items-start mb-0 sm:mb-3">
+                    <div className="scale-75 origin-top-left sm:scale-100 sm:origin-center">
+                      <UserAvatar
+                        seed={registration.avatarSeed || registration.ticketCode || registration.id}
+                        size={40}
+                        className="mb-0.5 sm:mb-2"
+                        color={registration.avatarColor}
+                        transparent
+                      />
+                    </div>
+                  </div>
+                  <p ref={nameRef} className="text-lg sm:text-6xl font-bold tracking-tight text-white leading-tight">{fullName}</p>
+                  <p className="text-[10px] sm:text-2xl text-muted-foreground mt-0.5 sm:mt-2 line-clamp-1">
+                    {registrantTypeLabel}{registration.schoolAffiliation ? ` • ${registration.schoolAffiliation}` : ''}
+                  </p>
                 </div>
-                <p ref={nameRef} className="text-4xl sm:text-6xl font-bold tracking-tight text-white">{fullName}</p>
-                <p className="text-sm sm:text-2xl text-muted-foreground mt-2">
-                  {registrantTypeLabel}{registration.schoolAffiliation ? ` • ${registration.schoolAffiliation}` : ''}
-                </p>
-              </div>
 
-              <div className="grid grid-cols-3 gap-4 text-sm mb-10 sm:mb-4">
-                <div>
-                  <p className="uppercase tracking-wider text-muted-foreground font-semibold">Valid Thru</p>
-                  <p className="font-mono text-sm sm:text-2xl">01/30</p>
+                <div className="grid grid-cols-3 gap-2 sm:gap-4 text-sm mb-4 sm:mb-4">
+                  <div>
+                    <p className="uppercase tracking-wider text-muted-foreground font-semibold text-[8px] sm:text-sm">Valid Thru</p>
+                    <p className="font-mono text-[9px] sm:text-2xl">01/30</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="uppercase tracking-wider text-muted-foreground font-semibold text-[8px] sm:text-sm">Email</p>
+                    <p className="font-mono text-[9px] sm:text-2xl break-all line-clamp-1">{registration.email || ""}</p>
+                  </div>
                 </div>
-                <div className="col-span-2">
-                  <p className="uppercase tracking-wider text-muted-foreground font-semibold">Email</p>
-                  <p className="font-mono text-sm sm:text-2xl break-all">{registration.email || ""}</p>
+
+                {/* Absolute badge container removed to fix overlapping */}
+
+                <div className="absolute bottom-2 sm:bottom-4 right-3 sm:right-4 flex items-center gap-1 sm:gap-2 text-[9px] sm:text-xs text-muted-foreground">
+                  <RotateCw className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                  <span>Tap to flip</span>
                 </div>
-              </div>
-
-              <div className="absolute top-0 sm:top-4 right-0 sm:right-2 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                <Badge
-                  variant="outline"
-                  className={cn(
-                    'text-xs sm:text-sm px-3 py-1 rounded-full backdrop-blur-xl',
-                    'shadow-[0_0_0_1px_rgba(255,255,255,0.1)]',
-                    'flex items-center gap-2',
-                    getStatusColor(registration.status)
-                  )}
-                >
-                  {registration.status === 'confirmed' && <CheckCircle className="w-4 h-4" />}
-                  {registration.status === 'pending' && <Clock className="w-4 h-4" />}
-                  {registration.status === 'rejected' && <XCircle className="w-4 h-4" />}
-                  <span className="font-semibold">{(registration.status || 'pending').toUpperCase()}</span>
-                </Badge>
-                {actions}
-              </div>
-
-              <div className="absolute bottom-4 right-4 flex items-center gap-2 text-xs text-muted-foreground">
-                <RotateCw className="h-3 w-3" />
-                <span>Tap to flip</span>
               </div>
             </div>
-          </div>
           </div>
         </div>
 
         {/* Back */}
         <div ref={backRef} className="flip-card-face flip-card-back absolute inset-0">
-          <div className="relative h-full rounded-2xl p-[1px] bg-gradient-to-br from-secondary/35 via-white/10 to-primary/35 shadow-[0_18px_60px_-22px_hsl(222.5_90%_32.7%_/_0.45)]">
-            <div className="glass-card relative overflow-hidden rounded-2xl p-6 sm:p-5 h-full">
+          <div className="relative h-full rounded-xl sm:rounded-2xl p-[1px] bg-gradient-to-br from-secondary/35 via-white/10 to-primary/35 shadow-[0_18px_60px_-22px_hsl(222.5_90%_32.7%_/_0.45)]">
+            <div className="glass-card relative overflow-hidden rounded-xl sm:rounded-2xl p-4 sm:p-5 h-full">
               {/* ID-seeded abstract pattern (slow animated drift) */}
               <div
                 className="pointer-events-none absolute inset-0 card-pattern-animate opacity-[0.42] mix-blend-screen saturate-150 contrast-125"
@@ -411,7 +427,7 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
                 draggable={false}
               />
 
-              <div className="h-full flex flex-col justify-center items-center p-4 sm:p-6">
+              <div className="h-full flex flex-col justify-center items-center p-2 sm:p-6">
                 <div className="relative w-full max-w-sm">
                   {/* Outer glow */}
                   <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-primary/20 via-primary/10 to-secondary/20 blur-2xl" />
@@ -419,39 +435,39 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
                   {/* Main container */}
                   <div className="relative bg-transparent">
                     {/* Header */}
-                    <div className="text-center mb-3 sm:mb-4">
-                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 mb-3">
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center">
-                          <img src="/r-icon.svg" alt="" className="w-6 h-6" />
+                    <div className="text-center mb-1 sm:mb-4">
+                      <div className="inline-flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 mb-1 sm:mb-3">
+                        <div className="w-5 h-5 sm:w-8 sm:h-8 rounded-full flex items-center justify-center">
+                          <img src="/r-icon.svg" alt="" className="w-4 h-4 sm:w-6 sm:h-6" />
                         </div>
                       </div>
-                      <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
+                      <h3 className="text-base sm:text-2xl font-bold text-white mb-0.5 sm:mb-2">
                         RAISE ID
                       </h3>
-                      <p className="text-xs sm:text-sm text-muted-foreground/80 font-medium">
+                      <p className="hidden sm:block text-xs sm:text-sm text-muted-foreground/80 font-medium">
                         Present this code for attendance.
                       </p>
                     </div>
 
                     {/* Pattern container */}
-                    <div className="relative mb-3 sm:mb-4 w-[200px] h-[200px] mx-auto">
+                    <div className="relative mb-2 sm:mb-4 w-[120px] h-[120px] sm:w-[200px] sm:h-[200px] mx-auto">
                       {/* Pattern glow */}
                       <div className="absolute -inset-2 bg-gradient-to-br from-primary/30 via-primary/20 to-secondary/30 rounded-2xl blur-xl" />
 
                       {/* Pattern frame */}
-                      <div className="relative bg-white rounded-2xl p-1 shadow-lg">
-                        <div className="relative bg-gradient-to-br from-slate-50 to-slate-100/80 rounded-xl p-2 border border-slate-200/50">
+                      <div className="relative bg-white rounded-xl sm:rounded-2xl p-1 shadow-lg">
+                        <div className="relative bg-gradient-to-br from-slate-50 to-slate-100/80 rounded-lg sm:rounded-xl p-1 sm:p-2 border border-slate-200/50">
                           {/* Corner accents */}
-                          <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary/30 rounded-tl-xl" />
-                          <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-primary/30 rounded-tr-xl" />
-                          <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-primary/30 rounded-bl-xl" />
-                          <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary/30 rounded-br-xl" />
+                          <div className="absolute top-0 left-0 w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-l-2 border-primary/30 rounded-tl-lg" />
+                          <div className="absolute top-0 right-0 w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-r-2 border-primary/30 rounded-tr-lg" />
+                          <div className="absolute bottom-0 left-0 w-3 h-3 sm:w-4 sm:h-4 border-b-2 border-l-2 border-primary/30 rounded-bl-lg" />
+                          <div className="absolute bottom-0 right-0 w-3 h-3 sm:w-4 sm:h-4 border-b-2 border-r-2 border-primary/30 rounded-br-lg" />
 
                           {/* Pattern display */}
-                          <div className="flex justify-center items-center p-2 bg-white rounded-lg">
+                          <div className="flex justify-center items-center p-1 sm:p-2 bg-white rounded-md sm:rounded-lg">
                             <QRCode
                               value={registration.ticketCode || registration.id}
-                              size={150}
+                              size={256}
                               style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                               viewBox={`0 0 256 256`}
                             />
@@ -462,11 +478,11 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
 
                     {/* Footer instruction */}
                     <div className="text-center">
-                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20">
-                        <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-2 rounded-full bg-white/10 border border-white/20">
+                        <svg className="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <p className="text-xs font-medium text-foreground/80">
+                        <p className="text-[10px] sm:text-xs font-medium text-foreground/80">
                           {registration.ticketCode || registration.id}
                         </p>
                       </div>
