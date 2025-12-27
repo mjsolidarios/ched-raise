@@ -189,7 +189,7 @@ switch ($type) {
         $templatePath = __DIR__ . '/templates/RegistrationEmail.html';
         if (file_exists($templatePath)) {
             $htmlContent = file_get_contents($templatePath);
-            $subject = 'Registration Confirmation';
+            $subject = '[CHED-RAISE] Registration Confirmation';
             $htmlContent = str_replace('{{ticketCode}}', $ticketCode, $htmlContent);
             $htmlContent = str_replace('{{name}}', $name, $htmlContent);
         } else {
@@ -200,7 +200,7 @@ switch ($type) {
         $templatePath = __DIR__ . '/templates/RegistrationRejectedEmail.html';
         if (file_exists($templatePath)) {
             $htmlContent = file_get_contents($templatePath);
-            $subject = 'Registration Rejected';
+            $subject = '[CHED-RAISE] Registration Rejected';
             $htmlContent = str_replace('{{ticketCode}}', $ticketCode, $htmlContent);
             $htmlContent = str_replace('{{name}}', $name, $htmlContent);
         } else {
@@ -211,7 +211,7 @@ switch ($type) {
         $templatePath = __DIR__ . '/templates/RegistrationApprovedEmail.html';
         if (file_exists($templatePath)) {
             $htmlContent = file_get_contents($templatePath);
-            $subject = 'Registration Approved';
+            $subject = '[CHED-RAISE] Registration Approved';
             $htmlContent = str_replace('{{ticketCode}}', $ticketCode, $htmlContent);
             $htmlContent = str_replace('{{name}}', $name, $htmlContent);
         } else {
@@ -222,7 +222,7 @@ switch ($type) {
         $templatePath = __DIR__ . '/templates/ParticipationCertificate.html';
         if (file_exists($templatePath)) {
             $htmlContent = file_get_contents($templatePath);
-            $subject = 'Participation Certificate';
+            $subject = '[CHED-RAISE] Participation Certificate';
             $htmlContent = str_replace('{{name}}', $name, $htmlContent);
             $htmlContent = str_replace('{{middleName}}', $middleName, $htmlContent);
             $htmlContent = str_replace('{{lastName}}', $lastName, $htmlContent);
@@ -235,7 +235,7 @@ switch ($type) {
         $templatePath = __DIR__ . '/templates/AppearanceCertificate.html';
         if (file_exists($templatePath)) {
             $htmlContent = file_get_contents($templatePath);
-            $subject = 'Appearance Certificate';
+            $subject = '[CHED-RAISE] Appearance Certificate';
             $htmlContent = str_replace('{{name}}', $name, $htmlContent);
             $htmlContent = str_replace('{{middleName}}', $middleName, $htmlContent);
             $htmlContent = str_replace('{{lastName}}', $lastName, $htmlContent);
