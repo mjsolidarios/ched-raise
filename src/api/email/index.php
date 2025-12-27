@@ -219,7 +219,7 @@ switch ($type) {
         }
         break;
     case 'participation_certificate':
-        $templatePath = __DIR__ . '/certificates/ParticipationCertificate.html';
+        $templatePath = __DIR__ . '/templates/ParticipationCertificate.html';
         if (file_exists($templatePath)) {
             $htmlContent = file_get_contents($templatePath);
             $subject = 'Participation Certificate';
@@ -232,7 +232,7 @@ switch ($type) {
         }
         break;
     case 'appearance_certificate':
-        $templatePath = __DIR__ . '/certificates/AppearanceCertificate.html';
+        $templatePath = __DIR__ . '/templates/AppearanceCertificate.html';
         if (file_exists($templatePath)) {
             $htmlContent = file_get_contents($templatePath);
             $subject = 'Appearance Certificate';
