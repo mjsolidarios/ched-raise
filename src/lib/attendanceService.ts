@@ -6,7 +6,8 @@ import {
     where,
     getDocs,
     orderBy,
-    Timestamp
+    Timestamp,
+    deleteDoc
 } from 'firebase/firestore';
 
 export interface AttendanceRecord {
@@ -204,5 +205,26 @@ export async function getAttendanceStats(): Promise<AttendanceStats> {
             scanned: 0,
             manual: 0
         };
+    }
+}
+
+/**
+ * Delete attendance records for a specific registration
+ * Used when a registration is cancelled/deleted
+ */
+export async function deleteAttendanceForRegistration(registrationId: string): Promise<void> {
+    try {
+        const attendanceRef = collection(db, 'attendance');
+        const q = query(attendanceRef, where('registrationId', '==', registrationId));
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) return;
+
+        const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+        await Promise.all(deletePromises);
+        console.log(`Deleted ${snapshot.size} attendance records for registration ${registrationId}`);
+    } catch (error) {
+        console.error('Error deleting attendance for registration:', error);
+        // We don't throw here to avoid blocking the main registration deletion flow
     }
 }

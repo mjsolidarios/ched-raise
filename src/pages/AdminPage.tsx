@@ -391,50 +391,6 @@ const AdminPage = () => {
                 animate="show"
                 className="space-y-8"
             >
-                {/* Stats Cards */}
-                <motion.div variants={item} className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    <Card className="glass-card">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Registrations</CardTitle>
-                            <Users className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{stats.total}</div>
-                            <p className="text-xs text-muted-foreground">All time submissions</p>
-                        </CardContent>
-                    </Card>
-                    <Card className="glass-card">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
-                            <Clock className="h-4 w-4 text-amber-500" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-amber-500">{stats.pending}</div>
-                            <p className="text-xs text-muted-foreground">Requires action</p>
-                        </CardContent>
-                    </Card>
-                    <Card className="glass-card">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Confirmed</CardTitle>
-                            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-emerald-500">{stats.confirmed}</div>
-                            <p className="text-xs text-muted-foreground">Approved attendees</p>
-                        </CardContent>
-                    </Card>
-                    <Card className="glass-card">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Rejected</CardTitle>
-                            <XCircle className="h-4 w-4 text-destructive" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-destructive">{stats.rejected}</div>
-                            <p className="text-xs text-muted-foreground">Declined submissions</p>
-                        </CardContent>
-                    </Card>
-                </motion.div>
-
                 {/* Main Content Area with Tabs */}
                 <motion.div variants={item}>
                     <Tabs defaultValue="registrations" className="w-full">
@@ -451,6 +407,49 @@ const AdminPage = () => {
 
                         {/* Registrations Tab */}
                         <TabsContent value="registrations">
+                            {/* Stats Cards */}
+                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-4">
+                                <Card className="glass-card">
+                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                        <CardTitle className="text-sm font-medium">Total Registrations</CardTitle>
+                                        <Users className="h-4 w-4 text-muted-foreground" />
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-2xl font-bold">{stats.total}</div>
+                                        <p className="text-xs text-muted-foreground">All time submissions</p>
+                                    </CardContent>
+                                </Card>
+                                <Card className="glass-card">
+                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                        <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
+                                        <Clock className="h-4 w-4 text-amber-500" />
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-2xl font-bold text-amber-500">{stats.pending}</div>
+                                        <p className="text-xs text-muted-foreground">Requires action</p>
+                                    </CardContent>
+                                </Card>
+                                <Card className="glass-card">
+                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                        <CardTitle className="text-sm font-medium">Confirmed</CardTitle>
+                                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-2xl font-bold text-emerald-500">{stats.confirmed}</div>
+                                        <p className="text-xs text-muted-foreground">Approved attendees</p>
+                                    </CardContent>
+                                </Card>
+                                <Card className="glass-card">
+                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                        <CardTitle className="text-sm font-medium">Rejected</CardTitle>
+                                        <XCircle className="h-4 w-4 text-destructive" />
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-2xl font-bold text-destructive">{stats.rejected}</div>
+                                        <p className="text-xs text-muted-foreground">Declined submissions</p>
+                                    </CardContent>
+                                </Card>
+                            </div>
                             <Card className="glass-card">
                                 <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                                     <div>
@@ -567,6 +566,14 @@ const AdminPage = () => {
 
                         {/* Attendance Tab */}
                         <TabsContent value="attendance" className="space-y-6">
+                            {attendanceStats && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    <Card className="glass-card border-white/10"><CardHeader className="pb-3"><CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2"><Users className="h-4 w-4" />Total Attendance</CardTitle></CardHeader><CardContent><div className="text-3xl font-bold">{attendanceStats.total}</div></CardContent></Card>
+                                    <Card className="glass-card border-white/10"><CardHeader className="pb-3"><CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-500" />Confirmed</CardTitle></CardHeader><CardContent><div className="text-3xl font-bold text-emerald-500">{attendanceStats.confirmed}</div></CardContent></Card>
+                                    <Card className="glass-card border-white/10"><CardHeader className="pb-3"><CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2"><Scan className="h-4 w-4 text-blue-500" />Scanned</CardTitle></CardHeader><CardContent><div className="text-3xl font-bold text-blue-500">{attendanceStats.scanned}</div></CardContent></Card>
+                                    <Card className="glass-card border-white/10"><CardHeader className="pb-3"><CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2"><Keyboard className="h-4 w-4 text-purple-500" />Manual Entry</CardTitle></CardHeader><CardContent><div className="text-3xl font-bold text-purple-500">{attendanceStats.manual}</div></CardContent></Card>
+                                </div>
+                            )}
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 <div className="lg:col-span-1">
                                     <AttendanceScanner scannedBy={user?.uid || ''} onSuccess={loadAttendanceData} />
@@ -617,14 +624,6 @@ const AdminPage = () => {
                                     </Card>
                                 </div>
                             </div>
-                            {attendanceStats && (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                    <Card className="glass-card border-white/10"><CardHeader className="pb-3"><CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2"><Users className="h-4 w-4" />Total Attendance</CardTitle></CardHeader><CardContent><div className="text-3xl font-bold">{attendanceStats.total}</div></CardContent></Card>
-                                    <Card className="glass-card border-white/10"><CardHeader className="pb-3"><CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-500" />Confirmed</CardTitle></CardHeader><CardContent><div className="text-3xl font-bold text-emerald-500">{attendanceStats.confirmed}</div></CardContent></Card>
-                                    <Card className="glass-card border-white/10"><CardHeader className="pb-3"><CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2"><Scan className="h-4 w-4 text-blue-500" />Scanned</CardTitle></CardHeader><CardContent><div className="text-3xl font-bold text-blue-500">{attendanceStats.scanned}</div></CardContent></Card>
-                                    <Card className="glass-card border-white/10"><CardHeader className="pb-3"><CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2"><Keyboard className="h-4 w-4 text-purple-500" />Manual Entry</CardTitle></CardHeader><CardContent><div className="text-3xl font-bold text-purple-500">{attendanceStats.manual}</div></CardContent></Card>
-                                </div>
-                            )}
                         </TabsContent>
                     </Tabs>
                 </motion.div>

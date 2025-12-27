@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,6 +6,7 @@ import { Scan, Keyboard, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { recordAttendance } from '@/lib/attendanceService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import { Html5QrcodeScanner } from 'html5-qrcode';
 
 interface AttendanceScannerProps {
     scannedBy: string;
@@ -17,6 +18,72 @@ export function AttendanceScanner({ scannedBy, onSuccess }: AttendanceScannerPro
     const [ticketCode, setTicketCode] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
     const [lastResult, setLastResult] = useState<{ success: boolean; message: string } | null>(null);
+    const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+
+    // Initialize/Cleanup Scanner
+    useEffect(() => {
+        if (mode === 'scan') {
+            // Small timeout to ensure DOM element exists
+            const timer = setTimeout(() => {
+                const scanner = new Html5QrcodeScanner(
+                    "reader",
+                    {
+                        fps: 10,
+                        qrbox: { width: 250, height: 250 },
+                        aspectRatio: 1
+                    },
+                    false
+                );
+
+                scanner.render(onScanSuccess, onScanFailure);
+                scannerRef.current = scanner;
+            }, 100);
+
+            return () => {
+                clearTimeout(timer);
+                if (scannerRef.current) {
+                    scannerRef.current.clear().catch(err => console.error("Failed to clear scanner", err));
+                }
+            };
+        }
+    }, [mode]);
+
+    const onScanSuccess = async (decodedText: string) => {
+        if (isProcessing) return;
+
+        // Pause scanning
+        if (scannerRef.current) {
+            scannerRef.current.pause();
+        }
+
+        setIsProcessing(true);
+        try {
+            const result = await recordAttendance(decodedText, 'scan', scannedBy);
+            setLastResult(result);
+
+            if (result.success) {
+                toast.success(result.message);
+                onSuccess?.();
+            } else {
+                toast.error(result.message);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to process scan");
+        } finally {
+            setIsProcessing(false);
+            // Resume scanning afte delay
+            setTimeout(() => {
+                if (scannerRef.current) {
+                    scannerRef.current.resume();
+                }
+            }, 2000);
+        }
+    };
+
+    const onScanFailure = (_error: any) => {
+        // console.warn(error); // Ignore frame errors
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -70,12 +137,21 @@ export function AttendanceScanner({ scannedBy, onSuccess }: AttendanceScannerPro
                         variant={mode === 'scan' ? 'default' : 'outline'}
                         onClick={() => setMode('scan')}
                         className="flex-1 min-w-[140px]"
-                        disabled
                     >
                         <Scan className="h-4 w-4 mr-2" />
-                        <span className="whitespace-nowrap text-xs sm:text-sm">Scan (Soon)</span>
+                        <span className="whitespace-nowrap">Scan QR Code</span>
                     </Button>
                 </div>
+
+                {/* Scanner View */}
+                {mode === 'scan' && (
+                    <div className="w-full max-w-sm mx-auto overflow-hidden rounded-lg border border-white/10 bg-black/50">
+                        <div id="reader" className="w-full"></div>
+                        <p className="text-xs text-center text-muted-foreground p-2">
+                            Point camera at QR code
+                        </p>
+                    </div>
+                )}
 
                 {/* Manual Entry Form */}
                 {mode === 'manual' && (

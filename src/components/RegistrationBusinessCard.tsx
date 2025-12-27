@@ -4,9 +4,8 @@ import { cn } from '@/lib/utils';
 import { CheckCircle, Clock, RotateCw, XCircle, Download } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { Button } from '@/components/ui/button';
-import RaiseProtocolEncoderGrid from './RaiseProtocolEncoderGrid';
+import QRCode from "react-qr-code";
 import { useFitText } from '@/hooks/use-fit-text';
-import { encodeTextToRaiseId } from '@/lib/raiseCodeUtils';
 import { UserAvatar } from './UserAvatar';
 
 const hashStringToUint32 = (str: string) => {
@@ -449,19 +448,13 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
                           <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary/30 rounded-br-xl" />
 
                           {/* Pattern display */}
-                          <div className="flex justify-center items-center">
-                            {(() => {
-                              const code = registration.ticketCode || registration.id;
-                              const grid = encodeTextToRaiseId(code);
-                              return grid ? (
-                                <RaiseProtocolEncoderGrid grid={grid} size={150} />
-                              ) : (
-                                // This fallback usually won't be hit unless encode fails, but kept for safety
-                                <div className="text-center py-4">
-                                  <p className="font-mono text-xs text-slate-500">Error generating pattern</p>
-                                </div>
-                              )
-                            })()}
+                          <div className="flex justify-center items-center p-2 bg-white rounded-lg">
+                            <QRCode
+                              value={registration.ticketCode || registration.id}
+                              size={150}
+                              style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                              viewBox={`0 0 256 256`}
+                            />
                           </div>
                         </div>
                       </div>

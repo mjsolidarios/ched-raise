@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Github } from '@uiw/react-color';
 import { GithubPlacement } from '@uiw/react-color-github';
 import { db, auth } from '@/lib/firebase';
+import { deleteAttendanceForRegistration } from '@/lib/attendanceService';
 import { collection, addDoc, deleteDoc, updateDoc, doc, serverTimestamp, query, where, onSnapshot, getDocs } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -152,6 +153,9 @@ const UserDashboard = () => {
         if (!registration?.id) return;
 
         try {
+            // Delete attendance records first
+            await deleteAttendanceForRegistration(registration.id);
+
             await deleteDoc(doc(db, "registrations", registration.id));
             // State will automatically update via onSnapshot
         } catch (error) {
