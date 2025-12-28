@@ -123,6 +123,7 @@ if ($type === 'generate_certificate') {
     $name = $input['name'] ?? null;
     $middleName = $input['middleName'] ?? '';
     $lastName = $input['lastName'] ?? '';
+    $school = $input['school'] ?? '';
 
     // Construct full name
     $fullNameParts = array_filter([$name, $middleName, $lastName]);
@@ -172,9 +173,9 @@ if ($type === 'generate_certificate') {
         $pdf->Ln(20);
         
         $pdf->SetFont('Arial', '', 16);
-        $purpose = "has personally appeared to facilitate the Technical Assistance.";
-        $pdf->SetXY(48, $pdf->GetY());
-        $pdf->MultiCell(200, 10, $purpose, 0, 'C');
+        $purpose = "This is to certify that " . strtoupper($fullName) . " of " . $school . " appeared at the Iloilo Convention Center on January 28-30, 2026 to attend the CHED-RAISE 2026 Summit.";
+        $pdf->SetXY(40, $pdf->GetY());
+        $pdf->MultiCell(217, 10, $purpose, 0, 'C');
 
     } elseif ($certType === 'participation') {
         $pdf->SetFont('Arial', 'B', 30);
@@ -205,6 +206,12 @@ if ($type === 'generate_certificate') {
     $pdf->SetFont('Arial', '', 12);
     $dateStr = "Given this " . date('jS') . " day of " . date('F, Y') . ".";
     $pdf->Cell(297, 10, $dateStr, 0, 1, 'C');
+
+    $pdf->Ln(15);
+    $pdf->SetFont('Arial', 'B', 14);
+    $pdf->Cell(297, 10, 'DR. RAUL F. MUYONG', 0, 1, 'C');
+    $pdf->SetFont('Arial', '', 12);
+    $pdf->Cell(297, 5, 'Regional Director, CHED Regional Office VI', 0, 1, 'C');
 
     // Output PDF
     // Clear any previous output
@@ -326,6 +333,7 @@ switch ($type) {
             $htmlContent = str_replace('{{name}}', $name, $htmlContent);
             $htmlContent = str_replace('{{middleName}}', $middleName, $htmlContent);
             $htmlContent = str_replace('{{lastName}}', $lastName, $htmlContent);
+            $htmlContent = str_replace('{{school}}', $input['school'] ?? '', $htmlContent);
             $htmlContent = str_replace('{{certificateType}}', $certificateType, $htmlContent);
             $htmlContent = str_replace('{{apiUrl}}', $apiUrl, $htmlContent);
             $htmlContent = str_replace('{{encryptedData}}', urlencode($encryptedData), $htmlContent);
