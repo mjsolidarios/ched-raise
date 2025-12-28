@@ -363,7 +363,7 @@ export const RegistrationBusinessCard = ({ registration, actions, hideFlipInstru
                       />
                     </div>
                   </div>
-                  <p ref={nameRef} className="text-lg sm:text-6xl font-bold tracking-tight text-white leading-tight">{fullName}</p>
+                  <p className="text-3xl sm:text-6xl font-bold tracking-tight text-white leading-tight">{fullName}</p>
                   <p className="text-[10px] sm:text-2xl text-muted-foreground mt-0.5 sm:mt-2 line-clamp-1">
                     {registrantTypeLabel}{registration.schoolAffiliation ? ` • ${registration.schoolAffiliation}` : ''}
                   </p>
@@ -383,7 +383,7 @@ export const RegistrationBusinessCard = ({ registration, actions, hideFlipInstru
                 {/* Absolute badge container removed to fix overlapping */}
 
                 {!hideFlipInstruction && (
-                  <div className="absolute bottom-2 sm:bottom-4 right-3 sm:right-4 flex items-center gap-1 sm:gap-2 text-[9px] sm:text-xs text-muted-foreground">
+                  <div className="absolute bottom-2 sm:bottom-2 right-2 sm:right-2 flex items-center gap-1 sm:gap-2 text-[9px] sm:text-xs text-muted-foreground">
                     <RotateCw className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                     <span>Tap to flip</span>
                   </div>
@@ -445,7 +445,7 @@ export const RegistrationBusinessCard = ({ registration, actions, hideFlipInstru
                           <img src="/r-icon.svg" alt="" className="w-4 h-4 sm:w-6 sm:h-6" />
                         </div>
                       </div>
-                      <h3 className="text-base sm:text-2xl font-bold text-white mb-0.5 sm:mb-2">
+                      <h3 className="hidden sm:block sm:text-2xl font-bold text-white mb-0.5 sm:mb-2">
                         RAISE ID
                       </h3>
                       <p className="hidden sm:block text-xs sm:text-sm text-muted-foreground/80 font-medium">
