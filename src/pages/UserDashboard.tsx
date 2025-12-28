@@ -33,7 +33,7 @@ import {
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { onAuthStateChanged, type User } from 'firebase/auth';
-import { Loader2, CalendarDays, Mail, Phone, CheckCircle2, XCircle, Clock, Pencil, InfoIcon, EditIcon, RefreshCcw, Circle, AlertCircle, MailCheckIcon } from 'lucide-react';
+import { Loader2, CalendarDays, Mail, Phone, CheckCircle2, XCircle, Clock, Pencil, InfoIcon, EditIcon, RefreshCcw, Circle, AlertCircle, MailCheckIcon, ClipboardCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { RegistrationProgress } from '@/components/RegistrationProgress';
 import { SchoolAutocomplete } from '@/components/SchoolAutocomplete';
@@ -421,12 +421,12 @@ const UserDashboard = () => {
                         <div className="absolute inset-0 bg-primary/5" />
                         <CardHeader>
                             <CardTitle className="text-2xl">
-                                {registration.surveyCompleted ? "Claim Your Certificate" : "Claim Your Certificate"}
+                                {registration.surveyCompleted ? "Claim Your Certificate" : "Survey"}
                             </CardTitle>
                             <CardDescription>
                                 {registration.surveyCompleted
                                     ? "The certificate of participation and certificate of appearance was sent in your email."
-                                    : "Please complete the feedback survey to generate your certificate."}
+                                    : "Please complete the feedback survey to receive your certificate."}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="relative z-10 flex flex-col items-center gap-6 py-8">
@@ -459,7 +459,7 @@ const UserDashboard = () => {
                             ) : (
                                 <div className="space-y-6">
                                     <div className="w-24 h-24 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto border border-amber-500/20">
-                                        <MailCheckIcon className="w-10 h-10 text-amber-500" />
+                                        <ClipboardCheck className="w-10 h-10 text-amber-500" />
                                     </div>
                                     <Button size="lg" className="w-full sm:w-auto text-lg px-8" onClick={() => window.location.href = '/survey'}>
                                         Take Feedback Survey

@@ -148,7 +148,7 @@
                     <div class="greeting">Thank you for RAISE-ing with us!</div>
 
                     <p class="text">
-                        We sincerely thank you for taking part in the <strong>CHED RAISE Program</strong>.
+                        We sincerely thank you for taking part in the <strong>CHED-RAISE 2026</strong>.
                         Your active participation and engagement greatly contributed to the success of the event.
                     </p>
 
@@ -165,7 +165,7 @@
                         <div class="recipient-name">{{name}} {{middleName}} {{lastName}}</div>
 
                         <p class="text" style="text-align: center; margin-top: 20px;">
-                            in the <strong>CHED RAISE Program</strong>.
+                            in the <strong>CHED-RAISE 2026 event</strong>.
                         </p>
                     </div>
 
@@ -178,18 +178,10 @@
                         <tbody>
                             <tr>
                                 <td align="center">
-                                    <form action="https://ched-raise.wvsu.edu.ph/api/email" method="POST"
-                                        target="_blank">
-                                        <input type="hidden" name="type" value="generate_certificate">
-                                        <input type="hidden" name="certificateType" value="participation">
-                                        <input type="hidden" name="name" value="{{name}}">
-                                        <input type="hidden" name="middleName" value="{{middleName}}">
-                                        <input type="hidden" name="lastName" value="{{lastName}}">
-                                        <button type="submit"
-                                            style="background-color: #166534; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; border: none; cursor: pointer; font-size: 16px;">
-                                            Download Certificate
-                                        </button>
-                                    </form>
+                                    <a href="{{apiUrl}}?data={{encryptedData}}" target="_blank"
+                                        style="display: inline-block; background-color: #166534; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">
+                                        Download Certificate
+                                    </a>
                                 </td>
                             </tr>
                         </tbody>
@@ -197,7 +189,7 @@
 
                     <p class="text" style="margin-top: 40px; text-align: center;">
                         Once again, thank you for being part of this initiative.<br>
-                        We look forward to your continued engagement in future CHED RAISE programs.
+                        We look forward to your continued engagement in future CHED RAISE events.
                     </p>
 
                     <p class="text" style="text-align: center;">

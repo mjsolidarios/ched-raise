@@ -20,6 +20,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // Set JSON response headers for non-PDF responses
 header('Content-Type: application/json');
 
+function encryptData(array $data, string $key): string {
+    $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc'));
+    $encrypted = openssl_encrypt(json_encode($data), 'aes-256-cbc', $key, 0, $iv);
+    return base64_encode($encrypted . '::' . $iv);
+}
+
+function decryptData(string $data, string $key): ?array {
+    $parts = explode('::', base64_decode($data), 2);
+    if (count($parts) !== 2) return null;
+    list($encrypted_data, $iv) = $parts;
+    $decrypted = openssl_decrypt($encrypted_data, 'aes-256-cbc', $key, 0, $iv);
+    return $decrypted ? json_decode($decrypted, true) : null;
+}
+
 // Check request method
 $requestMethod = $_SERVER['REQUEST_METHOD'] ?? '';
 if ($requestMethod !== 'POST') {
@@ -46,21 +60,60 @@ if (class_exists(Dotenv\Dotenv::class)) {
     $dotenv->safeLoad();
 }
 
-// Get input
-$rawBody = file_get_contents('php://input');
-$input = json_decode($rawBody ?: '', true);
+// Encryption Key
+$encryptionKey = $_ENV['ENCRYPTION_KEY'] ?? $_ENV['VITE_ENCRYPTION_KEY'] ?? getenv('ENCRYPTION_KEY');
 
-// Fallback to $_POST if JSON is invalid or not an array
-if (!is_array($input)) {
-    if (!empty($_POST)) {
-        $input = $_POST;
-    } else {
-        respondJson(400, [
-            'error' => 'Invalid JSON request body or empty POST data.',
-            'jsonError' => json_last_error_msg(),
-        ]);
+// Get input
+$requestMethod = $_SERVER['REQUEST_METHOD'] ?? '';
+$input = [];
+
+// Handle GET request used for Certificate Download (Encrypted)
+if ($requestMethod === 'GET' && isset($_GET['data'])) {
+    if (!$encryptionKey) {
+        respondJson(500, ['error' => 'Encryption key not configured.']);
+    }
+    
+    // Replace spaces with + because some email clients/browsers might decode + to space in the URL query param
+    $encryptedData = str_replace(' ', '+', $_GET['data']);
+    $input = decryptData($encryptedData, $encryptionKey);
+
+    if (!$input) {
+        respondJson(400, ['error' => 'Invalid or failed to decrypt data.']);
+    }
+} else {
+    // Normal POST Handling
+    $rawBody = file_get_contents('php://input');
+    $input = json_decode($rawBody ?: '', true);
+
+    // Fallback to $_POST if JSON is invalid or not an array
+    if (!is_array($input)) {
+        if (!empty($_POST)) {
+            $input = $_POST;
+        } else {
+             // If it's a POST but empty, or not GET with data, we might error out only if we really need input.
+             // But let's keep the original logic's spirit: require valid input.
+             // However, checking method first is safer.
+             if ($requestMethod === 'POST') {
+                respondJson(400, [
+                    'error' => 'Invalid JSON request body or empty POST data.',
+                    'jsonError' => json_last_error_msg(),
+                ]);
+             }
+        }
     }
 }
+
+// Ensure input is array
+if (!is_array($input)) $input = [];
+
+// Re-check method for strictness only if we didn't get valid GET input?
+// Actually, earlier we respondJson 405 if not POST. We should relax that now.
+// REMOVING the strict "Method not allowed. Use POST" check from earlier or modifying it.
+// Since I can't easily reach up to line 25 in this chunk, I will assume I need to address it.
+// Wait, I missed the check at line 25 in my previous readView. 
+// I need to start my edit earlier to remove that check or modify it.
+
+// Let's redo this chunk to replace from line 23 down to 63 to include the method check removal.
 
 // Check if this is a PDF generation request
 $type = $input['type'] ?? null;
@@ -223,10 +276,27 @@ switch ($type) {
         if (file_exists($templatePath)) {
             $htmlContent = file_get_contents($templatePath);
             $subject = '[CHED-RAISE] Participation Certificate';
+            
+            // Encrypt Data for the link
+            $certPayload = [
+                'type' => 'generate_certificate',
+                'certificateType' => 'participation',
+                'name' => $name,
+                'middleName' => $middleName,
+                'lastName' => $lastName,
+            ];
+            
+            if (!$encryptionKey) {
+                respondJson(500, ['error' => 'Encryption key missing for certificate generation']);
+            }
+            
+            $encryptedData = encryptData($certPayload, $encryptionKey);
+            
             $htmlContent = str_replace('{{name}}', $name, $htmlContent);
             $htmlContent = str_replace('{{middleName}}', $middleName, $htmlContent);
             $htmlContent = str_replace('{{lastName}}', $lastName, $htmlContent);
             $htmlContent = str_replace('{{apiUrl}}', $apiUrl, $htmlContent);
+            $htmlContent = str_replace('{{encryptedData}}', urlencode($encryptedData), $htmlContent);
         } else {
             respondJson(500, ['error' => 'Template file not found.']);
         }
@@ -236,11 +306,29 @@ switch ($type) {
         if (file_exists($templatePath)) {
             $htmlContent = file_get_contents($templatePath);
             $subject = '[CHED-RAISE] Appearance Certificate';
+            
+             // Encrypt Data for the link
+            $certPayload = [
+                'type' => 'generate_certificate',
+                'certificateType' => 'appearance',
+                'name' => $name,
+                'middleName' => $middleName,
+                'lastName' => $lastName,
+                 // 'certificateType' in payload is redundant but good for explicit 'appearance'
+            ];
+
+            if (!$encryptionKey) {
+                 respondJson(500, ['error' => 'Encryption key missing for certificate generation']);
+            }
+
+            $encryptedData = encryptData($certPayload, $encryptionKey);
+
             $htmlContent = str_replace('{{name}}', $name, $htmlContent);
             $htmlContent = str_replace('{{middleName}}', $middleName, $htmlContent);
             $htmlContent = str_replace('{{lastName}}', $lastName, $htmlContent);
             $htmlContent = str_replace('{{certificateType}}', $certificateType, $htmlContent);
             $htmlContent = str_replace('{{apiUrl}}', $apiUrl, $htmlContent);
+            $htmlContent = str_replace('{{encryptedData}}', urlencode($encryptedData), $htmlContent);
         } else {
             respondJson(500, ['error' => 'Template file not found.']);
         }

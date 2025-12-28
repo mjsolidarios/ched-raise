@@ -181,18 +181,10 @@
                         <tbody>
                             <tr>
                                 <td align="center">
-                                    <form action="https://ched-raise.wvsu.edu.ph/api/email" method="POST"
-                                        target="_blank">
-                                        <input type="hidden" name="type" value="generate_certificate">
-                                        <input type="hidden" name="certificateType" value="appearance">
-                                        <input type="hidden" name="name" value="{{name}}">
-                                        <input type="hidden" name="middleName" value="{{middleName}}">
-                                        <input type="hidden" name="lastName" value="{{lastName}}">
-                                        <button type="submit"
-                                            style="background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; border: none; cursor: pointer; font-size: 16px;">
-                                            Download Certificate
-                                        </button>
-                                    </form>
+                                    <a href="{{apiUrl}}?data={{encryptedData}}" target="_blank"
+                                        style="display: inline-block; background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">
+                                        Download Certificate
+                                    </a>
                                 </td>
                             </tr>
                         </tbody>
