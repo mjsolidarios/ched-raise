@@ -73,6 +73,7 @@ const SurveyPage = () => {
                 ticketCode: registrationData.ticketCode,
                 // Pass a fallback from if needed, or let API handle it
                 from: 'noreply@ched-raise.wvsu.edu.ph',
+                school: registrationData.schoolAffiliation,
             });
 
             toast.success("Survey submitted! Your certificate has been sent to your email.");
