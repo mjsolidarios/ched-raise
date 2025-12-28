@@ -1,16 +1,29 @@
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowRight, Calendar, MapPin } from "lucide-react"
 import { motion } from "framer-motion"
 import { Link } from "react-router-dom"
 import Typewriter from 'typewriter-effect';
+import { db } from '@/lib/firebase';
+import { doc, onSnapshot } from "firebase/firestore";
 
 import { CountdownTimer } from "@/components/CountdownTimer"
 // import { Robot } from "@/components/Robot"
 
 export function Hero() {
     const containerRef = useRef<HTMLElement>(null);
+    const [eventStatus, setEventStatus] = useState<'ongoing' | 'finished'>('ongoing');
+
+    useEffect(() => {
+        // Subscribe to global settings for event status
+        const settingsUnsub = onSnapshot(doc(db, 'settings', 'general'), (docSnap) => {
+            if (docSnap.exists()) {
+                setEventStatus(docSnap.data().eventStatus || 'ongoing');
+            }
+        });
+        return () => settingsUnsub();
+    }, []);
 
     useEffect(() => {
         const container = containerRef.current;
@@ -168,36 +181,40 @@ export function Hero() {
                     </div>
                 </motion.div>
 
-                <CountdownTimer targetDate="2026-01-28T08:00:00" />
+                {eventStatus !== 'finished' && (
+                    <>
+                        <CountdownTimer targetDate="2026-01-28T08:00:00" />
 
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.5 }}
-                    className="flex flex-col sm:flex-row items-center justify-center gap-4"
-                >
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Button size="lg" className="bg-primary text-white hover:bg-primary/90 h-14 px-8 text-lg font-bold shadow-[0_0_40px_rgba(8,52,159,0.6)] hover:shadow-[0_0_50px_rgba(8,52,159,0.8)] transition-all relative overflow-hidden group" asChild>
-                            <Link to="/login" onClick={() => window.scrollTo(0, 0)}>
-                                <span className="relative z-10 flex items-center">
-                                    Register Now
-                                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                                </span>
-                            </Link>
-                        </Button>
-                    </motion.div>
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-white/20 hover:bg-white/5 hover:border-teal-400/50 bg-white/5 backdrop-blur-md transition-all relative overflow-hidden group" asChild>
-                            <Link to="/agenda">
-                                <span className="relative z-10 flex items-center group-hover:text-teal-300 transition-colors">
-                                    <Calendar className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
-                                    View Agenda
-                                </span>
-                                <span className="absolute inset-0 bg-gradient-to-r from-teal-400/10 via-cyan-400/10 to-transparent -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out" />
-                            </Link>
-                        </Button>
-                    </motion.div>
-                </motion.div>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.5 }}
+                            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+                        >
+                            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                <Button size="lg" className="bg-primary text-white hover:bg-primary/90 h-14 px-8 text-lg font-bold shadow-[0_0_40px_rgba(8,52,159,0.6)] hover:shadow-[0_0_50px_rgba(8,52,159,0.8)] transition-all relative overflow-hidden group" asChild>
+                                    <Link to="/login" onClick={() => window.scrollTo(0, 0)}>
+                                        <span className="relative z-10 flex items-center">
+                                            Register Now
+                                            <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                                        </span>
+                                    </Link>
+                                </Button>
+                            </motion.div>
+                            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-white/20 hover:bg-white/5 hover:border-teal-400/50 bg-white/5 backdrop-blur-md transition-all relative overflow-hidden group" asChild>
+                                    <Link to="/agenda">
+                                        <span className="relative z-10 flex items-center group-hover:text-teal-300 transition-colors">
+                                            <Calendar className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
+                                            View Agenda
+                                        </span>
+                                        <span className="absolute inset-0 bg-gradient-to-r from-teal-400/10 via-cyan-400/10 to-transparent -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out" />
+                                    </Link>
+                                </Button>
+                            </motion.div>
+                        </motion.div>
+                    </>
+                )}
             </div>
 
             {/* 3D Robot Floating at the Bottom */}

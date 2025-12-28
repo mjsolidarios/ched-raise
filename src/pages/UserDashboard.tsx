@@ -33,7 +33,7 @@ import {
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { onAuthStateChanged, type User } from 'firebase/auth';
-import { Loader2, CalendarDays, Mail, Phone, CheckCircle2, XCircle, Clock, Pencil, InfoIcon, EditIcon, RefreshCcw, Circle, AlertCircle } from 'lucide-react';
+import { Loader2, CalendarDays, Mail, Phone, CheckCircle2, XCircle, Clock, Pencil, InfoIcon, EditIcon, RefreshCcw, Circle, AlertCircle, MailCheckIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { RegistrationProgress } from '@/components/RegistrationProgress';
 import { SchoolAutocomplete } from '@/components/SchoolAutocomplete';
@@ -410,10 +410,10 @@ const UserDashboard = () => {
                 >
                     <div className="space-y-4">
                         <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                            CHED RAISE 2026 has Concluded!
+                            Our event has concluded!
                         </h1>
                         <p className="text-lg text-muted-foreground">
-                            Thank you for participating in our event. We hope you had a fruitful experience.
+                            Thank you for participating. We hope you had a fruitful experience.
                         </p>
                     </div>
 
@@ -421,37 +421,45 @@ const UserDashboard = () => {
                         <div className="absolute inset-0 bg-primary/5" />
                         <CardHeader>
                             <CardTitle className="text-2xl">
-                                {registration.surveyCompleted ? "Certificate of Participation" : "Claim Your Certificate"}
+                                {registration.surveyCompleted ? "Claim Your Certificate" : "Claim Your Certificate"}
                             </CardTitle>
                             <CardDescription>
                                 {registration.surveyCompleted
-                                    ? "You have successfully completed the event requirements."
+                                    ? "The certificate of participation and certificate of appearance was sent in your email."
                                     : "Please complete the feedback survey to generate your certificate."}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="relative z-10 flex flex-col items-center gap-6 py-8">
                             {registration.surveyCompleted ? (
-                                <div className="space-y-6">
-                                    <div className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto border border-emerald-500/20">
-                                        <CheckCircle2 className="w-12 h-12 text-emerald-500" />
+                                <div className="space-y-6 w-full max-w-md mx-auto">
+                                    <div className="relative group cursor-default">
+                                        <div className="absolute inset-0 bg-emerald-500/20 blur-xl rounded-full group-hover:bg-emerald-500/30 transition-all duration-500" />
+                                        <div className="relative w-32 h-32 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full flex items-center justify-center mx-auto border border-emerald-500/20 shadow-lg shadow-emerald-500/5 group-hover:scale-105 transition-transform duration-500">
+                                            <MailCheckIcon className="w-16 h-16 text-emerald-500 drop-shadow-sm" />
+
+                                            {/* Pulse rings */}
+                                            <div className="absolute inset-0 rounded-full border border-emerald-500/20 animate-[ping_3s_ease-in-out_infinite]" />
+                                            <div className="absolute inset-0 rounded-full border border-emerald-500/10 animate-[ping_3s_ease-in-out_infinite_delay-1000ms]" />
+                                        </div>
                                     </div>
-                                    <div className="p-6 bg-background/50 border border-border rounded-lg max-w-sm mx-auto">
-                                        <p className="font-mono text-sm text-muted-foreground mb-2">CERTIFICATE ID</p>
-                                        <p className="text-xl font-bold tracking-wider">{registration.ticketCode || registration.id}</p>
+
+                                    <div className="space-y-2">
+                                        <h3 className="text-xl font-semibold text-emerald-500 glow-text-sm">Sent Successfully!</h3>
+                                        <p className="text-sm text-muted-foreground">
+                                            Please check your inbox (and spam folder) for an email from <br /> <span className="text-foreground font-medium">no-reply@ched-raise.wvsu.edu.ph</span>
+                                        </p>
                                     </div>
-                                    <Button size="lg" className="gap-2" onClick={() => setDashboardAlert({
-                                        show: true,
-                                        message: "Certificate Download Started...",
-                                        variant: "default",
-                                        title: "Success"
-                                    })}>
-                                        <CheckCircle2 className="w-4 h-4" /> Download Certificate
-                                    </Button>
+
+                                    <div className="pt-4 flex justify-center">
+                                        <Button variant="outline" className="gap-2 text-xs h-8 rounded-full border-primary/20 hover:border-primary/50" onClick={() => window.open('https://mail.google.com', '_blank')}>
+                                            <Mail className="w-3 h-3" /> Open Gmail
+                                        </Button>
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="space-y-6">
                                     <div className="w-24 h-24 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto border border-amber-500/20">
-                                        <Pencil className="w-10 h-10 text-amber-500" />
+                                        <MailCheckIcon className="w-10 h-10 text-amber-500" />
                                     </div>
                                     <Button size="lg" className="w-full sm:w-auto text-lg px-8" onClick={() => window.location.href = '/survey'}>
                                         Take Feedback Survey
@@ -463,8 +471,8 @@ const UserDashboard = () => {
                     </Card>
 
                     {/* Show limited registration details for reference */}
-                    <div className="opacity-70 pointer-events-none filter grayscale hover:grayscale-0 transition-all duration-500">
-                        <RegistrationBusinessCard registration={registration} />
+                    <div className="opacity-70 pointer-events-none filter grayscale hover:grayscale-0 transition-all duration-500 text-left">
+                        <RegistrationBusinessCard registration={registration} hideFlipInstruction={true} hideDownloadButton={true} />
                     </div>
 
                 </motion.div>
@@ -557,7 +565,6 @@ const UserDashboard = () => {
                                             <h2 className="text-2xl font-bold tracking-tight">Hello, {registration.firstName}!</h2>
                                             <p className="text-muted-foreground">Ready for the CHED RAISE 2026 Summit?</p>
                                             <div className="flex flex-wrap justify-center sm:justify-start gap-2 pt-2">
-                                                <Badge variant="secondary" className="font-mono text-xs">{registration.ticketCode || registration.id}</Badge>
                                                 <Badge variant="outline" className="capitalize text-xs">{registration.registrantType}</Badge>
                                             </div>
                                         </div>

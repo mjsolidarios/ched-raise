@@ -292,3 +292,11 @@
 .rotate-y-180 {
     transform: rotateY(180deg);
 }
+/* Glow Text Utilities */
+.glow-text {
+    text-shadow: 0 0 20px currentColor;
+}
+
+.glow-text-sm {
+    text-shadow: 0 0 10px currentColor;
+}

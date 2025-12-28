@@ -126,6 +126,8 @@ type Registration = {
 type RegistrationBusinessCardProps = {
   registration: Registration;
   actions?: ReactNode;
+  hideFlipInstruction?: boolean;
+  hideDownloadButton?: boolean;
 };
 
 const getStatusColor = (status?: string) => {
@@ -139,7 +141,7 @@ const getStatusColor = (status?: string) => {
   }
 };
 
-export const RegistrationBusinessCard = ({ registration, actions }: RegistrationBusinessCardProps) => {
+export const RegistrationBusinessCard = ({ registration, actions, hideFlipInstruction, hideDownloadButton }: RegistrationBusinessCardProps) => {
   const [flipped, setFlipped] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
   const frontRef = useRef<HTMLDivElement>(null);
@@ -380,10 +382,12 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
 
                 {/* Absolute badge container removed to fix overlapping */}
 
-                <div className="absolute bottom-2 sm:bottom-4 right-3 sm:right-4 flex items-center gap-1 sm:gap-2 text-[9px] sm:text-xs text-muted-foreground">
-                  <RotateCw className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                  <span>Tap to flip</span>
-                </div>
+                {!hideFlipInstruction && (
+                  <div className="absolute bottom-2 sm:bottom-4 right-3 sm:right-4 flex items-center gap-1 sm:gap-2 text-[9px] sm:text-xs text-muted-foreground">
+                    <RotateCw className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                    <span>Tap to flip</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -520,16 +524,18 @@ export const RegistrationBusinessCard = ({ registration, actions }: Registration
         </div>
       </div>
 
-      <div className="flex justify-center mt-4 sm:mt-6">
-        <Button
-          onClick={handleDownload}
-          variant="outline"
-          className="group/btn gap-2 shadow-sm hover:shadow-md transition-all rounded-full bg-white/50 backdrop-blur-sm border-white/20 hover:bg-white/80"
-        >
-          <Download className="w-4 h-4 text-foreground/70 group-hover/btn:text-primary transition-colors" />
-          <span className="text-foreground/80 group-hover/btn:text-foreground">Download ID</span>
-        </Button>
-      </div>
+      {!hideDownloadButton && (
+        <div className="flex justify-center mt-4 sm:mt-6">
+          <Button
+            onClick={handleDownload}
+            variant="outline"
+            className="group/btn gap-2 shadow-sm hover:shadow-md transition-all rounded-full bg-white/50 backdrop-blur-sm border-white/20 hover:bg-white/80"
+          >
+            <Download className="w-4 h-4 text-foreground/70 group-hover/btn:text-primary transition-colors" />
+            <span className="text-foreground/80 group-hover/btn:text-foreground">Download ID</span>
+          </Button>
+        </div>
+      )}
     </div >
   );
 };
