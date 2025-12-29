@@ -59,7 +59,7 @@ if (!file_exists($autoloadPath)) {
     ]);
 }
 
-// mPDF will be loaded via composer's autoload
+// FPDF will be loaded via composer's autoload
 
 
 require $autoloadPath;
