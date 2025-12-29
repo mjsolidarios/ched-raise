@@ -63,15 +63,14 @@ const SurveyPage = () => {
                 surveyTimestamp: new Date()
             });
 
-            // Send Participation Certificate Email
+            // Send Survey Completion Email
             await axios.post('/api/email/', {
-                type: 'participation_certificate',
+                type: 'survey_completion',
                 to: registrationData.email,
                 name: registrationData.firstName,
                 middleName: registrationData.middleName,
                 lastName: registrationData.lastName,
                 ticketCode: registrationData.ticketCode,
-                // Pass a fallback from if needed, or let API handle it
                 from: 'noreply@ched-raise.wvsu.edu.ph',
                 school: registrationData.schoolAffiliation,
             });

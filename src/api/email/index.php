@@ -9,7 +9,7 @@ function respondJson(int $statusCode, array $payload): void
 
 // CORS Headers
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 
 // Handle Preflight OPTIONS Request
@@ -39,8 +39,12 @@ function decryptData(string $data, string $key): ?array
 }
 
 // Check request method
+// Check request method
 $requestMethod = $_SERVER['REQUEST_METHOD'] ?? '';
-if ($requestMethod !== 'POST') {
+
+// Allow POST for normal API calls
+// Allow GET only if 'data' param is present (for certificate generation)
+if ($requestMethod !== 'POST' && !($requestMethod === 'GET' && isset($_GET['data']))) {
     respondJson(405, [
         'error' => 'Method not allowed. Use POST.',
         'method' => $requestMethod,
