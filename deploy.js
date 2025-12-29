@@ -68,19 +68,27 @@ async function deploy() {
     console.log('0. Exit');
 
     const choice = await rl.question('\nSelect deployment target [1-3, 0]: ');
-    rl.close();
 
     if (choice === '0') {
+        rl.close();
         process.exit(0);
     }
 
     if (!['1', '2', '3'].includes(choice)) {
         console.error('❌ Invalid selection');
+        rl.close();
         process.exit(1);
     }
 
     const deployFrontend = choice === '1' || choice === '3';
     const deployBackend = choice === '2' || choice === '3';
+
+    let updateVendor = false;
+    if (deployBackend) {
+        const vendorChoice = await rl.question('Does the backend "vendor" folder need to be updated? (y/n) [n]: ');
+        updateVendor = vendorChoice.toLowerCase() === 'y';
+    }
+    rl.close();
 
     const client = new ftp.Client();
     client.ftp.verbose = true;
@@ -129,7 +137,22 @@ async function deploy() {
             console.log('📤 Uploading backend API (src/api/email)...');
             const remoteApiPath = remotePath.endsWith('/') ? `${remotePath}api/email` : `${remotePath}/api/email`;
             await client.ensureDir(remoteApiPath);
-            await client.uploadFromDir(localApiPath);
+
+            const entries = fs.readdirSync(localApiPath, { withFileTypes: true });
+            for (const entry of entries) {
+                if (entry.name === 'vendor' && !updateVendor) {
+                    console.log('   ⏭️  Skipping vendor folder...');
+                    continue;
+                }
+                const entryLocalPath = path.join(localApiPath, entry.name);
+                const entryRemotePath = `${remoteApiPath}/${entry.name}`;
+
+                if (entry.isDirectory()) {
+                    await client.uploadFromDir(entryLocalPath, entryRemotePath);
+                } else {
+                    await client.uploadFile(entryLocalPath, entryRemotePath);
+                }
+            }
             console.log('\n✅ Backend API upload complete!\n');
         }
 
