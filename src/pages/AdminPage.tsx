@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { db, auth } from '@/lib/firebase';
-import { collection, query, onSnapshot, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, onSnapshot, doc, updateDoc, deleteField } from 'firebase/firestore';
 import { onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, type User } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,8 +8,19 @@ import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Users, Clock, CheckCircle2, XCircle, Search, Loader2, Scan, Keyboard, Mail } from 'lucide-react';
+
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+    DropdownMenuSub,
+    DropdownMenuSubTrigger,
+    DropdownMenuSubContent,
+} from "@/components/ui/dropdown-menu"
+import { Users, Clock, CheckCircle2, XCircle, Search, Loader2, Scan, Keyboard, Mail, Trash2, MoreHorizontal, Copy } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { UserAvatar } from '@/components/UserAvatar';
@@ -25,12 +36,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -67,6 +72,12 @@ const AdminPage = () => {
 
     // Email Confirmation State
     const [emailConfirmation, setEmailConfirmation] = useState<{ isOpen: boolean; reg: any | null }>({
+        isOpen: false,
+        reg: null
+    });
+
+    // Delete Survey State
+    const [deleteSurveyConfirmation, setDeleteSurveyConfirmation] = useState<{ isOpen: boolean; reg: any | null }>({
         isOpen: false,
         reg: null
     });
@@ -279,6 +290,31 @@ const AdminPage = () => {
             toast.error("Failed to send email.", { id: loadingToast });
         } finally {
             setEmailConfirmation({ isOpen: false, reg: null });
+        }
+    };
+
+    const initiateDeleteSurvey = (reg: any) => {
+        setDeleteSurveyConfirmation({ isOpen: true, reg });
+    };
+
+    const handleConfirmDeleteSurvey = async () => {
+        const reg = deleteSurveyConfirmation.reg;
+        if (!reg) return;
+
+        try {
+            const ref = doc(db, 'registrations', reg.id);
+            await updateDoc(ref, {
+                surveyCompleted: false,
+                surveyRating: deleteField(),
+                surveyFeedback: deleteField(),
+                surveyTimestamp: deleteField()
+            });
+            toast.success("Survey entry deleted.");
+        } catch (error) {
+            console.error("Error deleting survey entry:", error);
+            toast.error("Failed to delete survey entry.");
+        } finally {
+            setDeleteSurveyConfirmation({ isOpen: false, reg: null });
         }
     };
 
@@ -530,7 +566,6 @@ const AdminPage = () => {
                                                     <TableHead>School / Type</TableHead>
                                                     <TableHead>Contact</TableHead>
                                                     <TableHead>Status</TableHead>
-                                                    <TableHead>Ticket ID</TableHead>
                                                     <TableHead className="text-right">Actions</TableHead>
                                                 </TableRow>
                                             </TableHeader>
@@ -573,59 +608,61 @@ const AdminPage = () => {
                                                                     {reg.status}
                                                                 </Badge>
                                                             </TableCell>
-                                                            <TableCell>
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className="font-mono text-sm">{reg.ticketCode || reg.id}</span>
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="icon"
-                                                                        className="h-6 w-6"
-                                                                        onClick={() => {
-                                                                            navigator.clipboard.writeText(reg.ticketCode || reg.id);
-                                                                        }}
-                                                                    >
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
-                                                                            <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                                                                            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-                                                                        </svg>
-                                                                    </Button>
-                                                                </div>
-                                                            </TableCell>
-                                                            <TableCell className="text-right flex items-center justify-end gap-2">
-                                                                <Select onValueChange={(val: string) => updateStatus(reg.id, val)} value={reg.status}>
-                                                                    <SelectTrigger className="w-[130px] ml-auto h-8 text-xs">
-                                                                        <SelectValue />
-                                                                    </SelectTrigger>
-                                                                    <SelectContent align="end">
-                                                                        <SelectItem value="pending">
-                                                                            <div className="flex items-center gap-2"><Clock className="h-3 w-3" /> Pending</div>
-                                                                        </SelectItem>
-                                                                        <SelectItem value="confirmed">
-                                                                            <div className="flex items-center gap-2 decoration-emerald-500"><CheckCircle2 className="h-3 w-3 text-emerald-500" /> Confirm</div>
-                                                                        </SelectItem>
-                                                                        <SelectItem value="rejected">
-                                                                            <div className="flex items-center gap-2"><XCircle className="h-3 w-3 text-destructive" /> Reject</div>
-                                                                        </SelectItem>
-                                                                    </SelectContent>
-                                                                </Select>
-
-                                                                <TooltipProvider>
-                                                                    <Tooltip>
-                                                                        <TooltipTrigger asChild>
-                                                                            <Button
-                                                                                variant="ghost"
-                                                                                size="icon"
-                                                                                className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
-                                                                                onClick={() => initiateEmailSend(reg)}
-                                                                            >
-                                                                                <Mail className="h-4 w-4" />
-                                                                            </Button>
-                                                                        </TooltipTrigger>
-                                                                        <TooltipContent>
-                                                                            <p>Send Survey/Certificate Email</p>
-                                                                        </TooltipContent>
-                                                                    </Tooltip>
-                                                                </TooltipProvider>
+                                                            <TableCell className="text-right">
+                                                                <DropdownMenu>
+                                                                    <DropdownMenuTrigger asChild>
+                                                                        <Button variant="ghost" className="h-8 w-8 p-0">
+                                                                            <span className="sr-only">Open menu</span>
+                                                                            <MoreHorizontal className="h-4 w-4" />
+                                                                        </Button>
+                                                                    </DropdownMenuTrigger>
+                                                                    <DropdownMenuContent align="end">
+                                                                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                                        <DropdownMenuItem
+                                                                            onClick={() => {
+                                                                                navigator.clipboard.writeText(reg.ticketCode || reg.id);
+                                                                                toast.success("Ticket ID copied to clipboard");
+                                                                            }}
+                                                                        >
+                                                                            <Copy className="mr-2 h-4 w-4" />
+                                                                            Copy Ticket ID
+                                                                        </DropdownMenuItem>
+                                                                        <DropdownMenuSeparator />
+                                                                        <DropdownMenuSub>
+                                                                            <DropdownMenuSubTrigger>
+                                                                                <Clock className="mr-2 h-4 w-4" />
+                                                                                Change Status
+                                                                            </DropdownMenuSubTrigger>
+                                                                            <DropdownMenuSubContent>
+                                                                                <DropdownMenuItem onClick={() => updateStatus(reg.id, 'pending')}>
+                                                                                    <Clock className="mr-2 h-4 w-4" />
+                                                                                    Pending
+                                                                                </DropdownMenuItem>
+                                                                                <DropdownMenuItem onClick={() => updateStatus(reg.id, 'confirmed')}>
+                                                                                    <CheckCircle2 className="mr-2 h-4 w-4 text-emerald-500" />
+                                                                                    Confirm
+                                                                                </DropdownMenuItem>
+                                                                                <DropdownMenuItem onClick={() => updateStatus(reg.id, 'rejected')}>
+                                                                                    <XCircle className="mr-2 h-4 w-4 text-destructive" />
+                                                                                    Reject
+                                                                                </DropdownMenuItem>
+                                                                            </DropdownMenuSubContent>
+                                                                        </DropdownMenuSub>
+                                                                        <DropdownMenuSeparator />
+                                                                        <DropdownMenuItem onClick={() => initiateEmailSend(reg)}>
+                                                                            <Mail className="mr-2 h-4 w-4" />
+                                                                            Email Certificate
+                                                                        </DropdownMenuItem>
+                                                                        <DropdownMenuItem
+                                                                            onClick={() => initiateDeleteSurvey(reg)}
+                                                                            disabled={!reg.surveyCompleted}
+                                                                            className="text-destructive focus:text-destructive"
+                                                                        >
+                                                                            <Trash2 className="mr-2 h-4 w-4" />
+                                                                            Delete Survey
+                                                                        </DropdownMenuItem>
+                                                                    </DropdownMenuContent>
+                                                                </DropdownMenu>
                                                             </TableCell>
                                                         </TableRow>
                                                     ))
@@ -740,17 +777,18 @@ const AdminPage = () => {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-            <AlertDialog open={emailConfirmation.isOpen} onOpenChange={(open) => setEmailConfirmation(prev => ({ ...prev, isOpen: open }))}>
+
+            <AlertDialog open={deleteSurveyConfirmation.isOpen} onOpenChange={(open) => setDeleteSurveyConfirmation(prev => ({ ...prev, isOpen: open }))}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Send Survey Completion Email?</AlertDialogTitle>
+                        <AlertDialogTitle>Delete Survey Entry?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            This will send the unified certificate email (Participation & Appearance) to <strong>{emailConfirmation.reg?.firstName} {emailConfirmation.reg?.lastName}</strong> at {emailConfirmation.reg?.email}.
+                            Are you sure you want to delete the survey entry for <strong>{deleteSurveyConfirmation.reg?.firstName} {deleteSurveyConfirmation.reg?.lastName}</strong>? This action cannot be undone and will allow the user to retake the survey.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleConfirmSendEmail}>Send Email</AlertDialogAction>
+                        <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={handleConfirmDeleteSurvey}>Delete Survey</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

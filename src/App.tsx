@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Chatbot } from './components/Chatbot';
 import ScrollToTop from './components/ScrollToTop';
@@ -27,13 +27,21 @@ const PageLoader = () => (
     </div>
 );
 
+const ConditionalChatbot = () => {
+    const location = useLocation();
+    if (location.pathname.startsWith('/admin')) {
+        return null;
+    }
+    return <Chatbot />;
+};
+
 const App = () => {
     return (
         <Router>
             <ScrollToTop />
             <div className="min-h-screen bg-background text-foreground font-sans selection:bg-accent selection:text-white">
                 <Navbar />
-                <Chatbot />
+                <ConditionalChatbot />
                 <Suspense fallback={<PageLoader />}>
                     <Routes>
                         <Route path="/" element={<LandingPage />} />
