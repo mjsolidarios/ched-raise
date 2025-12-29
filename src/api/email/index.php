@@ -148,17 +148,21 @@ if ($type === 'generate_certificate') {
         respondJson(400, ['error' => 'Missing certificate type.']);
     }
 
-    // Create PDF with Dompdf
-    if (!class_exists('Dompdf\Dompdf')) {
-        respondJson(500, ['error' => 'Dompdf library not found. Please run "composer install" in src/api/email.']);
+    // Create PDF with mPDF
+    if (!class_exists('Mpdf\Mpdf')) {
+        respondJson(500, ['error' => 'mPDF library not found. Please run "composer require mpdf/mpdf" in src/api/email.']);
     }
 
-    $options = new \Dompdf\Options();
-    $options->set('isHtml5ParserEnabled', true);
-    $options->set('isRemoteEnabled', true);
-    $options->set('defaultFont', 'serif');
-
-    $dompdf = new \Dompdf\Dompdf($options);
+    // Initialize mPDF with A4 Landscape
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4-L', // A4 Landscape
+        'orientation' => 'L',
+        'margin_left' => 0,
+        'margin_right' => 0,
+        'margin_top' => 0,
+        'margin_bottom' => 0,
+    ]);
 
     // Prepare content
     $templatePath = __DIR__ . '/templates/CertificatePDF.html';
@@ -189,9 +193,7 @@ if ($type === 'generate_certificate') {
         $html = str_replace($placeholder, $value, $html);
     }
 
-    $dompdf->loadHtml($html);
-    $dompdf->setPaper('A4', 'landscape');
-    $dompdf->render();
+    $mpdf->WriteHTML($html);
 
     // Output PDF
     if (ob_get_length())
@@ -199,7 +201,11 @@ if ($type === 'generate_certificate') {
 
     header('Content-Type: application/pdf');
     header('Content-Disposition: attachment; filename="ched-raise-certificate.pdf"');
-    echo $dompdf->output();
+
+    // Output function in mPDF sends headers automatically if D/I is used, 
+    // but since we set headers manually above, we can use 'S' (String) or just let it output to php://output (default 'I')
+    // 'D' forces download.
+    $mpdf->Output('ched-raise-certificate.pdf', 'D');
     exit;
 }
 
