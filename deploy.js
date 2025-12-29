@@ -55,13 +55,59 @@ const remotePath = process.env.FTP_REMOTE_PATH || '/';
 const localDistPath = path.join(__dirname, 'dist');
 const localApiPath = path.join(__dirname, 'src/api/email');
 
+async function uploadDirSmart(client, localDir, remoteDir) {
+    // Ensure remote directory exists
+    await client.ensureDir(remoteDir);
+
+    // Get list of remote files for comparison
+    const remoteFiles = await client.list(remoteDir);
+    const remoteFileMap = new Map(remoteFiles.map(f => [f.name, f.size]));
+
+    // Get list of local files
+    const localFiles = fs.readdirSync(localDir);
+
+    for (const file of localFiles) {
+        const localPath = path.join(localDir, file);
+        const remotePath = remoteDir.endsWith('/') ? `${remoteDir}${file}` : `${remoteDir}/${file}`;
+        const stats = fs.statSync(localPath);
+
+        if (stats.isDirectory()) {
+            // Recursively upload subdirectory
+            console.log(`📂 Entering ${file}...`);
+            await uploadDirSmart(client, localPath, remotePath);
+        } else {
+            // Check if file needs upload
+            let shouldUpload = true;
+
+            if (remoteFileMap.has(file)) {
+                const remoteSize = remoteFileMap.get(file);
+                // If sizes match, skip upload (basic "smart" check)
+                if (remoteSize === stats.size) {
+                    shouldUpload = false;
+                    // console.log(`⏭️  Skipped ${file} (Unchanged: ${stats.size} bytes)`);
+                } else {
+                    console.log(`📝 Updating ${file} (Size changed: ${remoteSize} -> ${stats.size})`);
+                }
+            } else {
+                console.log(`✨ New file ${file}`);
+            }
+
+            if (shouldUpload) {
+                process.stdout.write(`   Uploading ${file}... `);
+                await client.uploadFrom(localPath, remotePath);
+                process.stdout.write('Done\n');
+            }
+        }
+    }
+}
+
 async function deploy() {
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
     });
 
-    console.log('--- Deployment Target ---');
+    console.log('--- Deployment Target (Smart Sync) ---');
     console.log('1. Frontend (dist)');
     console.log('2. Backend API (src/api/email)');
     console.log('3. Both');
@@ -83,7 +129,7 @@ async function deploy() {
     const deployBackend = choice === '2' || choice === '3';
 
     const client = new ftp.Client();
-    client.ftp.verbose = true;
+    client.ftp.verbose = false; // Disable verbose logging to cleaner output for smart sync
 
     try {
         console.log('🚀 Starting deployment...\n');
@@ -113,24 +159,23 @@ async function deploy() {
         console.log('✅ Connected successfully\n');
 
         // Change to remote directory
-        console.log(`📂 Changing to remote directory: ${remotePath}`);
+        // console.log(`📂 Syncing to remote directory: ${remotePath}`);
         await client.ensureDir(remotePath);
-        console.log('✅ Directory ready\n');
+        // console.log('✅ Directory ready\n');
 
         if (deployFrontend) {
             // Upload dist folder contents
-            console.log('📤 Uploading frontend files (dist)...');
-            await client.uploadFromDir(localDistPath);
-            console.log('✅ Frontend upload complete!\n');
+            console.log('📤 Syncing frontend files (dist)...');
+            await uploadDirSmart(client, localDistPath, remotePath);
+            console.log('✅ Frontend sync complete!\n');
         }
 
         if (deployBackend) {
             // Upload API folder contents
-            console.log('📤 Uploading backend API (src/api/email)...');
+            console.log('📤 Syncing backend API (src/api/email)...');
             const remoteApiPath = remotePath.endsWith('/') ? `${remotePath}api/email` : `${remotePath}/api/email`;
-            await client.ensureDir(remoteApiPath);
-            await client.uploadFromDir(localApiPath);
-            console.log('\n✅ Backend API upload complete!\n');
+            await uploadDirSmart(client, localApiPath, remoteApiPath);
+            console.log('\n✅ Backend API sync complete!\n');
         }
 
         console.log('🎉 Deployment successful!');
