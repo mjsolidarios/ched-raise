@@ -9,7 +9,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter }
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Users, Clock, CheckCircle2, XCircle, Search, Loader2, Scan, Keyboard } from 'lucide-react';
+import { Users, Clock, CheckCircle2, XCircle, Search, Loader2, Scan, Keyboard, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { UserAvatar } from '@/components/UserAvatar';
@@ -25,6 +25,23 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { toast } from "sonner";
 
 
 
@@ -45,7 +62,15 @@ const AdminPage = () => {
     // Rejection Dialog State
     const [rejectingId, setRejectingId] = useState<string | null>(null);
     const [rejectionReason, setRejectionReason] = useState('');
+
     const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
+
+    // Email Confirmation State
+    const [emailConfirmation, setEmailConfirmation] = useState<{ isOpen: boolean; reg: any | null }>({
+        isOpen: false,
+        reg: null
+    });
+
 
     useEffect(() => {
         // Subscribe to global settings
@@ -224,6 +249,36 @@ const AdminPage = () => {
         } catch (error) {
             console.error("Error rejecting registration", error);
             alert("Failed to reject registration");
+        }
+    };
+
+    const initiateEmailSend = (reg: any) => {
+        setEmailConfirmation({ isOpen: true, reg });
+    };
+
+    const handleConfirmSendEmail = async () => {
+        const reg = emailConfirmation.reg;
+        if (!reg) return;
+
+        const loadingToast = toast.loading(`Sending email to ${reg.firstName}...`);
+
+        try {
+            await axios.post('/api/email/', {
+                type: 'survey_completion',
+                to: reg.email,
+                name: reg.firstName,
+                middleName: reg.middleName,
+                lastName: reg.lastName,
+                ticketCode: reg.ticketCode || reg.id,
+                from: 'noreply@ched-raise.wvsu.edu.ph',
+                school: reg.schoolAffiliation,
+            });
+            toast.success(`Email sent to ${reg.email}`, { id: loadingToast });
+        } catch (error) {
+            console.error("Error sending email:", error);
+            toast.error("Failed to send email.", { id: loadingToast });
+        } finally {
+            setEmailConfirmation({ isOpen: false, reg: null });
         }
     };
 
@@ -536,7 +591,7 @@ const AdminPage = () => {
                                                                     </Button>
                                                                 </div>
                                                             </TableCell>
-                                                            <TableCell className="text-right">
+                                                            <TableCell className="text-right flex items-center justify-end gap-2">
                                                                 <Select onValueChange={(val: string) => updateStatus(reg.id, val)} value={reg.status}>
                                                                     <SelectTrigger className="w-[130px] ml-auto h-8 text-xs">
                                                                         <SelectValue />
@@ -553,6 +608,24 @@ const AdminPage = () => {
                                                                         </SelectItem>
                                                                     </SelectContent>
                                                                 </Select>
+
+                                                                <TooltipProvider>
+                                                                    <Tooltip>
+                                                                        <TooltipTrigger asChild>
+                                                                            <Button
+                                                                                variant="ghost"
+                                                                                size="icon"
+                                                                                className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                                                                                onClick={() => initiateEmailSend(reg)}
+                                                                            >
+                                                                                <Mail className="h-4 w-4" />
+                                                                            </Button>
+                                                                        </TooltipTrigger>
+                                                                        <TooltipContent>
+                                                                            <p>Send Survey/Certificate Email</p>
+                                                                        </TooltipContent>
+                                                                    </Tooltip>
+                                                                </TooltipProvider>
                                                             </TableCell>
                                                         </TableRow>
                                                     ))
@@ -653,6 +726,34 @@ const AdminPage = () => {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+            <AlertDialog open={emailConfirmation.isOpen} onOpenChange={(open) => setEmailConfirmation(prev => ({ ...prev, isOpen: open }))}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Send Survey Completion Email?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This will send the unified certificate email (Participation & Appearance) to <strong>{emailConfirmation.reg?.firstName} {emailConfirmation.reg?.lastName}</strong> at {emailConfirmation.reg?.email}.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmSendEmail}>Send Email</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+            <AlertDialog open={emailConfirmation.isOpen} onOpenChange={(open) => setEmailConfirmation(prev => ({ ...prev, isOpen: open }))}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Send Survey Completion Email?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This will send the unified certificate email (Participation & Appearance) to <strong>{emailConfirmation.reg?.firstName} {emailConfirmation.reg?.lastName}</strong> at {emailConfirmation.reg?.email}.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmSendEmail}>Send Email</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div >
     );
 };
