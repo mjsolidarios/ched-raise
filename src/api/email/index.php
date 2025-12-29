@@ -169,15 +169,14 @@ if ($type === 'generate_certificate') {
     // Logos assumed to be in background at top. Text follows.
     // 2. Header Text (Below Logos)
     // Logos assumed to be in background at top. Text follows.
-    $pdf->SetY(35); // Moved up from 40
-    $pdf->SetFont('Arial', 'B', 6);
+    $pdf->SetY(40); 
+    $pdf->SetFont('Arial', 'B', 10);
     $pdf->SetTextColor(71, 85, 105); // #475569 slate-600
 
     // MultiCell for stacking lines closely with specific spacing
     $pdf->Cell(0, 5, strtoupper("Republic of the Philippines"), 0, 1, 'C');
     $pdf->Cell(0, 5, strtoupper("Commission on Higher Education"), 0, 1, 'C');
-    $pdf->Cell(0, 5, strtoupper("Northern Iloilo State University"), 0, 1, 'C');
-    $pdf->Cell(0, 5, strtoupper("West Visayas State University"), 0, 1, 'C');
+    $pdf->Cell(0, 5, strtoupper("Northern Iloilo State University | West Visayas State University"), 0, 1, 'C');
 
     // 3. Set Fonts
     $pdf->SetTextColor(30, 41, 59); // #1e293b dark slate
@@ -198,13 +197,13 @@ if ($type === 'generate_certificate') {
     // --- TEXT LAYOUT (Compressed & Dynamic for A4 Landscape) ---
 
     // Title
-    $pdf->SetY(60); // Moved up from 65
+    $pdf->SetY(75); 
     $pdf->SetFont('Arial', 'B', 32);
     $pdf->SetTextColor(30, 27, 75); // #1e1b4b
     $pdf->Cell(0, 15, $certTitle, 0, 1, 'C');
 
     // "This recognition is..."
-    $pdf->SetY(82); // Moved up from 85
+    $pdf->SetY(90); 
     $pdf->SetFont('Arial', '', 12);
     $pdf->SetTextColor(100, 116, 139); // #64748b
     $pdf->Cell(0, 10, $certifyText, 0, 1, 'C');
@@ -232,7 +231,7 @@ if ($type === 'generate_certificate') {
     }
 
     // Description
-    $pdf->SetY(135); // Moved up from 140
+    $pdf->SetY(130); // Moved up from 140
     $pdf->SetFont('Arial', '', 14);
     $pdf->SetTextColor(51, 65, 85); // #334155
     $pdf->SetX(40); // Left margin 40mm
@@ -242,16 +241,14 @@ if ($type === 'generate_certificate') {
     $currentY = $pdf->GetY();
     // Ensure we don't overlapping with signature or go too low
     // If description was long, add padding.
-    $pdf->SetY($currentY + 10); // 10mm buffer
+    $pdf->SetY($currentY + 6); // 6mm buffer
 
     $pdf->SetFont('Arial', 'B', 10);
     $pdf->SetTextColor(100, 116, 139);
     $pdf->Cell(0, 10, strtoupper($dateText), 0, 1, 'C');
 
     // Signature Line Image - Fixed at bottom to anchor the design
-    // Ensure we have space, otherwise force a page break? No, request said 1 page.
-    // We'll pin it to Y=180.
-    $sigY = 180;
+    $sigY = 172;
 
     $sigLinePath = __DIR__ . '/certificates/signature-line.png';
     if (file_exists($sigLinePath)) {
