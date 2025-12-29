@@ -148,64 +148,116 @@ if ($type === 'generate_certificate') {
         respondJson(400, ['error' => 'Missing certificate type.']);
     }
 
-    // Create PDF with mPDF
-    if (!class_exists('Mpdf\Mpdf')) {
-        respondJson(500, ['error' => 'mPDF library not found. Please run "composer require mpdf/mpdf" in src/api/email.']);
+    // Create PDF with FPDF
+    if (!class_exists('FPDF')) {
+        respondJson(500, ['error' => 'FPDF library not found. Please run "composer require setasign/fpdf" in src/api/email.']);
     }
 
-    // Initialize mPDF with A4 Landscape
-    $mpdf = new \Mpdf\Mpdf([
-        'mode' => 'utf-8',
-        'format' => 'A4-L', // A4 Landscape
-        'orientation' => 'L',
-        'margin_left' => 0,
-        'margin_right' => 0,
-        'margin_top' => 0,
-        'margin_bottom' => 0,
-    ]);
+    // Initialize FPDF with A4 Landscape (L, mm, A4)
+    $pdf = new FPDF('L', 'mm', 'A4');
+    $pdf->AddPage();
 
-    // Prepare content
-    $templatePath = __DIR__ . '/templates/CertificatePDF.html';
-    if (!file_exists($templatePath)) {
-        respondJson(500, ['error' => 'Certificate template not found.']);
+    // 1. Draw Background
+    // Image path relative to index.php
+    $bgPath = __DIR__ . '/certificates/background.png';
+    if (file_exists($bgPath)) {
+        // Place image at (0,0) with width 297mm and height 210mm
+        $pdf->Image($bgPath, 0, 0, 297, 210);
     }
 
-    $html = file_get_contents($templatePath);
+    // 2. Header Text (Below Logos)
+    // Logos assumed to be in background at top. Text follows.
+    $pdf->SetY(40); // Adjust based on logo height
+    $pdf->SetFont('Arial', 'B', 10);
+    $pdf->SetTextColor(71, 85, 105); // #475569 slate-600
 
+    // MultiCell for stacking lines closely with specific spacing
+    $pdf->Cell(0, 5, strtoupper("Republic of the Philippines"), 0, 1, 'C');
+    $pdf->Cell(0, 5, strtoupper("Commission on Higher Education"), 0, 1, 'C');
+    $pdf->Cell(0, 5, strtoupper("Northern Iloilo State University"), 0, 1, 'C');
+    $pdf->Cell(0, 5, strtoupper("West Visayas State University"), 0, 1, 'C');
+
+    // 3. Set Fonts
+    $pdf->SetTextColor(30, 41, 59); // #1e293b dark slate
+
+    // Prepare text
     $certTitle = ($certType === 'appearance') ? 'CERTIFICATE OF APPEARANCE' : 'CERTIFICATE OF PARTICIPATION';
-    $description = "";
+    $certifyText = "This recognition is honorably conferred upon";
+    $fullNameUpper = strtoupper($fullName);
 
     if ($certType === 'appearance') {
-        $description = "This is to certify that " . strtoupper($fullName) . " of " . $school . " appeared at the Iloilo Convention Center on January 28-30, 2026 to attend the CHED-RAISE 2026 Summit.";
+        $description = "This is to certify that " . $fullNameUpper . " of " . $school . " appeared at the Iloilo Convention Center on January 28-30, 2026 to attend the CHED-RAISE 2026 Summit.";
     } else {
         $description = "has actively participated in the CHED RAISE Program activities.";
     }
 
-    $replacements = [
-        '{{certificateTitle}}' => $certTitle,
-        '{{fullName}}' => strtoupper($fullName),
-        '{{description}}' => $description,
-        '{{day}}' => date('jS'),
-        '{{monthYear}}' => date('F, Y')
-    ];
+    $dateText = "Issued on this " . date('jS') . " day of " . date('F, Y');
 
-    foreach ($replacements as $placeholder => $value) {
-        $html = str_replace($placeholder, $value, $html);
+    // --- TEXT LAYOUT (Manual Coordinates for A4 Landscape) ---
+
+    // Title
+    $pdf->SetY(65);
+    $pdf->SetFont('Arial', 'B', 32);
+    $pdf->SetTextColor(30, 27, 75); // #1e1b4b
+    $pdf->Cell(0, 15, $certTitle, 0, 1, 'C');
+
+    // "This recognition is..."
+    $pdf->SetY(85);
+    $pdf->SetFont('Arial', '', 12);
+    $pdf->SetTextColor(100, 116, 139); // #64748b
+    $pdf->Cell(0, 10, $certifyText, 0, 1, 'C');
+
+    // Name
+    $pdf->SetY(105);
+    $pdf->SetFont('Times', 'B', 42);
+    $pdf->SetTextColor(2, 6, 23); // #020617
+    $pdf->Cell(0, 20, $fullNameUpper, 0, 1, 'C');
+
+    // Name Underline Image
+    $nameLinePath = __DIR__ . '/certificates/name-line.png';
+    if (file_exists($nameLinePath)) {
+        // Center image: Page Width 297. Image Width ~150mm? 
+        // Let's assume width 200mm for longer names or just fixed.
+        // FPDF Image(file, x, y, w, h)
+        // previous line was width 150mm (x=73.5 to 223.5)
+        $pdf->Image($nameLinePath, 73.5, 130, 150);
     }
 
-    $mpdf->WriteHTML($html);
+    // Description
+    $pdf->SetY(140);
+    $pdf->SetFont('Arial', '', 14);
+    $pdf->SetTextColor(51, 65, 85); // #334155
+    $pdf->SetX(40); // Left margin 40mm
+    $pdf->MultiCell(217, 8, $description, 0, 'C');
+
+    // Date
+    $pdf->SetY(165);
+    $pdf->SetFont('Arial', 'B', 10);
+    $pdf->SetTextColor(100, 116, 139);
+    $pdf->Cell(0, 10, strtoupper($dateText), 0, 1, 'C');
+
+    // Signature Line Image
+    $sigLinePath = __DIR__ . '/certificates/signature-line.png';
+    // Previous line center 148.5, width 90mm -> x = 103.5
+    // Y was 182
+    if (file_exists($sigLinePath)) {
+        $pdf->Image($sigLinePath, 103.5, 182, 90);
+    }
+
+    $pdf->SetY(185);
+    $pdf->SetFont('Arial', 'B', 14);
+    $pdf->SetTextColor(15, 23, 42);
+    $pdf->Cell(0, 8, "DR. RAUL F. MUYONG", 0, 1, 'C');
+
+    $pdf->SetFont('Arial', '', 10);
+    $pdf->SetTextColor(100, 116, 139);
+    $pdf->Cell(0, 5, "Regional Director, CHED RO VI", 0, 1, 'C');
 
     // Output PDF
-    if (ob_get_length())
-        ob_clean();
-
     header('Content-Type: application/pdf');
     header('Content-Disposition: attachment; filename="ched-raise-certificate.pdf"');
 
-    // Output function in mPDF sends headers automatically if D/I is used, 
-    // but since we set headers manually above, we can use 'S' (String) or just let it output to php://output (default 'I')
-    // 'D' forces download.
-    $mpdf->Output('ched-raise-certificate.pdf', 'D');
+    $pdf->Output('D', 'ched-raise-certificate.pdf');
     exit;
 }
 
