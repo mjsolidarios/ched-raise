@@ -59,13 +59,8 @@ if (!file_exists($autoloadPath)) {
     ]);
 }
 
-$fpdfPath = __DIR__ . '/vendor/fpdf/fpdf/src/Fpdf.php';
-if (!file_exists($fpdfPath)) {
-    respondJson(500, [
-        'error' => 'FPDF library not found. Please run "composer install" in src/api/email.',
-    ]);
-}
-require $fpdfPath;
+// Dompdf will be loaded via composer's autoload
+
 
 require $autoloadPath;
 
@@ -153,94 +148,58 @@ if ($type === 'generate_certificate') {
         respondJson(400, ['error' => 'Missing certificate type.']);
     }
 
-    // Create PDF
-    if (!class_exists('FPDF')) {
-        respondJson(500, ['error' => 'FPDF library not found. Please run "composer install" in src/api/email.']);
+    // Create PDF with Dompdf
+    if (!class_exists('Dompdf\Dompdf')) {
+        respondJson(500, ['error' => 'Dompdf library not found. Please run "composer install" in src/api/email.']);
     }
-    $pdf = new \FPDF('L', 'mm', 'A4'); // Landscape
-    $pdf->AddPage();
 
-    // Add Border
-    $pdf->SetLineWidth(2);
-    $pdf->Rect(10, 10, 277, 190);
+    $options = new \Dompdf\Options();
+    $options->set('isHtml5ParserEnabled', true);
+    $options->set('isRemoteEnabled', true);
+    $options->set('defaultFont', 'serif');
 
-    // Basic Branding
-    $pdf->SetFont('Arial', 'B', 24);
-    $pdf->SetXY(0, 40);
-    $pdf->Cell(297, 10, 'CHED RAISE', 0, 1, 'C');
+    $dompdf = new \Dompdf\Dompdf($options);
 
-    $pdf->SetFont('Arial', '', 14);
-    $pdf->Cell(297, 10, 'Technical Assistance and Monitoring', 0, 1, 'C');
+    // Prepare content
+    $templatePath = __DIR__ . '/templates/CertificatePDF.html';
+    if (!file_exists($templatePath)) {
+        respondJson(500, ['error' => 'Certificate template not found.']);
+    }
 
-    $pdf->Ln(20);
+    $html = file_get_contents($templatePath);
+
+    $certTitle = ($certType === 'appearance') ? 'CERTIFICATE OF APPEARANCE' : 'CERTIFICATE OF PARTICIPATION';
+    $description = "";
 
     if ($certType === 'appearance') {
-        $pdf->SetFont('Arial', 'B', 30);
-        $pdf->Cell(297, 15, 'CERTIFICATE OF APPEARANCE', 0, 1, 'C');
-
-        $pdf->Ln(20);
-
-        $pdf->SetFont('Arial', '', 16);
-        $pdf->Cell(297, 10, 'This is to certify that', 0, 1, 'C');
-
-        $pdf->Ln(10);
-
-        $pdf->SetFont('Times', 'B', 32);
-        $pdf->Cell(297, 15, strtoupper($fullName), 0, 1, 'C');
-        // Underline effect
-        $pdf->Line(70, $pdf->GetY(), 227, $pdf->GetY());
-
-        $pdf->Ln(20);
-
-        $pdf->SetFont('Arial', '', 16);
-        $purpose = "This is to certify that " . strtoupper($fullName) . " of " . $school . " appeared at the Iloilo Convention Center on January 28-30, 2026 to attend the CHED-RAISE 2026 Summit.";
-        $pdf->SetXY(40, $pdf->GetY());
-        $pdf->MultiCell(217, 10, $purpose, 0, 'C');
-
-    } elseif ($certType === 'participation') {
-        $pdf->SetFont('Arial', 'B', 30);
-        $pdf->Cell(297, 15, 'CERTIFICATE OF PARTICIPATION', 0, 1, 'C');
-
-        $pdf->Ln(20);
-
-        $pdf->SetFont('Arial', '', 16);
-        $pdf->Cell(297, 10, 'This is to certify that', 0, 1, 'C');
-
-        $pdf->Ln(10);
-
-        $pdf->SetFont('Times', 'B', 32);
-        $pdf->Cell(297, 15, strtoupper($fullName), 0, 1, 'C');
-        // Underline effect
-        $pdf->Line(70, $pdf->GetY(), 227, $pdf->GetY());
-
-        $pdf->Ln(20);
-
-        $pdf->SetFont('Arial', '', 16);
-        $text = "has actively participated in the CHED RAISE Program activities.";
-        $pdf->SetXY(48, $pdf->GetY());
-        $pdf->MultiCell(200, 10, $text, 0, 'C');
+        $description = "This is to certify that " . strtoupper($fullName) . " of " . $school . " appeared at the Iloilo Convention Center on January 28-30, 2026 to attend the CHED-RAISE 2026 Summit.";
+    } else {
+        $description = "has actively participated in the CHED RAISE Program activities.";
     }
 
-    $pdf->Ln(20);
+    $replacements = [
+        '{{certificateTitle}}' => $certTitle,
+        '{{fullName}}' => strtoupper($fullName),
+        '{{description}}' => $description,
+        '{{day}}' => date('jS'),
+        '{{monthYear}}' => date('F, Y')
+    ];
 
-    $pdf->SetFont('Arial', '', 12);
-    $dateStr = "Given this " . date('jS') . " day of " . date('F, Y') . ".";
-    $pdf->Cell(297, 10, $dateStr, 0, 1, 'C');
+    foreach ($replacements as $placeholder => $value) {
+        $html = str_replace($placeholder, $value, $html);
+    }
 
-    $pdf->Ln(15);
-    $pdf->SetFont('Arial', 'B', 14);
-    $pdf->Cell(297, 10, 'DR. RAUL F. MUYONG', 0, 1, 'C');
-    $pdf->SetFont('Arial', '', 12);
-    $pdf->Cell(297, 5, 'Regional Director, CHED Regional Office VI', 0, 1, 'C');
+    $dompdf->loadHtml($html);
+    $dompdf->setPaper('A4', 'landscape');
+    $dompdf->render();
 
     // Output PDF
-    // Clear any previous output
     if (ob_get_length())
         ob_clean();
 
     header('Content-Type: application/pdf');
-    header('Content-Disposition: attachment; filename="certificate.pdf"');
-    $pdf->Output('D', 'ched-raise-certificate.pdf');
+    header('Content-Disposition: attachment; filename="ched-raise-certificate.pdf"');
+    echo $dompdf->output();
     exit;
 }
 
