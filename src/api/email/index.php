@@ -167,8 +167,10 @@ if ($type === 'generate_certificate') {
 
     // 2. Header Text (Below Logos)
     // Logos assumed to be in background at top. Text follows.
-    $pdf->SetY(40); // Adjust based on logo height
-    $pdf->SetFont('Arial', 'B', 10);
+    // 2. Header Text (Below Logos)
+    // Logos assumed to be in background at top. Text follows.
+    $pdf->SetY(35); // Moved up from 40
+    $pdf->SetFont('Arial', 'B', 6);
     $pdf->SetTextColor(71, 85, 105); // #475569 slate-600
 
     // MultiCell for stacking lines closely with specific spacing
@@ -193,58 +195,70 @@ if ($type === 'generate_certificate') {
 
     $dateText = "Issued on this " . date('jS') . " day of " . date('F, Y');
 
-    // --- TEXT LAYOUT (Manual Coordinates for A4 Landscape) ---
+    // --- TEXT LAYOUT (Compressed & Dynamic for A4 Landscape) ---
 
     // Title
-    $pdf->SetY(65);
+    $pdf->SetY(60); // Moved up from 65
     $pdf->SetFont('Arial', 'B', 32);
     $pdf->SetTextColor(30, 27, 75); // #1e1b4b
     $pdf->Cell(0, 15, $certTitle, 0, 1, 'C');
 
     // "This recognition is..."
-    $pdf->SetY(85);
+    $pdf->SetY(82); // Moved up from 85
     $pdf->SetFont('Arial', '', 12);
     $pdf->SetTextColor(100, 116, 139); // #64748b
     $pdf->Cell(0, 10, $certifyText, 0, 1, 'C');
 
-    // Name
-    $pdf->SetY(105);
-    $pdf->SetFont('Times', 'B', 42);
+    // Name - With Auto Scaling
+    $pdf->SetY(102); // Moved up from 105
+    $nameFontSize = 42;
+    $pdf->SetFont('Times', 'B', $nameFontSize);
+
+    // Check width and scale down if necessary
+    $maxWidth = 250; // Max width in mm
+    while ($pdf->GetStringWidth($fullNameUpper) > $maxWidth && $nameFontSize > 20) {
+        $nameFontSize--;
+        $pdf->SetFont('Times', 'B', $nameFontSize);
+    }
+
     $pdf->SetTextColor(2, 6, 23); // #020617
     $pdf->Cell(0, 20, $fullNameUpper, 0, 1, 'C');
 
     // Name Underline Image
     $nameLinePath = __DIR__ . '/certificates/name-line.png';
     if (file_exists($nameLinePath)) {
-        // Center image: Page Width 297. Image Width ~150mm? 
-        // Let's assume width 200mm for longer names or just fixed.
-        // FPDF Image(file, x, y, w, h)
-        // previous line was width 150mm (x=73.5 to 223.5)
-        $pdf->Image($nameLinePath, 73.5, 130, 150);
+        // Reduced gap between name and line
+        $pdf->Image($nameLinePath, 73.5, 122, 150); // Y moved to 122
     }
 
     // Description
-    $pdf->SetY(140);
+    $pdf->SetY(135); // Moved up from 140
     $pdf->SetFont('Arial', '', 14);
     $pdf->SetTextColor(51, 65, 85); // #334155
     $pdf->SetX(40); // Left margin 40mm
     $pdf->MultiCell(217, 8, $description, 0, 'C');
 
-    // Date
-    $pdf->SetY(165);
+    // Date - Dynamic Position relative to Description
+    $currentY = $pdf->GetY();
+    // Ensure we don't overlapping with signature or go too low
+    // If description was long, add padding.
+    $pdf->SetY($currentY + 10); // 10mm buffer
+
     $pdf->SetFont('Arial', 'B', 10);
     $pdf->SetTextColor(100, 116, 139);
     $pdf->Cell(0, 10, strtoupper($dateText), 0, 1, 'C');
 
-    // Signature Line Image
+    // Signature Line Image - Fixed at bottom to anchor the design
+    // Ensure we have space, otherwise force a page break? No, request said 1 page.
+    // We'll pin it to Y=180.
+    $sigY = 180;
+
     $sigLinePath = __DIR__ . '/certificates/signature-line.png';
-    // Previous line center 148.5, width 90mm -> x = 103.5
-    // Y was 182
     if (file_exists($sigLinePath)) {
-        $pdf->Image($sigLinePath, 103.5, 182, 90);
+        $pdf->Image($sigLinePath, 103.5, $sigY, 90);
     }
 
-    $pdf->SetY(185);
+    $pdf->SetY($sigY + 3); // Just below line
     $pdf->SetFont('Arial', 'B', 14);
     $pdf->SetTextColor(15, 23, 42);
     $pdf->Cell(0, 8, "DR. RAUL F. MUYONG", 0, 1, 'C');
