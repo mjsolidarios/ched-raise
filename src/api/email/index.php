@@ -59,6 +59,14 @@ if (!file_exists($autoloadPath)) {
     ]);
 }
 
+$fpdfPath = __DIR__ . '/vendor/fpdf/fpdf/src/Fpdf.php';
+if (!file_exists($fpdfPath)) {
+    respondJson(500, [
+        'error' => 'FPDF library not found. Please run "composer install" in src/api/email.',
+    ]);
+}
+require $fpdfPath;
+
 require $autoloadPath;
 
 // Load environment variables
