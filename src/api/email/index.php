@@ -146,7 +146,10 @@ if ($type === 'generate_certificate') {
     }
 
     // Create PDF
-    $pdf = new FPDF('L', 'mm', 'A4'); // Landscape
+    if (!class_exists('FPDF')) {
+        respondJson(500, ['error' => 'FPDF library not found. Please run "composer install" in src/api/email.']);
+    }
+    $pdf = new \FPDF('L', 'mm', 'A4'); // Landscape
     $pdf->AddPage();
 
     // Add Border
