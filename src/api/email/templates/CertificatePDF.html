@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="UTF-8">
-
     <style>
         /* ===== FORCE SINGLE PAGE ===== */
         @page {
@@ -15,110 +14,218 @@
         body {
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
             background: #ffffff;
-            font-family: "Times New Roman", Georgia, serif;
+            font-family: "Inter", -apple-system, sans-serif;
+            color: #1e293b;
+            -webkit-print-color-adjust: exact;
         }
 
         /* ===== CERTIFICATE FRAME ===== */
         .certificate {
-            width: 296mm;
-            height: 209mm;
-            margin: 0.5mm auto;
-            padding: 12mm 15mm;
+            width: 277mm;
+            height: 190mm;
+            margin: 10mm auto;
+            padding: 8mm;
             box-sizing: border-box;
-            border: 5px double #1a365d;
-            text-align: center;
             position: relative;
+            text-align: center;
+            overflow: hidden;
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
         }
 
-        /* Inner border */
+        /* STRUCTURAL DOT GRID & ALGORITHMIC TEXTURES */
         .certificate::before {
             content: "";
             position: absolute;
-            inset: 8mm;
-            border: 1px solid #cbd5e0;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            /* Dot Grid Overlay */
+            background-image:
+                radial-gradient(#94a3b8 1px, transparent 1px),
+                linear-gradient(to right, rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+            background-size: 15px 15px, 60px 60px, 60px 60px;
+            opacity: 0.6;
         }
 
-        /* ===== HEADER ===== */
-        .header p {
+        /* STATIC ABSTRACT BLOBS (For print depth) */
+        .abstract-blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: 1;
+            opacity: 0.25;
+            border-radius: 50%;
+        }
+
+        .blob-1 {
+            width: 400px;
+            height: 400px;
+            background: #6366f1;
+            top: -150px;
+            left: -100px;
+        }
+
+        .blob-2 {
+            width: 450px;
+            height: 450px;
+            background: #2dd4bf;
+            bottom: -200px;
+            right: -100px;
+        }
+
+        .blob-3 {
+            width: 300px;
+            height: 300px;
+            background: #818cf8;
+            top: 20%;
+            right: 10%;
+            opacity: 0.15;
+        }
+
+        /* NEURAL CONNECTORS & DATA STREAMS */
+        .neural-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* ===== CONTENT PANEL ===== */
+        .content-panel {
+            position: relative;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(2px);
+            border: 1.5px solid #e2e8f0;
+            padding: 10mm;
+            box-sizing: border-box;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            clip-path: polygon(40px 0%, calc(100% - 40px) 0%,
+                    100% 40px, 100% calc(100% - 40px),
+                    calc(100% - 40px) 100%, 40px 100%,
+                    0% calc(100% - 40px), 0% 40px);
+        }
+
+        /* ===== LOGOS & HEADER ===== */
+        .logo-header img {
+            height: 16mm;
+            width: auto;
+            margin: 0 5mm;
+        }
+
+        .header-text {
+            margin-top: 4mm;
+        }
+
+        .header-text p {
             margin: 0;
-            font-size: 12px;
-            color: #4a5568;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #475569;
         }
 
-        .header h1 {
-            margin: 2mm 0 0;
-            font-size: 32px;
-            letter-spacing: 4px;
-            color: #1a365d;
+        .ched-raise-logo {
+            height: 24px;
+            margin-top: 4mm;
         }
 
         /* ===== TITLE ===== */
         .title {
-            margin: 8mm 0 4mm;
-            font-size: 28px;
-            font-weight: bold;
-            color: #2c5282;
-            letter-spacing: 1.5px;
+            margin: 2mm 0;
+            font-size: 42px;
+            font-weight: 900;
+            color: #1e1b4b;
+            letter-spacing: -1px;
             text-transform: uppercase;
         }
 
-        /* ===== BODY ===== */
+        /* ===== RECIPIENT SECTION ===== */
         .certify-text {
             font-size: 16px;
-            font-style: italic;
-            color: #2d3748;
-            margin-bottom: 2mm;
+            color: #64748b;
+            letter-spacing: 1.5px;
+            font-weight: 500;
+        }
+
+        .name-wrapper {
+            position: relative;
+            display: inline-block;
+            margin: 5mm auto;
         }
 
         .name {
-            margin: 4mm auto;
-            padding-bottom: 2mm;
-            font-size: 36px;
-            font-weight: bold;
-            color: #1a202c;
-            border-bottom: 2px solid #1a365d;
-            display: inline-block;
-            min-width: 110mm;
+            font-size: 54px;
+            font-weight: 800;
+            color: #020617;
+            padding: 0 15mm;
+            font-family: "Georgia", serif;
+        }
+
+        .name-underline {
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #4338ca, #0d9488, #4338ca, transparent);
+            margin-top: 3mm;
+            border-radius: 10px;
         }
 
         .description {
-            font-size: 16px;
-            line-height: 1.4;
-            margin: 0 20mm 4mm;
-            color: #2d3748;
+            font-size: 17px;
+            line-height: 1.6;
+            margin: 2mm 30mm;
+            color: #334155;
+            font-weight: 400;
         }
 
-        /* ===== DATE ===== */
+        /* ===== FOOTER & SIGNATURE ===== */
         .date {
-            font-size: 14px;
-            margin-top: 2mm;
-            color: #4a5568;
-        }
-
-        /* ===== SIGNATURE ===== */
-        .footer {
-            margin-top: 10mm;
-        }
-
-        .signature-line {
-            width: 60mm;
-            margin: 0 auto 2mm;
-            border-top: 1px solid #2d3748;
-        }
-
-        .signature-name {
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 8mm;
+            font-weight: 600;
             text-transform: uppercase;
-            color: #1a202c;
+            letter-spacing: 1px;
         }
 
-        .signature-title {
-            font-size: 12px;
-            color: #4a5568;
+        .signature-section {
+            display: flex;
+            justify-content: center;
+        }
+
+        .sig-block {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .sig-line {
+            width: 90mm;
+            height: 1.5px;
+            background: #64748b;
+            margin-bottom: 4mm;
+            position: relative;
+        }
+
+        /* Sig line dot removed for a cleaner look as requested */
+
+        .sig-name {
+            font-size: 19px;
+            font-weight: 700;
+            color: #0f172a;
+            text-transform: uppercase;
+        }
+
+        .sig-title {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 1mm;
+            font-weight: 500;
         }
     </style>
 </head>
@@ -126,35 +233,103 @@
 <body>
 
     <div class="certificate">
+        <!-- Abstract Static Patterns -->
+        <div class="abstract-blob blob-1"></div>
+        <div class="abstract-blob blob-2"></div>
+        <div class="abstract-blob blob-3"></div>
 
-        <div class="header">
-            <p>Northern Iloilo State University</p>
-            <p>West Visayas State University</p>
-            <h1>CHED RAISE</h1>
-        </div>
+        <!-- DENSE STATIC NEURAL PATTERN -->
+        <svg class="neural-overlay" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="streamGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#4338ca" stop-opacity="0.8" />
+                    <stop offset="100%" stop-color="#0d9488" stop-opacity="0.8" />
+                </linearGradient>
+            </defs>
 
-        <div class="title">{{certificateTitle}}</div>
+            <!-- Dense Dendrite Layers -->
+            <g stroke="url(#streamGrad)" fill="none" stroke-width="1.2" opacity="0.4">
+                <!-- Top Corner Branching -->
+                <path d="M0,0 Q100,50 150,200 T300,300" />
+                <path d="M0,50 Q120,80 140,220" stroke-width="0.5" />
 
-        <div class="certify-text">This certificate is proudly presented to</div>
+                <!-- Bottom Corner Branching -->
+                <path d="M800,600 Q700,550 650,400 T500,300" />
+                <path d="M800,550 Q680,520 660,380" stroke-width="0.5" />
 
-        <div class="name">{{fullName}}</div>
+                <!-- Lateral Connectors -->
+                <path d="M-50,300 C200,250 400,350 850,300" stroke-width="1.5" />
+                <path d="M400,-50 C450,200 350,400 400,650" stroke-width="1" />
+            </g>
 
-        <div class="description">
-            {{description}}
-        </div>
+            <!-- Synapse Nodes (Static) -->
+            <g fill="#4338ca">
+                <circle cx="150" cy="200" r="5" />
+                <circle cx="650" cy="400" r="5" fill="#0d9488" />
+                <circle cx="300" cy="300" r="4" opacity="0.6" />
+                <circle cx="500" cy="300" r="4" fill="#0d9488" opacity="0.6" />
 
-        <div class="date">
-            Given this {{day}} day of {{monthYear}}.
-        </div>
+                <!-- Scatter Nodes -->
+                <circle cx="100" cy="450" r="3" opacity="0.3" />
+                <circle cx="700" cy="150" r="3" opacity="0.3" />
+                <circle cx="400" cy="150" r="2" opacity="0.4" />
+                <circle cx="400" cy="450" r="2" opacity="0.4" />
+            </g>
 
-        <div class="footer">
-            <div class="signature-line"></div>
-            <div class="signature-name">Dr. Raul F. Muyong</div>
-            <div class="signature-title">
-                Regional Director, CHED Regional Office VI
+            <!-- Fine Neural Filaments -->
+            <g stroke="#94a3b8" stroke-width="0.3" opacity="0.5">
+                <path d="M0,150 L800,150 M0,450 L800,450" />
+                <path d="M200,0 L200,600 M600,0 L600,600" />
+            </g>
+        </svg>
+
+        <div class="content-panel">
+            <div class="top-section">
+                <div class="logo-header">
+                    <img src="ched-logo.png" alt="CHED">
+                    <img src="nisu-logo.png" alt="NISU">
+                    <img src="wvsu-logo.png" alt="WVSU">
+                </div>
+
+                <div class="header-text">
+                    <p>Republic of the Philippines</p>
+                    <p>Commission on Higher Education</p>
+                    <p>Regional Office VI - Western Visayas</p>
+                    <img class="ched-raise-logo" src="ched-raise-logo.png" alt="CHED RAISE">
+                </div>
+            </div>
+
+            <div class="mid-section">
+                <div class="title">{{certificateTitle}}</div>
+
+                <div class="certify-text">
+                    This recognition is honorably conferred upon
+                </div>
+
+                <div class="name-wrapper">
+                    <div class="name">{{fullName}}</div>
+                    <div class="name-underline"></div>
+                </div>
+
+                <div class="description">
+                    {{description}}
+                </div>
+            </div>
+
+            <div class="bottom-section">
+                <div class="date">
+                    Issued on this {{day}} day of {{monthYear}}
+                </div>
+
+                <div class="signature-section">
+                    <div class="sig-block">
+                        <div class="sig-line"></div>
+                        <div class="sig-name">Dr. Raul F. Muyong</div>
+                        <div class="sig-title">Regional Director, CHED RO VI</div>
+                    </div>
+                </div>
             </div>
         </div>
-
     </div>
 
 </body>
