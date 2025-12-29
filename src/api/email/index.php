@@ -238,9 +238,7 @@ $middleName = $input['middleName'] ?? null;
 $lastName = $input['lastName'] ?? null;
 $certificateType = $input['certificateType'] ?? null;
 
-// Determine API URL for certificate generation
-// This assumes the API is reachable publicly or locally where the user clicks the link
-$apiUrl = $_ENV['API_BASE_URL'] ?? 'http://localhost/api/email'; // Fallback needs to be adjusted by user
+
 
 if (!$from || !$to || !$type || !$ticketCode) {
     respondJson(400, ['error' => 'Missing required fields: from, to, type, ticketCode']);
@@ -308,7 +306,6 @@ switch ($type) {
             $htmlContent = str_replace('{{name}}', $name, $htmlContent);
             $htmlContent = str_replace('{{middleName}}', $middleName, $htmlContent);
             $htmlContent = str_replace('{{lastName}}', $lastName, $htmlContent);
-            $htmlContent = str_replace('{{apiUrl}}', $apiUrl, $htmlContent);
             $htmlContent = str_replace('{{encryptedData}}', urlencode($encryptedData), $htmlContent);
         } else {
             respondJson(500, ['error' => 'Template file not found.']);
@@ -341,7 +338,6 @@ switch ($type) {
             $htmlContent = str_replace('{{lastName}}', $lastName, $htmlContent);
             $htmlContent = str_replace('{{school}}', $input['school'] ?? '', $htmlContent);
             $htmlContent = str_replace('{{certificateType}}', $certificateType, $htmlContent);
-            $htmlContent = str_replace('{{apiUrl}}', $apiUrl, $htmlContent);
             $htmlContent = str_replace('{{encryptedData}}', urlencode($encryptedData), $htmlContent);
         } else {
             respondJson(500, ['error' => 'Template file not found.']);
@@ -395,7 +391,7 @@ switch ($type) {
             $htmlContent = str_replace('{{name}}', $name, $htmlContent);
             $htmlContent = str_replace('{{middleName}}', $middleName, $htmlContent);
             $htmlContent = str_replace('{{lastName}}', $lastName, $htmlContent);
-            $htmlContent = str_replace('{{apiUrl}}', $apiUrl, $htmlContent);
+
 
         } else {
             respondJson(500, ['error' => 'Template file not found.']);

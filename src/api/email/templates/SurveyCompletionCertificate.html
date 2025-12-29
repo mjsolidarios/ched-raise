@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Certificate of Completion</title>
+    <title>Certificate of Completion | CHED-RAISE 2026</title>
     <style type="text/css">
         /* Reset styles */
         body,
@@ -60,7 +60,7 @@
 
         /* Header */
         .header {
-            background-color: #FFFFFF;
+            background-color: #ffffff;
             padding: 0;
             text-align: center;
         }
@@ -107,7 +107,7 @@
             border-bottom: 2px solid #60a5fa;
             display: inline-block;
             padding-bottom: 5px;
-            min-width: 200px;
+            min-width: 220px;
         }
 
         /* Buttons */
@@ -116,11 +116,11 @@
             padding: 12px 24px;
             text-decoration: none;
             border-radius: 5px;
-            font-weight: bold;
+            font-weight: 600;
             font-size: 16px;
             text-align: center;
             margin: 10px 0;
-            width: 200px;
+            width: 220px;
         }
 
         .btn-participation {
@@ -166,40 +166,41 @@
             <!-- Header -->
             <tr>
                 <td class="header">
-                    <img src="https://ched-raise.wvsu.edu.ph/mail-header.png" alt="CHED RAISE Logo">
+                    <img src="https://ched-raise.wvsu.edu.ph/mail-header.png" alt="CHED-RAISE Header">
                 </td>
             </tr>
 
             <!-- Body -->
             <tr>
                 <td class="content">
-                    <div class="greeting">Thank you for completing the survey!</div>
+                    <div class="greeting">Thank You for Your Participation</div>
 
                     <p class="text">
-                        We sincerely appreciate your feedback and your active participation in the <strong>CHED-RAISE
-                            2026</strong>.
-                        Your insights are valuable to us.
+                        We sincerely thank you for completing the post-event survey and for your active participation in
+                        <strong>CHED-RAISE 2026</strong>. Your feedback is highly valued and plays a vital role in
+                        helping
+                        us improve our programs and initiatives.
                     </p>
 
                     <p class="text">
-                        In recognition of your time and contribution, we are pleased to present your certificates.
-                        You may generate and download them using the buttons below.
+                        In recognition of your time, engagement, and valuable contribution, we are pleased to provide
+                        you with your official certificates. You may generate and download them using the options below.
                     </p>
 
                     <div class="certificate-box">
                         <p class="text" style="text-align: center; margin-bottom: 10px;">
-                            Certificates issued to
+                            This is to certify that
                         </p>
 
                         <div class="recipient-name">{{name}} {{middleName}} {{lastName}}</div>
 
                         <p class="text" style="text-align: center; margin-top: 20px;">
-                            for the <strong>CHED-RAISE 2026 event</strong>.
+                            has successfully participated in the <strong>CHED-RAISE 2026 Event</strong>.
                         </p>
                     </div>
 
                     <p class="text" style="text-align: center;">
-                        Please click the buttons below to download your certificates.
+                        Please select the appropriate button below to download your certificate.
                     </p>
 
                     <table role="presentation" border="0" cellpadding="0" cellspacing="0"
@@ -207,16 +208,16 @@
                         <tbody>
                             <tr>
                                 <td align="center" style="padding: 10px;">
-                                    <a href="{{apiUrl}}?data={{encryptedParticipationData}}" target="_blank"
-                                        class="btn btn-participation">
+                                    <a href="https://ched-raise.wvsu.edu.ph/api/email/?data={{encryptedParticipationData}}"
+                                        target="_blank" class="btn btn-participation">
                                         Certificate of Participation
                                     </a>
                                 </td>
                             </tr>
                             <tr>
                                 <td align="center" style="padding: 10px;">
-                                    <a href="{{apiUrl}}?data={{encryptedAppearanceData}}" target="_blank"
-                                        class="btn btn-appearance">
+                                    <a href="https://ched-raise.wvsu.edu.ph/api/email/?data={{encryptedAppearanceData}}"
+                                        target="_blank" class="btn btn-appearance">
                                         Certificate of Appearance
                                     </a>
                                 </td>
@@ -225,13 +226,13 @@
                     </table>
 
                     <p class="text" style="margin-top: 40px; text-align: center;">
-                        Thank you once again for your support.<br>
-                        We look forward to seeing you in future events.
+                        Once again, thank you for your support and cooperation.<br>
+                        We look forward to your continued participation in future CHED-RAISE activities.
                     </p>
 
                     <p class="text" style="text-align: center;">
-                        Best regards,<br>
-                        <strong>The CHED RAISE Team</strong>
+                        Sincerely,<br>
+                        <strong>The CHED-RAISE Team</strong>
                     </p>
                 </td>
             </tr>
@@ -239,14 +240,18 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p>&copy; 2026 CHED RAISE. All rights reserved.</p>
+            <p>&copy; 2026 CHED-RAISE. All rights reserved.</p>
             <p>
-                Visit our website: <a href="https://ched-raise.wvsu.edu.ph"
-                    style="color: #8898aa; text-decoration: underline;">https://ched-raise.wvsu.edu.ph</a><br>
-                For inquiries, email us at <a href="mailto:helpdesk.chedraise@gmail.com"
-                    style="color: #8898aa; text-decoration: underline;">helpdesk.chedraise@gmail.com</a>
+                Website:
+                <a href="https://ched-raise.wvsu.edu.ph" style="color: #8898aa; text-decoration: underline;">
+                    https://ched-raise.wvsu.edu.ph
+                </a><br>
+                Email:
+                <a href="mailto:helpdesk.chedraise@gmail.com" style="color: #8898aa; text-decoration: underline;">
+                    helpdesk.chedraise@gmail.com
+                </a>
             </p>
-            <p>This is an automated message. Please do not reply to this email.</p>
+            <p>This is an automated message. Please do not reply.</p>
         </div>
     </div>
 </body>
