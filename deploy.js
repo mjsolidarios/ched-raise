@@ -150,7 +150,7 @@ async function deploy() {
                 if (entry.isDirectory()) {
                     await client.uploadFromDir(entryLocalPath, entryRemotePath);
                 } else {
-                    await client.uploadFile(entryLocalPath, entryRemotePath);
+                    await client.uploadFrom(entryLocalPath, entryRemotePath);
                 }
             }
             console.log('\n✅ Backend API upload complete!\n');
