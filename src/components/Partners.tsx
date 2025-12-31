@@ -13,7 +13,7 @@ export function Partners() {
     const PARTNERS = [
         { name: "CHED", logo: "/partners/ched-logo.svg", description: "Commission on Higher Education" },
         { name: "DOST", logo: "/partners/dost-logo.svg", description: "Department of Science and Technology" },
-        { name: "AAP", logo: null, description: "Analytics & AI Association of the Philippines" },
+        { name: "AAP", logo: "/partners/aap-logo.svg", description: "Analytics & AI Association of the Philippines" },
         { name: "PCORP", logo: null, description: "Private Sector Jobs and Skills Corporation" },
         { name: "TPIS", logo: null, description: "Technical Panel for Information Systems" },
         { name: "IBPAP", logo: "/partners/ibpap-logo.svg", description: "IT & Business Process Association of the Philippines" },
