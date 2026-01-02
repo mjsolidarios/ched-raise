@@ -4,19 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Certificate of Completion | CHED-RAISE 2026</title>
+    <title>Your Certificates - CHED-RAISE 2026</title>
+    <!--[if mso]>
+    <noscript>
+    <xml>
+    <o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+    </o:OfficeDocumentSettings>
+    </xml>
+    </noscript>
+    <![endif]-->
     <style type="text/css">
-        /* Reset styles */
+        /* Reset & Base Styles */
         body,
         table,
         td,
         a {
             -webkit-text-size-adjust: 100%;
             -ms-text-size-adjust: 100%;
-        }
-
-        a:visited {
-            text-decoration: none;
         }
 
         table,
@@ -27,136 +32,176 @@
 
         img {
             -ms-interpolation-mode: bicubic;
-        }
-
-        /* General styles */
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #f6f9fc;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            line-height: 1.6;
-            color: #333333;
+            border: 0;
+            height: auto;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
         }
 
         table {
             border-collapse: collapse !important;
         }
 
-        /* Container */
-        .wrapper {
-            width: 100%;
-            table-layout: fixed;
-            background-color: #f6f9fc;
-            padding-bottom: 40px;
+        body {
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            background-color: #f4f7fa;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: #2d3748;
         }
 
-        .main-table {
-            background-color: #ffffff;
-            margin: 0 auto;
-            width: 100%;
+        /* Layout */
+        .email-container {
             max-width: 600px;
-            border-spacing: 0;
-            border-radius: 8px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
         }
 
-        /* Header */
         .header {
             background-color: #ffffff;
-            padding: 0;
             text-align: center;
+            padding: 0;
         }
 
         .header img {
             width: 100%;
-            height: auto;
+            max-width: 600px;
+            display: block;
         }
 
         /* Content */
         .content {
-            padding: 40px 30px;
+            padding: 40px 40px 30px 40px;
         }
 
-        .greeting {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 25px;
-            color: #1a1a1a;
-            text-align: center;
-        }
-
-        .text {
-            margin-bottom: 20px;
-            color: #4a5568;
-            text-align: justify;
-        }
-
-        /* Certificate Box */
-        .certificate-box {
-            background-color: #eff6ff;
-            border: 2px solid #bfdbfe;
-            padding: 30px;
-            text-align: center;
-            margin: 30px 0;
-            border-radius: 8px;
-        }
-
-        .recipient-name {
-            font-size: 22px;
+        .h1 {
+            font-size: 26px;
             font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 20px;
+            line-height: 1.3;
+            text-align: center;
+        }
+
+        .p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #4a5568;
+            margin-bottom: 20px;
+        }
+
+        /* Certificate Card */
+        .cert-card {
+            background: linear-gradient(135deg, #eff6ff 0%, #ebf8ff 100%);
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .cert-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #1e40af;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .cert-name {
+            font-size: 24px;
+            font-weight: 800;
             color: #1e3a8a;
             margin: 10px 0;
-            border-bottom: 2px solid #60a5fa;
+            border-bottom: 2px solid #93c5fd;
             display: inline-block;
-            padding-bottom: 5px;
-            min-width: 220px;
+            padding-bottom: 4px;
+        }
+
+        .cert-type {
+            font-size: 15px;
+            color: #4a5568;
+            margin-top: 15px;
         }
 
         /* Buttons */
-        .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: 600;
-            font-size: 16px;
+        .btn-container {
             text-align: center;
+            margin: 30px 0;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 16px 32px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            width: 240px;
             margin: 10px 0;
-            width: 220px;
         }
 
-        .btn-participation {
+        .btn-primary {
             background-color: #31d1c8;
-            color: #ffffff;
+            color: #ffffff !important;
+            box-shadow: 0 4px 6px rgba(49, 209, 200, 0.2);
         }
 
-        .btn-appearance {
+        .btn-secondary {
             background-color: #649dff;
-            color: #ffffff;
+            color: #ffffff !important;
+            box-shadow: 0 4px 6px rgba(100, 157, 255, 0.2);
         }
 
         /* Footer */
         .footer {
-            background-color: #f6f9fc;
-            padding: 20px;
+            background-color: #f8fafc;
+            padding: 30px 40px;
             text-align: center;
-            font-size: 12px;
-            color: #8898aa;
+            border-top: 1px solid #edf2f7;
         }
 
-        .footer p {
-            margin: 5px 0;
+        .footer-text {
+            font-size: 13px;
+            color: #718096;
+            line-height: 1.5;
+            margin-bottom: 10px;
         }
 
-        /* Mobile Responsive */
+        .footer-links a {
+            color: #2b6cb0;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Mobile Adjustments */
         @media screen and (max-width: 600px) {
             .content {
-                padding: 30px 20px;
+                padding: 30px 20px !important;
             }
 
-            .btn {
+            .h1 {
+                font-size: 22px !important;
+            }
+
+            .cert-card {
+                padding: 20px !important;
+            }
+
+            .cert-name {
+                font-size: 20px !important;
+            }
+
+            .button {
                 width: 100% !important;
                 box-sizing: border-box;
             }
@@ -165,98 +210,90 @@
 </head>
 
 <body>
-    <div class="wrapper">
-        <table class="main-table" align="center">
-            <!-- Header -->
+    <div style="background-color: #f4f7fa; padding: 40px 0;">
+        <table role="presentation" class="email-container" align="center" border="0" cellpadding="0" cellspacing="0">
+            <!-- Header Image -->
             <tr>
                 <td class="header">
-                    <img src="https://ched-raise.wvsu.edu.ph/mail-header.png" alt="CHED-RAISE Header">
+                    <img src="https://ched-raise.wvsu.edu.ph/mail-header.png" alt="CHED-RAISE Program Header"
+                        width="600">
                 </td>
             </tr>
 
-            <!-- Body -->
+            <!-- Main Content -->
             <tr>
                 <td class="content">
-                    <div class="greeting">Thank You for Your Participation</div>
+                    <h1 class="h1">Thank you for your participation!</h1>
 
-                    <p class="text">
-                        We sincerely thank you for completing the post-event survey and for your active participation in
-                        <strong>CHED-RAISE 2026</strong>. Your feedback is highly valued and plays a vital role in
-                        helping
-                        us improve our programs and initiatives.
+                    <p class="p">
+                        Dear <strong>{{name}}</strong>,
                     </p>
 
-                    <p class="text">
-                        In recognition of your time, engagement, and valuable contribution, we are pleased to provide
-                        you with your official certificates. You may generate and download them using the options below.
+                    <p class="p">
+                        We sincerely appreciate you taking the time to complete the post-event survey. Your feedback is
+                        invaluable in helping us refine the <strong>CHED-RAISE 2026</strong> initiatives and better
+                        serve our community.
                     </p>
 
-                    <div class="certificate-box">
-                        <p class="text" style="text-align: center; margin-bottom: 10px;">
-                            This is to certify that
-                        </p>
+                    <p class="p">
+                        In recognition of your active engagement and contribution, we are pleased to present your
+                        official certificates. You can find the download links for both your participation and
+                        appearance below.
+                    </p>
 
-                        <div class="recipient-name">{{name}} {{middleName}} {{lastName}}</div>
-
-                        <p class="text" style="text-align: center; margin-top: 20px;">
-                            has successfully participated in the <strong>CHED-RAISE 2026 Event</strong>.
-                        </p>
+                    <!-- Certificate Preview Card -->
+                    <div class="cert-card">
+                        <div class="cert-label">Achievement Recognition</div>
+                        <p style="margin: 0; font-size: 14px; color: #4a5568;">This is to certify that</p>
+                        <div class="cert-name">{{name}} {{middleName}} {{lastName}}</div>
+                        <div class="cert-type">
+                            Has successfully participated in the<br>
+                            <strong style="color: #1e3a8a;">CHED-RAISE 2026 Event</strong>
+                        </div>
                     </div>
 
-                    <p class="text" style="text-align: center;">
-                        Please select the appropriate button below to download your certificate.
+                    <!-- CTA Buttons -->
+                    <div class="btn-container">
+                        <p class="p" style="font-size: 14px; font-weight: 600; margin-bottom: 15px;">Download your
+                            certificates:</p>
+                        <a href="https://ched-raise.wvsu.edu.ph/api/email/?data={{encryptedParticipationData}}"
+                            class="button btn-primary">
+                            Certificate of Participation
+                        </a>
+                        <br>
+                        <a href="https://ched-raise.wvsu.edu.ph/api/email/?data={{encryptedAppearanceData}}"
+                            class="button btn-secondary">
+                            Certificate of Appearance
+                        </a>
+                    </div>
+
+                    <p class="p" style="margin-top: 40px; border-top: 1px solid #edf2f7; padding-top: 25px;">
+                        Thank you once again for your support. We look forward to seeing you at our future activities!
                     </p>
 
-                    <table role="presentation" border="0" cellpadding="0" cellspacing="0"
-                        style="margin: 0 auto; width: 100%;">
-                        <tbody>
-                            <tr>
-                                <td align="center" style="padding: 10px;">
-                                    <a href="https://ched-raise.wvsu.edu.ph/api/email/?data={{encryptedParticipationData}}"
-                                        target="_blank" class="btn btn-participation">
-                                        Certificate of Participation
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td align="center" style="padding: 10px;">
-                                    <a href="https://ched-raise.wvsu.edu.ph/api/email/?data={{encryptedAppearanceData}}"
-                                        target="_blank" class="btn btn-appearance">
-                                        Certificate of Appearance
-                                    </a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <p class="text" style="margin-top: 40px; text-align: center;">
-                        Once again, thank you for your support and cooperation.<br>
-                        We look forward to your continued participation in future CHED-RAISE activities.
-                    </p>
-
-                    <p class="text" style="text-align: center;">
+                    <p class="p" style="margin-bottom: 0;">
                         Sincerely,<br>
                         <strong>The CHED-RAISE Team</strong>
                     </p>
                 </td>
             </tr>
-        </table>
 
-        <!-- Footer -->
-        <div class="footer">
-            <p>&copy; 2026 CHED-RAISE. All rights reserved.</p>
-            <p>
-                Website:
-                <a href="https://ched-raise.wvsu.edu.ph" style="color: #8898aa; text-decoration: underline;">
-                    https://ched-raise.wvsu.edu.ph
-                </a><br>
-                Email:
-                <a href="mailto:helpdesk.chedraise@gmail.com" style="color: #8898aa; text-decoration: underline;">
-                    helpdesk.chedraise@gmail.com
-                </a>
-            </p>
-            <p>This is an automated message. Please do not reply.</p>
-        </div>
+            <!-- Footer -->
+            <tr>
+                <td class="footer">
+                    <p class="footer-text">
+                        &copy; 2026 CHED-RAISE Program. All rights reserved.
+                    </p>
+                    <p class="footer-text footer-links">
+                        <a href="https://ched-raise.wvsu.edu.ph">Official Website</a> &nbsp;|&nbsp;
+                        <a href="mailto:helpdesk.chedraise@gmail.com">Contact Support</a>
+                    </p>
+                    <p class="footer-text" style="font-size: 11px; margin-top: 20px; opacity: 0.8;">
+                        This is an automated notification. Please do not reply directly to this email.
+                    </p>
+                </td>
+            </tr>
+        </table>
     </div>
 </body>
 

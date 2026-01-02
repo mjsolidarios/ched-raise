@@ -189,7 +189,7 @@ if ($type === 'generate_certificate') {
     if ($certType === 'appearance') {
         $description = "This is to certify that " . $fullNameUpper . " of " . $school . " appeared at the Iloilo Convention Center on January 28-30, 2026 to attend the CHED-RAISE 2026 Summit.";
     } else {
-        $description = "has actively participated in the CHED RAISE Program activities.";
+        $description = "has actively participated in the CHED RAISE 2026 activities.";
     }
 
     $dateText = "Issued on this " . date('jS') . " day of " . date('F, Y');
