@@ -933,9 +933,9 @@ const UserDashboard = () => {
                     <CardHeader>
                         <CardTitle className="text-base flex items-center gap-2">
                             <BarChart3 className="h-4 w-4 text-primary" />
-                            Participants by Region
+                            Who are RAISE-ing with us?
                         </CardTitle>
-                        <CardDescription>Distribution of attendees sorted by volume</CardDescription>
+                        <CardDescription>Here are our current registrants so far.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
