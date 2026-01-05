@@ -33,7 +33,7 @@ import {
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { onAuthStateChanged, type User } from 'firebase/auth';
-import { Loader2, CalendarDays, Mail, Phone, CheckCircle2, XCircle, Clock, Pencil, InfoIcon, EditIcon, RefreshCcw, Circle, AlertCircle, MailCheckIcon, ClipboardCheck } from 'lucide-react';
+import { Loader2, CalendarDays, Mail, Phone, CheckCircle2, XCircle, Clock, Pencil, InfoIcon, EditIcon, RefreshCcw, Circle, AlertCircle, MailCheckIcon, ClipboardCheck, BarChart3 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { RegistrationProgress } from '@/components/RegistrationProgress';
 import { SchoolAutocomplete } from '@/components/SchoolAutocomplete';
@@ -42,6 +42,8 @@ import { toTitleCase } from '@/lib/utils/format';
 import { generateTicketCode } from '@/lib/raiseCodeUtils';
 import { Link } from 'react-router-dom';
 import { UserAvatar, getDeterministicAvatarColor } from '@/components/UserAvatar';
+import { PHILIPPINE_REGIONS } from '@/lib/regions';
+// Recharts removed as we switched to list view
 
 const UserDashboard = () => {
     const [user, setUser] = useState<User | null>(auth.currentUser);
@@ -55,11 +57,13 @@ const UserDashboard = () => {
         email: user?.email || '',
         contactNumber: '',
         schoolAffiliation: '',
+        region: '',
         registrantType: '',
         registrantTypeOther: ''
     });
     const [submitting, setSubmitting] = useState(false);
     const [dashboardAlert, setDashboardAlert] = useState<{ show: boolean, message: string, variant?: 'default' | 'destructive', title?: string } | null>(null);
+    const [regionStats, setRegionStats] = useState<{ name: string; value: number }[]>([]);
 
     // Edit State
     const [isEditOpen, setIsEditOpen] = useState(false);
@@ -74,6 +78,29 @@ const UserDashboard = () => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    useEffect(() => {
+        const q = query(collection(db, 'registrations'));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const stats: Record<string, number> = {};
+            snapshot.docs.forEach(doc => {
+                const data = doc.data();
+                const region = data.region || 'Unknown';
+                if (region) {
+                    stats[region] = (stats[region] || 0) + 1;
+                }
+            });
+
+            const chartData = Object.entries(stats)
+                .map(([name, value]) => ({ name, value }))
+                .sort((a, b) => b.value - a.value); // Sort by count descending
+
+            setRegionStats(chartData);
+        }, (error) => {
+            console.error("Error fetching region stats:", error);
         });
         return () => unsubscribe();
     }, []);
@@ -149,6 +176,10 @@ const UserDashboard = () => {
         setFormData({ ...formData, registrantType: value });
     };
 
+    const handleRegionChange = (value: string) => {
+        setFormData({ ...formData, region: value });
+    };
+
     const handleCancelRegistration = async () => {
         if (!registration?.id) return;
 
@@ -176,6 +207,7 @@ const UserDashboard = () => {
             middleName: registration.middleName || '',
             contactNumber: registration.contactNumber || '',
             schoolAffiliation: registration.schoolAffiliation || '',
+            region: registration.region || '',
             registrantType: registration.registrantType || '',
             registrantTypeOther: registration.registrantTypeOther || ''
         });
@@ -188,6 +220,10 @@ const UserDashboard = () => {
 
     const handleEditSelectChange = (value: string) => {
         setEditFormData({ ...editFormData, registrantType: value });
+    };
+
+    const handleEditRegionChange = (value: string) => {
+        setEditFormData({ ...editFormData, region: value });
     };
 
     const handleUpdateRegistration = async (e: React.FormEvent) => {
@@ -229,7 +265,7 @@ const UserDashboard = () => {
         e.preventDefault();
         setSubmitting(true);
 
-        if (!formData.lastName || !formData.firstName || !formData.middleName || !formData.contactNumber || !formData.schoolAffiliation || !formData.registrantType) {
+        if (!formData.lastName || !formData.firstName || !formData.middleName || !formData.contactNumber || !formData.schoolAffiliation || !formData.region || !formData.registrantType) {
             setDashboardAlert({
                 show: true,
                 message: "Please fill in all required fields.",
@@ -628,6 +664,21 @@ const UserDashboard = () => {
                                                 />
                                             </div>
                                             <div className="space-y-2">
+                                                <Label htmlFor="edit-region">Region <span className="text-destructive">*</span></Label>
+                                                <Select onValueChange={handleEditRegionChange} value={editFormData.region}>
+                                                    <SelectTrigger className="bg-background/50">
+                                                        <SelectValue placeholder="Select region" />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="max-h-[200px]">
+                                                        {PHILIPPINE_REGIONS.map((region) => (
+                                                            <SelectItem key={region} value={region}>
+                                                                {region}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div className="space-y-2">
                                                 <Label htmlFor="edit-contactNumber">Contact Number <span className="text-destructive">*</span></Label>
                                                 <Input id="edit-contactNumber" name="contactNumber" value={editFormData.contactNumber} onChange={handleEditChange} className="col-span-3" />
                                             </div>
@@ -793,6 +844,22 @@ const UserDashboard = () => {
                                         </div>
 
                                         <div className="space-y-2">
+                                            <Label htmlFor="region">Region <span className="text-destructive">*</span></Label>
+                                            <Select onValueChange={handleRegionChange} value={formData.region}>
+                                                <SelectTrigger className="bg-background/50">
+                                                    <SelectValue placeholder="Select region" />
+                                                </SelectTrigger>
+                                                <SelectContent className="max-h-[200px]">
+                                                    {PHILIPPINE_REGIONS.map((region) => (
+                                                        <SelectItem key={region} value={region}>
+                                                            {region}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+
+                                        <div className="space-y-2">
                                             <Label htmlFor="registrantType">Registrant Type <span className="text-destructive">*</span></Label>
                                             <Select onValueChange={handleSelectChange} value={formData.registrantType}>
                                                 <SelectTrigger className="bg-background/50">
@@ -845,6 +912,61 @@ const UserDashboard = () => {
                                 <div className="mt-4 pt-4 border-t border-primary/10 flex items-center gap-2">
                                     <Mail className="h-4 w-4 text-primary" />
                                     <a href="helpdesk.chedraise@gmail.com" className="text-primary hover:underline">helpdesk.chedraise@gmail.com</a>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="glass-card border-none shadow-lg">
+                            <CardHeader>
+                                <CardTitle className="text-base flex items-center gap-2">
+                                    <BarChart3 className="h-4 w-4 text-primary" />
+                                    Participants by Region
+                                </CardTitle>
+                                <CardDescription>Distribution of attendees sorted by volume</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                                    {regionStats.length === 0 ? (
+                                        <div className="text-center py-8 text-muted-foreground">
+                                            No data available yet
+                                        </div>
+                                    ) : (
+                                        regionStats.map((stat, index) => {
+                                            const total = regionStats.reduce((acc, curr) => acc + curr.value, 0);
+                                            const percentage = ((stat.value / total) * 100).toFixed(1);
+
+                                            // Dynamic color based on index/rank
+                                            const isTop3 = index < 3;
+                                            const barColor = isTop3 ? 'bg-primary' : 'bg-primary/50';
+
+                                            return (
+                                                <div key={stat.name} className="space-y-1.5">
+                                                    <div className="flex items-center justify-between text-sm">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${isTop3 ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                                                                {index + 1}
+                                                            </span>
+                                                            <span className="font-medium truncate max-w-[200px] sm:max-w-[300px]" title={stat.name}>
+                                                                {stat.name}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 text-xs">
+                                                            <span className="font-bold text-foreground">{stat.value}</span>
+                                                            <span className="text-muted-foreground">({percentage}%)</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="h-2 w-full bg-secondary/50 rounded-full overflow-hidden">
+                                                        <motion.div
+                                                            initial={{ width: 0 }}
+                                                            animate={{ width: `${(stat.value / total) * 100}%` }}
+                                                            transition={{ duration: 1, delay: index * 0.1 }}
+                                                            className={`h-full ${barColor} rounded-full`}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+                                    )}
                                 </div>
                             </CardContent>
                         </Card>

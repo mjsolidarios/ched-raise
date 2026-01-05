@@ -20,7 +20,8 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu"
-import { Users, Clock, CheckCircle2, XCircle, Search, Loader2, Scan, Keyboard, Mail, Trash2, MoreHorizontal, Copy } from 'lucide-react';
+import { Users, Clock, CheckCircle2, XCircle, Search, Loader2, Scan, Keyboard, Mail, Trash2, MoreHorizontal, Copy, BarChart3 } from 'lucide-react';
+// Recharts removed as we switched to list view
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { UserAvatar } from '@/components/UserAvatar';
@@ -335,6 +336,7 @@ const AdminPage = () => {
                 reg.middleName?.toLowerCase().includes(searchLower) ||
                 reg.email?.toLowerCase().includes(searchLower) ||
                 reg.schoolAffiliation?.toLowerCase().includes(searchLower) ||
+                reg.region?.toLowerCase().includes(searchLower) ||
                 reg.ticketCode?.toLowerCase().includes(searchLower) ||
                 reg.id?.toLowerCase().includes(searchLower)
             );
@@ -350,6 +352,18 @@ const AdminPage = () => {
         confirmed: registrations.filter(r => r.status === 'confirmed').length,
         rejected: registrations.filter(r => r.status === 'rejected').length
     };
+
+    const regionStats = useMemo(() => {
+        const stats: Record<string, number> = {};
+        registrations.forEach(reg => {
+            const region = reg.region || 'Unknown';
+            stats[region] = (stats[region] || 0) + 1;
+        });
+
+        return Object.entries(stats)
+            .map(([name, value]) => ({ name, value }))
+            .sort((a, b) => b.value - a.value);
+    }, [registrations]);
 
     const container = {
         hidden: { opacity: 0 },
@@ -541,6 +555,63 @@ const AdminPage = () => {
                                     </CardContent>
                                 </Card>
                             </div>
+
+                            <div className="grid gap-4 mb-4">
+                                <Card className="glass-card">
+                                    <CardHeader>
+                                        <CardTitle className="text-base flex items-center gap-2">
+                                            <BarChart3 className="h-4 w-4 text-primary" />
+                                            Participants by Region
+                                        </CardTitle>
+                                        <CardDescription>Distribution of registrants across regions</CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                                            {regionStats.length === 0 ? (
+                                                <div className="text-center py-8 text-muted-foreground">
+                                                    No data available yet
+                                                </div>
+                                            ) : (
+                                                regionStats.map((stat, index) => {
+                                                    const total = regionStats.reduce((acc, curr) => acc + curr.value, 0);
+                                                    const percentage = ((stat.value / total) * 100).toFixed(1);
+
+                                                    // Dynamic color based on index/rank
+                                                    const isTop3 = index < 3;
+                                                    const barColor = isTop3 ? 'bg-primary' : 'bg-primary/50';
+
+                                                    return (
+                                                        <div key={stat.name} className="space-y-1.5">
+                                                            <div className="flex items-center justify-between text-sm">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${isTop3 ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                                                                        {index + 1}
+                                                                    </span>
+                                                                    <span className="font-medium truncate" title={stat.name}>
+                                                                        {stat.name}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="flex items-center gap-2 text-xs">
+                                                                    <span className="font-bold text-foreground">{stat.value}</span>
+                                                                    <span className="text-muted-foreground">({percentage}%)</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="h-2 w-full bg-secondary/50 rounded-full overflow-hidden">
+                                                                <motion.div
+                                                                    initial={{ width: 0 }}
+                                                                    animate={{ width: `${(stat.value / total) * 100}%` }}
+                                                                    transition={{ duration: 1, delay: index * 0.1 }}
+                                                                    className={`h-full ${barColor} rounded-full`}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })
+                                            )}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </div>
                             <Card className="glass-card">
                                 <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                                     <div>
@@ -550,7 +621,7 @@ const AdminPage = () => {
                                     <div className="relative w-full md:w-64">
                                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                                         <Input
-                                            placeholder="Search names, emails..."
+                                            placeholder="Search names, emails, regions..."
                                             className="pl-8 bg-background/50"
                                             value={searchTerm}
                                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -563,7 +634,7 @@ const AdminPage = () => {
                                             <TableHeader className="bg-muted/50">
                                                 <TableRow>
                                                     <TableHead>Full Name</TableHead>
-                                                    <TableHead>School / Type</TableHead>
+                                                    <TableHead>School / Region</TableHead>
                                                     <TableHead>Contact</TableHead>
                                                     <TableHead>Status</TableHead>
                                                     <TableHead className="text-right">Actions</TableHead>
@@ -589,8 +660,9 @@ const AdminPage = () => {
                                                                 </div>
                                                             </TableCell>
                                                             <TableCell>
-                                                                <div className="text-sm">{reg.schoolAffiliation || 'N/A'}</div>
-                                                                <div className="text-xs text-muted-foreground capitalize">{reg.registrantType || 'N/A'} {reg.registrantType === 'others' && reg.registrantTypeOther ? `(${reg.registrantTypeOther})` : ''}</div>
+                                                                <div className="text-sm font-medium">{reg.schoolAffiliation || 'N/A'}</div>
+                                                                <div className="text-xs text-muted-foreground">{reg.region || 'N/A'}</div>
+                                                                <div className="text-xs text-muted-foreground/60 capitalize mt-0.5">{reg.registrantType || 'N/A'} {reg.registrantType === 'others' && reg.registrantTypeOther ? `(${reg.registrantTypeOther})` : ''}</div>
                                                             </TableCell>
                                                             <TableCell>
                                                                 <div className="text-sm">{reg.email}</div>
