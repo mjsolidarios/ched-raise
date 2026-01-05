@@ -310,6 +310,8 @@ switch ($type) {
             $subject = '[CHED-RAISE] Registration Rejected';
             $htmlContent = str_replace('{{ticketCode}}', $ticketCode, $htmlContent);
             $htmlContent = str_replace('{{name}}', $name, $htmlContent);
+            $reason = $input['reason'] ?? 'No specific reason provided.';
+            $htmlContent = str_replace('{{reason}}', $reason, $htmlContent);
         } else {
             respondJson(500, ['error' => 'Template file not found.']);
         }

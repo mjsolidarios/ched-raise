@@ -251,7 +251,8 @@ const AdminPage = () => {
                     to: reg.email,
                     firstName: reg.firstName,
                     ticketCode: reg.ticketCode || reg.id,
-                    type: 'registration_rejected'
+                    type: 'registration_rejected',
+                    reason: rejectionReason
                 }).catch(err => console.error("Error sending rejection email:", err));
             }
 

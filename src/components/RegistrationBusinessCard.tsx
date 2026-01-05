@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import QRCode from "react-qr-code";
 import { useFitText } from '@/hooks/use-fit-text';
 import { UserAvatar } from './UserAvatar';
+import { getRegionShortName } from '@/lib/regions';
 
 const hashStringToUint32 = (str: string) => {
   // FNV-1a 32-bit
@@ -118,6 +119,7 @@ type Registration = {
   schoolAffiliation?: string;
   registrantType?: string;
   registrantTypeOther?: string;
+  region?: string;
   ticketCode?: string;
   avatarSeed?: string;
   avatarColor?: string;
@@ -176,6 +178,7 @@ export const RegistrationBusinessCard = ({ registration, actions, hideFlipInstru
         };
 
         const dataUrlFront = await toPng(frontRef.current, options);
+        // Create a dummy link to trigger download
         const link = document.createElement('a');
         link.download = `raise-id-${registration.id}-front.png`;
         link.href = dataUrlFront;
@@ -365,7 +368,7 @@ export const RegistrationBusinessCard = ({ registration, actions, hideFlipInstru
                   </div>
                   <p className="text-3xl sm:text-6xl font-bold tracking-tight text-white leading-tight">{fullName}</p>
                   <p className="text-[10px] sm:text-2xl text-muted-foreground mt-0.5 sm:mt-2 line-clamp-1">
-                    {registrantTypeLabel}{registration.schoolAffiliation ? ` • ${registration.schoolAffiliation}` : ''}
+                    {registrantTypeLabel}{registration.schoolAffiliation ? ` • ${registration.schoolAffiliation}` : ''}{registration.region ? ` • ${getRegionShortName(registration.region)}` : ''}
                   </p>
                 </div>
 
