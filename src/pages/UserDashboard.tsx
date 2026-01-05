@@ -945,11 +945,7 @@ const UserDashboard = () => {
                                 </div>
                             ) : (
                                 regionStats.map((stat, index) => {
-                                    const total = regionStats.reduce((acc, curr) => acc + curr.value, 0);
-                                    const percentage = ((stat.value / total) * 100).toFixed(1);
-
                                     const isTop3 = index < 3;
-                                    const barColor = isTop3 ? 'bg-primary' : 'bg-primary/50';
 
                                     // Take only top 7 avatars
                                     const displayAvatars = stat.avatars?.slice(0, 7) || [];
