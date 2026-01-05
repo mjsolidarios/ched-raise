@@ -28,6 +28,7 @@ import { UserAvatar } from '@/components/UserAvatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AttendanceScanner } from '@/components/AttendanceScanner';
 import { getAttendanceRecords, getAttendanceStats, type AttendanceRecord, type AttendanceStats } from '@/lib/attendanceService';
+import { getRegionShortName } from '@/lib/regions';
 import axios from 'axios';
 import {
     Dialog,
@@ -215,7 +216,11 @@ const AdminPage = () => {
 
         try {
             const ref = doc(db, 'registrations', id);
-            await updateDoc(ref, { status: newStatus });
+            await updateDoc(ref, {
+                status: newStatus,
+                statusUpdatedBy: user?.email,
+                statusUpdatedAt: new Date()
+            });
 
             if (newStatus === 'confirmed') {
                 const reg = registrations.find(r => r.id === id);
@@ -241,7 +246,9 @@ const AdminPage = () => {
             const ref = doc(db, 'registrations', rejectingId);
             await updateDoc(ref, {
                 status: 'rejected',
-                rejectionReason: rejectionReason
+                rejectionReason: rejectionReason,
+                statusUpdatedBy: user?.email,
+                statusUpdatedAt: new Date()
             });
 
             const reg = registrations.find(r => r.id === rejectingId);
@@ -286,6 +293,14 @@ const AdminPage = () => {
                 from: 'noreply@ched-raise.wvsu.edu.ph',
                 school: reg.schoolAffiliation,
             });
+
+            // Track email action
+            const ref = doc(db, 'registrations', reg.id);
+            await updateDoc(ref, {
+                emailSentBy: user?.email,
+                emailSentAt: new Date()
+            });
+
             toast.success(`Email sent to ${reg.email}`, { id: loadingToast });
         } catch (error) {
             console.error("Error sending email:", error);
@@ -309,7 +324,9 @@ const AdminPage = () => {
                 surveyCompleted: false,
                 surveyRating: deleteField(),
                 surveyFeedback: deleteField(),
-                surveyTimestamp: deleteField()
+                surveyTimestamp: deleteField(),
+                surveyDeletedBy: user?.email,
+                surveyDeletedAt: new Date()
             });
             toast.success("Survey entry deleted.");
         } catch (error) {
@@ -557,62 +574,7 @@ const AdminPage = () => {
                                 </Card>
                             </div>
 
-                            <div className="grid gap-4 mb-4">
-                                <Card className="glass-card">
-                                    <CardHeader>
-                                        <CardTitle className="text-base flex items-center gap-2">
-                                            <BarChart3 className="h-4 w-4 text-primary" />
-                                            Participants by Region
-                                        </CardTitle>
-                                        <CardDescription>Distribution of registrants across regions</CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                                            {regionStats.length === 0 ? (
-                                                <div className="text-center py-8 text-muted-foreground">
-                                                    No data available yet
-                                                </div>
-                                            ) : (
-                                                regionStats.map((stat, index) => {
-                                                    const total = regionStats.reduce((acc, curr) => acc + curr.value, 0);
-                                                    const percentage = ((stat.value / total) * 100).toFixed(1);
 
-                                                    // Dynamic color based on index/rank
-                                                    const isTop3 = index < 3;
-                                                    const barColor = isTop3 ? 'bg-primary' : 'bg-primary/50';
-
-                                                    return (
-                                                        <div key={stat.name} className="space-y-1.5">
-                                                            <div className="flex items-center justify-between text-sm">
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${isTop3 ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
-                                                                        {index + 1}
-                                                                    </span>
-                                                                    <span className="font-medium truncate" title={stat.name}>
-                                                                        {stat.name}
-                                                                    </span>
-                                                                </div>
-                                                                <div className="flex items-center gap-2 text-xs">
-                                                                    <span className="font-bold text-foreground">{stat.value}</span>
-                                                                    <span className="text-muted-foreground">({percentage}%)</span>
-                                                                </div>
-                                                            </div>
-                                                            <div className="h-2 w-full bg-secondary/50 rounded-full overflow-hidden">
-                                                                <motion.div
-                                                                    initial={{ width: 0 }}
-                                                                    animate={{ width: `${(stat.value / total) * 100}%` }}
-                                                                    transition={{ duration: 1, delay: index * 0.1 }}
-                                                                    className={`h-full ${barColor} rounded-full`}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                })
-                                            )}
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </div>
                             <Card className="glass-card">
                                 <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                                     <div>
@@ -638,13 +600,14 @@ const AdminPage = () => {
                                                     <TableHead>School / Region</TableHead>
                                                     <TableHead>Contact</TableHead>
                                                     <TableHead>Status</TableHead>
+                                                    <TableHead>Updates</TableHead>
                                                     <TableHead className="text-right">Actions</TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
                                                 {filteredRegistrations.length === 0 ? (
                                                     <TableRow>
-                                                        <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                                                        <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                                                             No registrations found.
                                                         </TableCell>
                                                     </TableRow>
@@ -680,6 +643,28 @@ const AdminPage = () => {
                                                                 >
                                                                     {reg.status}
                                                                 </Badge>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div className="flex flex-col gap-1 text-[10px] text-muted-foreground/80">
+                                                                    {reg.statusUpdatedBy && (
+                                                                        <div className="flex items-center gap-1" title={`Status updated by ${reg.statusUpdatedBy}`}>
+                                                                            <Clock className="w-3 h-3 text-muted-foreground/60" />
+                                                                            <span className="truncate max-w-[120px]">{reg.statusUpdatedBy.split('@')[0]}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {reg.emailSentBy && (
+                                                                        <div className="flex items-center gap-1" title={`Email sent by ${reg.emailSentBy}`}>
+                                                                            <Mail className="w-3 h-3 text-blue-500/60" />
+                                                                            <span className="truncate max-w-[120px]">{reg.emailSentBy.split('@')[0]}</span>
+                                                                        </div>
+                                                                    )}
+                                                                    {reg.surveyDeletedBy && (
+                                                                        <div className="flex items-center gap-1" title={`Survey reset by ${reg.surveyDeletedBy}`}>
+                                                                            <Trash2 className="w-3 h-3 text-destructive/60" />
+                                                                            <span className="truncate max-w-[120px]">{reg.surveyDeletedBy.split('@')[0]}</span>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
                                                             </TableCell>
                                                             <TableCell className="text-right">
                                                                 <DropdownMenu>
@@ -745,6 +730,63 @@ const AdminPage = () => {
                                     </div>
                                 </CardContent>
                             </Card>
+
+                            <div className="grid gap-4 my-4">
+                                <Card className="glass-card">
+                                    <CardHeader>
+                                        <CardTitle className="text-base flex items-center gap-2">
+                                            <BarChart3 className="h-4 w-4 text-primary" />
+                                            Participants by Region
+                                        </CardTitle>
+                                        <CardDescription>Distribution of registrants across regions</CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                                            {regionStats.length === 0 ? (
+                                                <div className="text-center py-8 text-muted-foreground">
+                                                    No data available yet
+                                                </div>
+                                            ) : (
+                                                regionStats.map((stat, index) => {
+                                                    const total = regionStats.reduce((acc, curr) => acc + curr.value, 0);
+                                                    const percentage = ((stat.value / total) * 100).toFixed(1);
+
+                                                    // Dynamic color based on index/rank
+                                                    const isTop3 = index < 3;
+                                                    const barColor = isTop3 ? 'bg-primary' : 'bg-primary/50';
+
+                                                    return (
+                                                        <div key={stat.name} className="space-y-1.5">
+                                                            <div className="flex items-center justify-between text-sm">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${isTop3 ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                                                                        {index + 1}
+                                                                    </span>
+                                                                    <span className="font-medium truncate" title={stat.name}>
+                                                                        {getRegionShortName(stat.name)}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="flex items-center gap-2 text-xs">
+                                                                    <span className="font-bold text-foreground">{stat.value}</span>
+                                                                    <span className="text-muted-foreground">({percentage}%)</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="h-2 w-full bg-secondary/50 rounded-full overflow-hidden">
+                                                                <motion.div
+                                                                    initial={{ width: 0 }}
+                                                                    animate={{ width: `${(stat.value / total) * 100}%` }}
+                                                                    transition={{ duration: 1, delay: index * 0.1 }}
+                                                                    className={`h-full ${barColor} rounded-full`}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })
+                                            )}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </div>
                         </TabsContent>
 
                         {/* Attendance Tab */}

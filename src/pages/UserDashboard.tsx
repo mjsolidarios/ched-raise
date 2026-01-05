@@ -42,7 +42,7 @@ import { toTitleCase } from '@/lib/utils/format';
 import { generateTicketCode } from '@/lib/raiseCodeUtils';
 import { Link } from 'react-router-dom';
 import { UserAvatar, getDeterministicAvatarColor } from '@/components/UserAvatar';
-import { PHILIPPINE_REGIONS } from '@/lib/regions';
+import { PHILIPPINE_REGIONS, getRegionShortName } from '@/lib/regions';
 // Recharts removed as we switched to list view
 
 const UserDashboard = () => {
@@ -63,7 +63,7 @@ const UserDashboard = () => {
     });
     const [submitting, setSubmitting] = useState(false);
     const [dashboardAlert, setDashboardAlert] = useState<{ show: boolean, message: string, variant?: 'default' | 'destructive', title?: string } | null>(null);
-    const [regionStats, setRegionStats] = useState<{ name: string; value: number }[]>([]);
+    const [regionStats, setRegionStats] = useState<{ name: string; value: number; avatars: { seed: string; color: string }[] }[]>([]);
 
     // Edit State
     const [isEditOpen, setIsEditOpen] = useState(false);
@@ -85,17 +85,29 @@ const UserDashboard = () => {
     useEffect(() => {
         const q = query(collection(db, 'registrations'));
         const unsubscribe = onSnapshot(q, (snapshot) => {
-            const stats: Record<string, number> = {};
+            const stats: Record<string, { count: number, avatars: { seed: string, color: string }[] }> = {};
             snapshot.docs.forEach(doc => {
                 const data = doc.data();
                 const region = data.region || 'Unknown';
-                if (region) {
-                    stats[region] = (stats[region] || 0) + 1;
+                if (!stats[region]) {
+                    stats[region] = { count: 0, avatars: [] };
+                }
+                stats[region].count += 1;
+                // Collect avatars, limiting to 10 to avoid performance issues
+                if (stats[region].avatars.length < 10 && (data.ticketCode || data.id)) {
+                    stats[region].avatars.push({
+                        seed: data.avatarSeed || data.ticketCode || data.id,
+                        color: data.avatarColor || getDeterministicAvatarColor(data.ticketCode || data.id)
+                    });
                 }
             });
 
             const chartData = Object.entries(stats)
-                .map(([name, value]) => ({ name, value }))
+                .map(([name, data]) => ({
+                    name,
+                    value: data.count,
+                    avatars: data.avatars
+                }))
                 .sort((a, b) => b.value - a.value); // Sort by count descending
 
             setRegionStats(chartData);
@@ -915,64 +927,64 @@ const UserDashboard = () => {
                                 </div>
                             </CardContent>
                         </Card>
-
-                        <Card className="glass-card border-none shadow-lg">
-                            <CardHeader>
-                                <CardTitle className="text-base flex items-center gap-2">
-                                    <BarChart3 className="h-4 w-4 text-primary" />
-                                    Participants by Region
-                                </CardTitle>
-                                <CardDescription>Distribution of attendees sorted by volume</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                                    {regionStats.length === 0 ? (
-                                        <div className="text-center py-8 text-muted-foreground">
-                                            No data available yet
-                                        </div>
-                                    ) : (
-                                        regionStats.map((stat, index) => {
-                                            const total = regionStats.reduce((acc, curr) => acc + curr.value, 0);
-                                            const percentage = ((stat.value / total) * 100).toFixed(1);
-
-                                            // Dynamic color based on index/rank
-                                            const isTop3 = index < 3;
-                                            const barColor = isTop3 ? 'bg-primary' : 'bg-primary/50';
-
-                                            return (
-                                                <div key={stat.name} className="space-y-1.5">
-                                                    <div className="flex items-center justify-between text-sm">
-                                                        <div className="flex items-center gap-2">
-                                                            <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${isTop3 ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
-                                                                {index + 1}
-                                                            </span>
-                                                            <span className="font-medium truncate max-w-[200px] sm:max-w-[300px]" title={stat.name}>
-                                                                {stat.name}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex items-center gap-2 text-xs">
-                                                            <span className="font-bold text-foreground">{stat.value}</span>
-                                                            <span className="text-muted-foreground">({percentage}%)</span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="h-2 w-full bg-secondary/50 rounded-full overflow-hidden">
-                                                        <motion.div
-                                                            initial={{ width: 0 }}
-                                                            animate={{ width: `${(stat.value / total) * 100}%` }}
-                                                            transition={{ duration: 1, delay: index * 0.1 }}
-                                                            className={`h-full ${barColor} rounded-full`}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            );
-                                        })
-                                    )}
-                                </div>
-                            </CardContent>
-                        </Card>
                     </motion.div>
                 </motion.div>
+                <Card className="glass-card border-none shadow-lg">
+                    <CardHeader>
+                        <CardTitle className="text-base flex items-center gap-2">
+                            <BarChart3 className="h-4 w-4 text-primary" />
+                            Participants by Region
+                        </CardTitle>
+                        <CardDescription>Distribution of attendees sorted by volume</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                            {regionStats.length === 0 ? (
+                                <div className="text-center py-8 text-muted-foreground">
+                                    No data available yet
+                                </div>
+                            ) : (
+                                regionStats.map((stat, index) => {
+                                    const total = regionStats.reduce((acc, curr) => acc + curr.value, 0);
+                                    const percentage = ((stat.value / total) * 100).toFixed(1);
 
+                                    const isTop3 = index < 3;
+                                    const barColor = isTop3 ? 'bg-primary' : 'bg-primary/50';
+
+                                    // Take only top 7 avatars
+                                    const displayAvatars = stat.avatars?.slice(0, 7) || [];
+                                    const hasMore = (stat.avatars?.length || 0) > 7 || stat.value > 7;
+
+                                    return (
+                                        <div key={stat.name} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                                            <div className="flex items-center gap-3">
+                                                <span className={`flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold shrink-0 ${isTop3 ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                                                    {index + 1}
+                                                </span>
+                                                <span className="font-medium text-sm truncate max-w-[120px] sm:max-w-[150px]" title={stat.name}>
+                                                    {getRegionShortName(stat.name)}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex items-center -space-x-2 overflow-hidden pl-2">
+                                                {displayAvatars.map((avatar, i) => (
+                                                    <div key={i} className="relative z-10 inline-block h-6 w-6 rounded-full ring-2 ring-background">
+                                                        <UserAvatar seed={avatar.seed} size={24} color={avatar.color} className="h-full w-full" />
+                                                    </div>
+                                                ))}
+                                                {hasMore && (
+                                                    <div className="relative z-0 inline-block flex items-center justify-center h-6 w-6 rounded-full bg-muted ring-2 ring-background text-[10px] font-bold text-muted-foreground">
+                                                        ...
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
                 <div className="mt-12 pt-8 border-t border-border/40 text-center">
                     <Link to="/privacy-policy" className="text-xs text-muted-foreground/60 hover:text-primary transition-colors">
                         Privacy Policy
