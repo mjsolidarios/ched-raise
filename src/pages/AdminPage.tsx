@@ -20,7 +20,7 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu"
-import { Users, Clock, CheckCircle2, XCircle, Search, Loader2, Scan, Keyboard, Mail, Trash2, MoreHorizontal, Copy, BarChart3 } from 'lucide-react';
+import { Users, Clock, CheckCircle2, XCircle, Search, Loader2, Scan, Keyboard, Mail, Trash2, MoreHorizontal, Copy, BarChart3, ArrowUpDown, ArrowUp, ArrowDown, Filter } from 'lucide-react';
 // Recharts removed as we switched to list view
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -28,7 +28,7 @@ import { UserAvatar } from '@/components/UserAvatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AttendanceScanner } from '@/components/AttendanceScanner';
 import { getAttendanceRecords, getAttendanceStats, type AttendanceRecord, type AttendanceStats } from '@/lib/attendanceService';
-import { getRegionShortName } from '@/lib/regions';
+import { getRegionShortName, PHILIPPINE_REGIONS } from '@/lib/regions';
 import axios from 'axios';
 import {
     Dialog,
@@ -48,6 +48,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
 
@@ -59,6 +60,9 @@ const AdminPage = () => {
     const [loginPassword, setLoginPassword] = useState('');
     const [registrations, setRegistrations] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [sortColumn, setSortColumn] = useState<'name' | 'region' | 'status' | null>(null);
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+    const [regionFilter, setRegionFilter] = useState<string>('all');
     const [eventStatus, setEventStatus] = useState<'ongoing' | 'finished'>('ongoing');
 
     // Attendance State
@@ -343,10 +347,12 @@ const AdminPage = () => {
         return `${lastName || ''}, ${firstName || ''} ${middleName || ''}`.trim();
     };
 
-    // Filter registrations
+    // Filter and sort registrations
     const filteredRegistrations = useMemo(() => {
         console.log('Filtering registrations with search term:', searchTerm);
-        const filtered = registrations.filter(reg => {
+
+        // Apply search filter
+        let filtered = registrations.filter(reg => {
             const searchLower = searchTerm.toLowerCase();
             return (
                 reg.lastName?.toLowerCase().includes(searchLower) ||
@@ -359,9 +365,37 @@ const AdminPage = () => {
                 reg.id?.toLowerCase().includes(searchLower)
             );
         });
+
+        // Apply region filter
+        if (regionFilter !== 'all') {
+            filtered = filtered.filter(reg => reg.region === regionFilter);
+        }
+
+        // Apply sorting
+        if (sortColumn) {
+            filtered = [...filtered].sort((a, b) => {
+                let aValue: string = '';
+                let bValue: string = '';
+
+                if (sortColumn === 'name') {
+                    aValue = formatFullName(a.lastName, a.firstName, a.middleName);
+                    bValue = formatFullName(b.lastName, b.firstName, b.middleName);
+                } else if (sortColumn === 'region') {
+                    aValue = a.region || '';
+                    bValue = b.region || '';
+                } else if (sortColumn === 'status') {
+                    aValue = a.status || '';
+                    bValue = b.status || '';
+                }
+
+                const comparison = aValue.localeCompare(bValue);
+                return sortDirection === 'asc' ? comparison : -comparison;
+            });
+        }
+
         console.log('Filtered registrations:', filtered);
         return filtered;
-    }, [registrations, searchTerm]);
+    }, [registrations, searchTerm, regionFilter, sortColumn, sortDirection]);
 
     // Calculate Stats
     const stats = {
@@ -581,14 +615,30 @@ const AdminPage = () => {
                                         <CardTitle>Registrations</CardTitle>
                                         <CardDescription>Manage and review participant details.</CardDescription>
                                     </div>
-                                    <div className="relative w-full md:w-64">
-                                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                                        <Input
-                                            placeholder="Search names, emails, regions..."
-                                            className="pl-8 bg-background/50"
-                                            value={searchTerm}
-                                            onChange={(e) => setSearchTerm(e.target.value)}
-                                        />
+                                    <div className="flex gap-2 w-full md:w-auto">
+                                        <Select value={regionFilter} onValueChange={setRegionFilter}>
+                                            <SelectTrigger className="w-full md:w-48 bg-background/50">
+                                                <div className="flex items-center gap-2">
+                                                    <Filter className="h-4 w-4" />
+                                                    <SelectValue placeholder="All Regions" />
+                                                </div>
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="all">All Regions</SelectItem>
+                                                {PHILIPPINE_REGIONS.map(region => (
+                                                    <SelectItem key={region} value={region}>{getRegionShortName(region)}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <div className="relative flex-1 md:w-64">
+                                            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                                            <Input
+                                                placeholder="Search names, emails, regions..."
+                                                className="pl-8 bg-background/50"
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                            />
+                                        </div>
                                     </div>
                                 </CardHeader>
                                 <CardContent className="p-0">
@@ -596,10 +646,61 @@ const AdminPage = () => {
                                         <Table>
                                             <TableHeader className="bg-muted/50">
                                                 <TableRow>
-                                                    <TableHead>Full Name</TableHead>
-                                                    <TableHead>School / Region</TableHead>
+                                                    <TableHead>
+                                                        <button
+                                                            className="flex items-center gap-1 hover:text-foreground transition-colors"
+                                                            onClick={() => {
+                                                                if (sortColumn === 'name') {
+                                                                    setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+                                                                } else {
+                                                                    setSortColumn('name');
+                                                                    setSortDirection('asc');
+                                                                }
+                                                            }}
+                                                        >
+                                                            Full Name
+                                                            {sortColumn === 'name' ? (
+                                                                sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
+                                                            ) : <ArrowUpDown className="h-3 w-3 opacity-50" />}
+                                                        </button>
+                                                    </TableHead>
+                                                    <TableHead>
+                                                        <button
+                                                            className="flex items-center gap-1 hover:text-foreground transition-colors"
+                                                            onClick={() => {
+                                                                if (sortColumn === 'region') {
+                                                                    setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+                                                                } else {
+                                                                    setSortColumn('region');
+                                                                    setSortDirection('asc');
+                                                                }
+                                                            }}
+                                                        >
+                                                            School / Region
+                                                            {sortColumn === 'region' ? (
+                                                                sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
+                                                            ) : <ArrowUpDown className="h-3 w-3 opacity-50" />}
+                                                        </button>
+                                                    </TableHead>
                                                     <TableHead>Contact</TableHead>
-                                                    <TableHead>Status</TableHead>
+                                                    <TableHead>
+                                                        <button
+                                                            className="flex items-center gap-1 hover:text-foreground transition-colors"
+                                                            onClick={() => {
+                                                                if (sortColumn === 'status') {
+                                                                    setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+                                                                } else {
+                                                                    setSortColumn('status');
+                                                                    setSortDirection('asc');
+                                                                }
+                                                            }}
+                                                        >
+                                                            Status
+                                                            {sortColumn === 'status' ? (
+                                                                sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
+                                                            ) : <ArrowUpDown className="h-3 w-3 opacity-50" />}
+                                                        </button>
+                                                    </TableHead>
                                                     <TableHead>Updates</TableHead>
                                                     <TableHead className="text-right">Actions</TableHead>
                                                 </TableRow>
