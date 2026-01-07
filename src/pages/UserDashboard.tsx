@@ -12,6 +12,12 @@ import axios from 'axios';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
     AlertDialog,
     AlertDialogAction,
     AlertDialogCancel,
@@ -63,7 +69,7 @@ const UserDashboard = () => {
     });
     const [submitting, setSubmitting] = useState(false);
     const [dashboardAlert, setDashboardAlert] = useState<{ show: boolean, message: string, variant?: 'default' | 'destructive', title?: string } | null>(null);
-    const [regionStats, setRegionStats] = useState<{ name: string; value: number; avatars: { seed: string; color: string }[] }[]>([]);
+    const [regionStats, setRegionStats] = useState<{ name: string; value: number; avatars: { seed: string; color: string; id?: string; firstName?: string; ticketCode?: string }[] }[]>([]);
 
     // Edit State
     const [isEditOpen, setIsEditOpen] = useState(false);
@@ -83,38 +89,23 @@ const UserDashboard = () => {
     }, []);
 
     useEffect(() => {
-        const q = query(collection(db, 'registrations'));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const stats: Record<string, { count: number, avatars: { seed: string, color: string }[] }> = {};
-            snapshot.docs.forEach(doc => {
-                const data = doc.data();
-                const region = data.region || 'Unknown';
-                if (!stats[region]) {
-                    stats[region] = { count: 0, avatars: [] };
+        // Fetch stats from public settings document (aggregated by Admin)
+        const unsub = onSnapshot(doc(db, 'settings', 'stats'), (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.regions) {
+                    setRegionStats(data.regions);
+                    console.log("📊 Loaded public stats from settings:", data.regions.length);
                 }
-                stats[region].count += 1;
-                // Collect avatars, limiting to 10 to avoid performance issues
-                if (stats[region].avatars.length < 10 && (data.ticketCode || data.id)) {
-                    stats[region].avatars.push({
-                        seed: data.avatarSeed || data.ticketCode || data.id,
-                        color: data.avatarColor || getDeterministicAvatarColor(data.ticketCode || data.id)
-                    });
-                }
-            });
-
-            const chartData = Object.entries(stats)
-                .map(([name, data]) => ({
-                    name,
-                    value: data.count,
-                    avatars: data.avatars
-                }))
-                .sort((a, b) => b.value - a.value); // Sort by count descending
-
-            setRegionStats(chartData);
+            } else {
+                console.log("ℹ️ No public stats found");
+                setRegionStats([]);
+            }
         }, (error) => {
-            console.error("Error fetching region stats:", error);
+            console.error("Error fetching public stats:", error);
         });
-        return () => unsubscribe();
+
+        return () => unsub();
     }, []);
 
     useEffect(() => {
@@ -962,15 +953,33 @@ const UserDashboard = () => {
                                                 </span>
                                             </div>
 
-                                            <div className="flex items-center -space-x-2 overflow-hidden pl-2">
-                                                {displayAvatars.map((avatar, i) => (
-                                                    <div key={i} className="relative z-10 inline-block h-6 w-6 rounded-full ring-2 ring-background">
-                                                        <UserAvatar seed={avatar.seed} size={24} color={avatar.color} className="h-full w-full" />
-                                                    </div>
-                                                ))}
+                                            <div className="flex items-center -space-x-2 overflow-hidden pl-2 pb-2 pt-1">
+                                                <TooltipProvider>
+                                                    {displayAvatars.map((avatar, i) => (
+                                                        <Tooltip key={i}>
+                                                            <TooltipTrigger asChild>
+                                                                <div className="relative z-10 inline-block h-8 w-8 rounded-full ring-2 ring-background transition-transform duration-200 hover:scale-125 hover:z-20 cursor-pointer">
+                                                                    <UserAvatar
+                                                                        seed={(registration && (avatar.id === registration.id || (registration.ticketCode && avatar.ticketCode === registration.ticketCode) || (registration.ticketCode && avatar.seed === registration.ticketCode))) ? (registration.avatarSeed || registration.ticketCode || registration.id) : avatar.seed}
+                                                                        size={32}
+                                                                        color={
+                                                                            (registration && (avatar.id === registration.id || (registration.ticketCode && avatar.ticketCode === registration.ticketCode) || (registration.ticketCode && avatar.seed === registration.ticketCode)))
+                                                                                ? registration.avatarColor
+                                                                                : ((!avatar.color || avatar.color === '#000000') ? undefined : avatar.color)
+                                                                        }
+                                                                        className="h-full w-full"
+                                                                    />
+                                                                </div>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p className="text-xs font-semibold">{avatar.firstName || 'Participant'}</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    ))}
+                                                </TooltipProvider>
                                                 {hasMore && (
-                                                    <div className="relative z-0 inline-block flex items-center justify-center h-6 w-6 rounded-full bg-muted ring-2 ring-background text-[10px] font-bold text-muted-foreground">
-                                                        ...
+                                                    <div className="relative z-0 inline-block flex items-center justify-center h-8 w-8 rounded-full bg-muted ring-2 ring-background text-[10px] font-bold text-muted-foreground ml-1">
+                                                        +{stat.value - displayAvatars.length}
                                                     </div>
                                                 )}
                                             </div>

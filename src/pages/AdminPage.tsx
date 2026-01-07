@@ -1,6 +1,7 @@
+
 import { useState, useEffect, useMemo } from 'react';
 import { db, auth } from '@/lib/firebase';
-import { collection, query, onSnapshot, doc, updateDoc, deleteField } from 'firebase/firestore';
+import { collection, addDoc, deleteDoc, updateDoc, doc, query, where, onSnapshot, orderBy, limit, setDoc, deleteField } from 'firebase/firestore';
 import { onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, type User } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,11 +21,11 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu"
-import { Users, Clock, CheckCircle2, XCircle, Search, Loader2, Scan, Keyboard, Mail, Trash2, MoreHorizontal, Copy, BarChart3, ArrowUpDown, ArrowUp, ArrowDown, Filter } from 'lucide-react';
+import { Users, Clock, CheckCircle2, XCircle, Search, Loader2, Scan, Keyboard, Mail, Trash2, MoreHorizontal, Copy, BarChart3, ArrowUpDown, ArrowUp, ArrowDown, Filter, ShieldCheck, Activity } from 'lucide-react';
 // Recharts removed as we switched to list view
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { UserAvatar } from '@/components/UserAvatar';
+import { Link, useNavigate } from 'react-router-dom';
+import { UserAvatar, getDeterministicAvatarColor } from '@/components/UserAvatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AttendanceScanner } from '@/components/AttendanceScanner';
 import { getAttendanceRecords, getAttendanceStats, type AttendanceRecord, type AttendanceStats } from '@/lib/attendanceService';
@@ -50,6 +51,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import NotFoundPage from './NotFoundPage';
 
 
 
@@ -64,6 +66,11 @@ const AdminPage = () => {
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
     const [regionFilter, setRegionFilter] = useState<string>('all');
     const [eventStatus, setEventStatus] = useState<'ongoing' | 'finished'>('ongoing');
+
+    // Admin Role State
+    const [adminRole, setAdminRole] = useState<'super_admin' | 'regional_admin' | 'user' | null>(null);
+    const [adminRegion, setAdminRegion] = useState<string | null>(null);
+    const [userDataLoaded, setUserDataLoaded] = useState(false);
 
     // Attendance State
     const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
@@ -101,7 +108,23 @@ const AdminPage = () => {
         return () => settingsUnsub();
     }, []);
 
+    const [globalStats, setGlobalStats] = useState<{ name: string; value: number }[]>([]);
+
+    useEffect(() => {
+        // Fetch global stats for the region breakdown card
+        const unsub = onSnapshot(doc(db, 'settings', 'stats'), (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.regions) {
+                    setGlobalStats(data.regions);
+                }
+            }
+        });
+        return () => unsub();
+    }, []);
+
     const toggleEventStatus = async () => {
+        if (adminRole !== 'super_admin') return; // Security check
         const newStatus = eventStatus === 'ongoing' ? 'finished' : 'ongoing';
         try {
             // Ensure document exists and update
@@ -122,44 +145,146 @@ const AdminPage = () => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
-            setLoading(false);
+            if (!currentUser) {
+                setLoading(false);
+                setUserDataLoaded(true); // Technically loaded nothing
+            }
         });
         return () => unsubscribe();
     }, []);
 
+    // Sync Permissions State
+    const [isSyncing, setIsSyncing] = useState(false);
+    const [syncSuccess, setSyncSuccess] = useState(false);
+
+    // Fetch Admin Details (Role & Region)
     useEffect(() => {
-        if (user) {
-            console.log('User authenticated, fetching registrations...');
+        if (!user) return;
+
+        // We need to find the registration doc for this user to get their role
+        const q = query(collection(db, 'registrations'), where('uid', '==', user.uid));
+        const unsub = onSnapshot(q, (snapshot) => {
+            if (!snapshot.empty) {
+                const data = snapshot.docs[0].data();
+                setAdminRole(data.role || 'user'); // Default to user if no role
+                setAdminRegion(data.region || null);
+            } else {
+                setAdminRole('user');
+                setAdminRegion(null);
+            }
+            setUserDataLoaded(true);
+        });
+
+        return () => unsub();
+    }, [user]);
+
+    // Force region filter for regional admins
+    useEffect(() => {
+        if (adminRole === 'regional_admin' && adminRegion) {
+            setRegionFilter(adminRegion);
+        }
+    }, [adminRole, adminRegion]);
+
+    // Workaround: Sync Stats to Public Settings
+    // Since common users can't read 'registrations', we aggregate stats here (as admin) and save to 'settings/stats' (public read)
+    useEffect(() => {
+        if (registrations.length > 0 && adminRole === 'super_admin') {
+            console.log("🔄 Syncing public stats...");
+            const stats: Record<string, { count: number, avatars: { seed: string, color: string, firstName?: string, id?: string, ticketCode?: string }[] }> = {};
+
+            // Re-calculate stats from the full list
+            registrations.forEach(repo => { // repo? variable naming in map below suggests 'registrationsData' items
+                const data = repo as any;
+                const region = data.region || 'Unknown';
+                if (!stats[region]) {
+                    stats[region] = { count: 0, avatars: [] };
+                }
+                stats[region].count += 1;
+
+                // Collect avatars (limit 15 for safety)
+                if (stats[region].avatars.length < 15 && (data.ticketCode || data.id)) {
+                    stats[region].avatars.push({
+                        seed: data.avatarSeed || data.ticketCode || data.id,
+                        id: data.id,
+                        ticketCode: data.ticketCode,
+                        color: data.avatarColor || getDeterministicAvatarColor(data.ticketCode || data.id),
+                        firstName: data.firstName
+                    });
+                }
+            });
+
+            // Format for saving
+            const chartData = Object.entries(stats)
+                .map(([name, data]) => ({
+                    name,
+                    value: data.count,
+                    avatars: data.avatars
+                }))
+                .sort((a, b) => b.value - a.value);
+
+            // Debounce or just save
+            // We use setDoc with merge to avoid overwriting other potential settings if we used a shared doc, but 'stats' is dedicated
+            setDoc(doc(db, 'settings', 'stats'), {
+                regions: chartData,
+                lastUpdated: new Date()
+            }, { merge: true })
+                .then(() => console.log("✅ Stats synced to public settings"))
+                .catch((err: any) => console.error("❌ Failed to sync stats", err));
+        }
+    }, [registrations, adminRole]);
+
+    const navigate = useNavigate();
+
+    // Redirect non-admins
+    // useEffect(() => {
+    //     if (userDataLoaded && user && adminRole === 'user') {
+    //         toast.error("Access Denied: You do not have admin privileges.");
+    //         navigate('/');
+    //     }
+    // }, [userDataLoaded, user, adminRole, navigate]);
+
+    useEffect(() => {
+        if (user && userDataLoaded) {
+            console.log('User authenticated and role loaded, fetching registrations...');
             try {
-                const q = query(collection(db, 'registrations'));
-                console.log('Query:', q);
+                let q;
+
+                if (adminRole === 'regional_admin' && adminRegion) {
+                    console.log(`Fetching registrations for region: ${adminRegion}`);
+                    q = query(collection(db, 'registrations'), where('region', '==', adminRegion));
+                } else {
+                    // Super admin or normal user (though normal user shouldn't be here, we'll handle UI later)
+                    // fetching all for super admin
+                    console.log('Fetching all registrations');
+                    q = query(collection(db, 'registrations'));
+                }
 
                 const unsubscribe = onSnapshot(q,
                     (snapshot) => {
                         const registrationsData = snapshot.docs.map(doc => {
-                            console.log('Document data:', doc.id, doc.data());
                             return {
                                 id: doc.id,
                                 ...doc.data()
                             };
                         });
-                        console.log('Fetched registrations:', registrationsData);
                         setRegistrations(registrationsData);
+                        setLoading(false);
                     },
                     (error) => {
                         console.error('Error fetching registrations:', error);
-                        console.error('Error details:', error.code, error.message);
+                        setLoading(false);
                     }
                 );
                 return () => unsubscribe();
             } catch (error) {
                 console.error('Error setting up query:', error);
+                setLoading(false);
             }
-        } else {
+        } else if (!user) {
             console.log('No user, clearing registrations');
             setRegistrations([]);
         }
-    }, [user]);
+    }, [user, userDataLoaded, adminRole, adminRegion]);
 
     // Load attendance data
     useEffect(() => {
@@ -242,6 +367,83 @@ const AdminPage = () => {
             console.error("Error updating status", error);
         }
     };
+
+    const promoteToRegionalAdmin = async (id: string, region: string) => {
+        if (adminRole !== 'super_admin') {
+            toast.error("Only Super Admins can promote users.");
+            return;
+        }
+
+        if (!region) {
+            toast.error("User must have a region to be a Regional Admin.");
+            return;
+        }
+
+        try {
+            const ref = doc(db, 'registrations', id);
+            await updateDoc(ref, {
+                role: 'regional_admin'
+            });
+
+            // Sync to user_roles collection for Firestore Rules
+            const reg = registrations.find(r => r.id === id);
+            if (reg && reg.uid) {
+                await setDoc(doc(db, 'user_roles', reg.uid), {
+                    role: 'regional_admin',
+                    region: region
+                });
+            }
+
+            toast.success("User promoted to Regional Admin");
+        } catch (error) {
+            console.error("Error promoting user", error);
+            toast.error("Failed to promote user");
+        }
+    };
+
+    const syncPermissions = async () => {
+        if (adminRole !== 'super_admin') return;
+        setIsSyncing(true);
+        const toastId = toast.loading("Syncing permissions...");
+        let count = 0;
+        try {
+            for (const reg of registrations) {
+                if (reg.role === 'regional_admin' && reg.uid && reg.region) {
+                    await setDoc(doc(db, 'user_roles', reg.uid), {
+                        role: 'regional_admin',
+                        region: reg.region
+                    });
+                    count++;
+                }
+            }
+            toast.success(`Synced ${count} admin permissions`, { id: toastId });
+            setSyncSuccess(true);
+            setTimeout(() => setSyncSuccess(false), 3000);
+        } catch (e) {
+            console.error(e);
+            toast.error("Failed to sync permissions", { id: toastId });
+        } finally {
+            setIsSyncing(false);
+        }
+    };
+
+    const handleDeleteRegistration = async (id: string) => {
+        if (adminRole !== 'super_admin') {
+            toast.error("Only Super Admins can delete registrations.");
+            return;
+        }
+
+        if (!confirm("Are you sure you want to delete this registration? This cannot be undone.")) return;
+
+        try {
+            await deleteDoc(doc(db, 'registrations', id));
+            toast.success("Registration deleted");
+        } catch (error) {
+            console.error("Error deleting registration", error);
+            toast.error("Failed to delete registration");
+        }
+
+    }
 
     const handleConfirmReject = async () => {
         if (!rejectingId) return;
@@ -347,6 +549,44 @@ const AdminPage = () => {
         return `${lastName || ''}, ${firstName || ''} ${middleName || ''}`.trim();
     };
 
+    const handleExportCSV = () => {
+        const headers = [
+            "Ticket ID", "Last Name", "First Name", "Middle Name",
+            "Email", "Contact Number", "School/Affiliation", "Region",
+            "Type", "Status", "Survey Completed?", "Date Registered"
+        ];
+
+        const csvContent = [
+            headers.join(','),
+            ...filteredRegistrations.map(reg => {
+                return [
+                    reg.ticketCode || reg.id || '',
+                    `"${reg.lastName || ''}"`,
+                    `"${reg.firstName || ''}"`,
+                    `"${reg.middleName || ''}"`,
+                    `"${reg.email || ''}"`,
+                    `"${reg.contactNumber || ''}"`,
+                    `"${reg.schoolAffiliation || ''}"`,
+                    `"${reg.region || ''}"`,
+                    `"${reg.registrantType || ''}"`,
+                    reg.status || 'pending',
+                    reg.surveyCompleted ? 'Yes' : 'No',
+                    reg.timestamp?.toDate ? new Date(reg.timestamp.toDate()).toLocaleDateString() : ''
+                ].join(',');
+            })
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `registrations_export_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     // Filter and sort registrations
     const filteredRegistrations = useMemo(() => {
         console.log('Filtering registrations with search term:', searchTerm);
@@ -397,7 +637,9 @@ const AdminPage = () => {
         return filtered;
     }, [registrations, searchTerm, regionFilter, sortColumn, sortDirection]);
 
-    // Calculate Stats
+
+
+    // Local stats for table-dependent metrics (like Top Cards)
     const stats = {
         total: registrations.length,
         pending: registrations.filter(r => r.status === 'pending').length,
@@ -405,7 +647,9 @@ const AdminPage = () => {
         rejected: registrations.filter(r => r.status === 'rejected').length
     };
 
-    const regionStats = useMemo(() => {
+    // Use global stats if available, otherwise fallback to local calculation (though global should exist)
+    // Use global stats if available, otherwise fallback to local calculation (though global should exist)
+    const calculatedRegionStats = useMemo(() => {
         const stats: Record<string, number> = {};
         registrations.forEach(reg => {
             const region = reg.region || 'Unknown';
@@ -416,6 +660,8 @@ const AdminPage = () => {
             .map(([name, value]) => ({ name, value }))
             .sort((a, b) => b.value - a.value);
     }, [registrations]);
+
+    const displayRegionStats = globalStats.length > 0 ? globalStats : calculatedRegionStats;
 
     const container = {
         hidden: { opacity: 0 },
@@ -437,6 +683,11 @@ const AdminPage = () => {
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
     );
+
+    // If user is logged in but is just a normal user, show 404
+    if (user && userDataLoaded && adminRole === 'user') {
+        return <NotFoundPage />;
+    }
 
     if (!user) {
         return (
@@ -524,21 +775,63 @@ const AdminPage = () => {
                 className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
             >
                 <div>
-                    <h1 className="mt-16 text-3xl font-bold tracking-tight text-foreground">Overview</h1>
-                    <p className="text-muted-foreground">Welcome back, Admin.</p>
+                    <div className="flex items-center gap-3 mt-16">
+                        <h1 className="text-3xl font-bold tracking-tight text-foreground">Overview</h1>
+                        {adminRole && (
+                            <Badge variant={adminRole === 'super_admin' ? 'default' : 'secondary'} className="h-6">
+                                {adminRole === 'super_admin' ? 'Super Admin' : `Regional Admin ${adminRegion ? `(${getRegionShortName(adminRegion)})` : ''}`}
+                            </Badge>
+                        )}
+                    </div>
+                    <p className="text-muted-foreground">Welcome back, {user?.displayName || 'Admin'}.</p>
                 </div>
 
-                <div className="mt-10 flex items-center gap-4 bg-muted/30 p-4 rounded-lg border border-border/50">
-                    <div className="space-y-0.5">
-                        <Label className="text-base">Event Status: <span className={eventStatus === 'ongoing' ? 'text-emerald-500' : 'text-amber-500'}>{eventStatus.toUpperCase()}</span></Label>
-                        <p className="text-xs text-muted-foreground">Toggle to specific 'Event Finished' mode.</p>
+                <div className="mt-16 relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-r from-background/50 to-muted/20 p-6 backdrop-blur-xl shadow-lg transition-all hover:shadow-primary/5">
+                    <div className="absolute inset-0 bg-grid-white/5 mask-image-linear-gradient(to-bottom,transparent,black)" />
+                    <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="flex items-center gap-4">
+                            <div className={`p-3 rounded-full ${eventStatus === 'ongoing' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'}`}>
+                                {eventStatus === 'ongoing' ? <Activity className="h-6 w-6" /> : <Clock className="h-6 w-6" />}
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-semibold tracking-tight">System Status</h3>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <span className="text-sm text-muted-foreground">Current Event Mode:</span>
+                                    <Badge variant={eventStatus === 'ongoing' ? 'default' : 'outline'} className={eventStatus === 'ongoing' ? 'bg-emerald-500 hover:bg-emerald-600' : 'text-amber-500 border-amber-500/50'}>
+                                        {eventStatus.toUpperCase()}
+                                    </Badge>
+                                </div>
+                            </div>
+                        </div>
+
+                        {adminRole === 'super_admin' && (
+                            <div className="flex items-center gap-3">
+                                <Button
+                                    variant="outline"
+                                    onClick={syncPermissions}
+                                    disabled={isSyncing}
+                                    className={`h-10 px-4 transition-all duration-300 border-white/10 bg-black/20 hover:bg-black/40 ${syncSuccess ? 'border-emerald-500/50 text-emerald-500 bg-emerald-500/10' : ''}`}
+                                >
+                                    {isSyncing ? (
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    ) : syncSuccess ? (
+                                        <CheckCircle2 className="w-4 h-4 mr-2" />
+                                    ) : (
+                                        <ShieldCheck className="w-4 h-4 mr-2" />
+                                    )}
+                                    {isSyncing ? 'Syncing...' : syncSuccess ? 'Synced!' : 'Sync Permissions'}
+                                </Button>
+                                <div className="h-8 w-[1px] bg-white/10 mx-1 hidden md:block" />
+                                <Button
+                                    variant={eventStatus === 'ongoing' ? "destructive" : "default"}
+                                    onClick={toggleEventStatus}
+                                    className="h-10 px-6 shadow-lg shadow-black/20"
+                                >
+                                    {eventStatus === 'ongoing' ? 'Finish Event' : 'Re-open Event'}
+                                </Button>
+                            </div>
+                        )}
                     </div>
-                    <Button
-                        variant={eventStatus === 'ongoing' ? "default" : "secondary"}
-                        onClick={toggleEventStatus}
-                    >
-                        {eventStatus === 'ongoing' ? 'Finish Event' : 'Re-open Event'}
-                    </Button>
                 </div>
             </motion.div>
 
@@ -616,20 +909,26 @@ const AdminPage = () => {
                                         <CardDescription>Manage and review participant details.</CardDescription>
                                     </div>
                                     <div className="flex gap-2 w-full md:w-auto">
-                                        <Select value={regionFilter} onValueChange={setRegionFilter}>
-                                            <SelectTrigger className="w-full md:w-48 bg-background/50">
-                                                <div className="flex items-center gap-2">
-                                                    <Filter className="h-4 w-4" />
-                                                    <SelectValue placeholder="All Regions" />
-                                                </div>
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="all">All Regions</SelectItem>
-                                                {PHILIPPINE_REGIONS.map(region => (
-                                                    <SelectItem key={region} value={region}>{getRegionShortName(region)}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
+                                        <Button variant="outline" onClick={handleExportCSV} className="gap-2">
+                                            <BarChart3 className="h-4 w-4" />
+                                            Export CSV
+                                        </Button>
+                                        {adminRole === 'super_admin' && (
+                                            <Select value={regionFilter} onValueChange={setRegionFilter}>
+                                                <SelectTrigger className="w-full md:w-48 bg-background/50">
+                                                    <div className="flex items-center gap-2">
+                                                        <Filter className="h-4 w-4" />
+                                                        <SelectValue placeholder="All Regions" />
+                                                    </div>
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="all">All Regions</SelectItem>
+                                                    {PHILIPPINE_REGIONS.map(region => (
+                                                        <SelectItem key={region} value={region}>{getRegionShortName(region)}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        )}
                                         <div className="relative flex-1 md:w-64">
                                             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                                             <Input
@@ -728,6 +1027,9 @@ const AdminPage = () => {
                                                                 <div className="text-sm font-medium">{reg.schoolAffiliation || 'N/A'}</div>
                                                                 <div className="text-xs text-muted-foreground">{reg.region || 'N/A'}</div>
                                                                 <div className="text-xs text-muted-foreground/60 capitalize mt-0.5">{reg.registrantType || 'N/A'} {reg.registrantType === 'others' && reg.registrantTypeOther ? `(${reg.registrantTypeOther})` : ''}</div>
+                                                                {reg.role === 'regional_admin' && (
+                                                                    <Badge variant="secondary" className="mt-1 text-[10px] h-5">Regional Admin</Badge>
+                                                                )}
                                                             </TableCell>
                                                             <TableCell>
                                                                 <div className="text-sm">{reg.email}</div>
@@ -740,7 +1042,7 @@ const AdminPage = () => {
                                                                         ${reg.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : ''}
                                                                         ${reg.status === 'rejected' ? 'bg-destructive/10 text-destructive border-destructive/20' : ''}
                                                                         ${reg.status === 'pending' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : ''}
-                                                                    `}
+`}
                                                                 >
                                                                     {reg.status}
                                                                 </Badge>
@@ -748,19 +1050,19 @@ const AdminPage = () => {
                                                             <TableCell>
                                                                 <div className="flex flex-col gap-1 text-[10px] text-muted-foreground/80">
                                                                     {reg.statusUpdatedBy && (
-                                                                        <div className="flex items-center gap-1" title={`Status updated by ${reg.statusUpdatedBy}`}>
+                                                                        <div className="flex items-center gap-1" title={`Status updated by ${reg.statusUpdatedBy} `}>
                                                                             <Clock className="w-3 h-3 text-muted-foreground/60" />
                                                                             <span className="truncate max-w-[120px]">{reg.statusUpdatedBy.split('@')[0]}</span>
                                                                         </div>
                                                                     )}
                                                                     {reg.emailSentBy && (
-                                                                        <div className="flex items-center gap-1" title={`Email sent by ${reg.emailSentBy}`}>
+                                                                        <div className="flex items-center gap-1" title={`Email sent by ${reg.emailSentBy} `}>
                                                                             <Mail className="w-3 h-3 text-blue-500/60" />
                                                                             <span className="truncate max-w-[120px]">{reg.emailSentBy.split('@')[0]}</span>
                                                                         </div>
                                                                     )}
                                                                     {reg.surveyDeletedBy && (
-                                                                        <div className="flex items-center gap-1" title={`Survey reset by ${reg.surveyDeletedBy}`}>
+                                                                        <div className="flex items-center gap-1" title={`Survey reset by ${reg.surveyDeletedBy} `}>
                                                                             <Trash2 className="w-3 h-3 text-destructive/60" />
                                                                             <span className="truncate max-w-[120px]">{reg.surveyDeletedBy.split('@')[0]}</span>
                                                                         </div>
@@ -807,6 +1109,21 @@ const AdminPage = () => {
                                                                                 </DropdownMenuItem>
                                                                             </DropdownMenuSubContent>
                                                                         </DropdownMenuSub>
+
+                                                                        {adminRole === 'super_admin' && (
+                                                                            <>
+                                                                                <DropdownMenuSeparator />
+                                                                                <DropdownMenuItem onClick={() => promoteToRegionalAdmin(reg.id, reg.region)}>
+                                                                                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                                                                                    Promote to Regional Admin
+                                                                                </DropdownMenuItem>
+                                                                                <DropdownMenuItem onClick={() => handleDeleteRegistration(reg.id)} className="text-destructive focus:text-destructive">
+                                                                                    <Trash2 className="mr-2 h-4 w-4" />
+                                                                                    Delete Registration
+                                                                                </DropdownMenuItem>
+                                                                            </>
+                                                                        )}
+
                                                                         <DropdownMenuSeparator />
                                                                         <DropdownMenuItem onClick={() => initiateEmailSend(reg)}>
                                                                             <Mail className="mr-2 h-4 w-4" />
@@ -843,13 +1160,13 @@ const AdminPage = () => {
                                     </CardHeader>
                                     <CardContent>
                                         <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                                            {regionStats.length === 0 ? (
+                                            {displayRegionStats.length === 0 ? (
                                                 <div className="text-center py-8 text-muted-foreground">
                                                     No data available yet
                                                 </div>
                                             ) : (
-                                                regionStats.map((stat, index) => {
-                                                    const total = regionStats.reduce((acc, curr) => acc + curr.value, 0);
+                                                displayRegionStats.map((stat, index) => {
+                                                    const total = displayRegionStats.reduce((acc, curr) => acc + curr.value, 0);
                                                     const percentage = ((stat.value / total) * 100).toFixed(1);
 
                                                     // Dynamic color based on index/rank
