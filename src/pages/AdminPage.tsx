@@ -810,7 +810,7 @@ const AdminPage = () => {
                                     variant="outline"
                                     onClick={syncPermissions}
                                     disabled={isSyncing}
-                                    className={`h-10 px-4 transition-all duration-300 border-white/10 bg-black/20 hover:bg-black/40 ${syncSuccess ? 'border-emerald-500/50 text-emerald-500 bg-emerald-500/10' : ''}`}
+                                    className={`h-10 px-4 transition-all duration-300 border-white/10 bg-black/20 hover:bg-black/40 hover:text-primary ${syncSuccess ? 'border-emerald-500/50 text-emerald-500 bg-emerald-500/10' : ''}`}
                                 >
                                     {isSyncing ? (
                                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
