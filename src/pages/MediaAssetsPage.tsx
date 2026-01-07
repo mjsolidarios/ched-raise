@@ -15,7 +15,7 @@ const MEDIA_ASSETS = [
         thumbnail: "/thumb-default.svg",
         date: "Dec 22, 2025",
         description: "CHED Memo for RAISE Summit 2025.",
-        file: "/downloads/ched-memo.pdf"
+        file: "/downloads/ched-raise-memo.pdf"
     },
     {
         id: 1,
@@ -24,7 +24,7 @@ const MEDIA_ASSETS = [
         thumbnail: "/thumb-default.svg",
         date: "Dec 10, 2025",
         description: "Download the official event brochure with schedule and speaker info.",
-        file: "/downloads/event-brochure.pdf"
+        file: "/downloads/ched-raise-event-brochure.pdf"
     },
     {
         id: 2,
@@ -33,7 +33,7 @@ const MEDIA_ASSETS = [
         thumbnail: "/thumb-default.svg",
         date: "Nov 28, 2025",
         description: "Assets and information for media partners.",
-        file: "/downloads/press-kit.zip"
+        file: "/downloads/ched-raise-brand-kit.zip"
     },
     {
         id: 3,
