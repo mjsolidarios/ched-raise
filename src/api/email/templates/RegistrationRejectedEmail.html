@@ -1,19 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
+    xmlns:o="urn:schemas-microsoft-com:office:office">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Registration Update - CHED RAISE</title>
-    <!--[if mso]>
-    <noscript>
-    <xml>
-    <o:OfficeDocumentSettings>
-        <o:PixelsPerInch>96</o:PixelsPerInch>
-    </o:OfficeDocumentSettings>
-    </xml>
-    </noscript>
-    <![endif]-->
+
     <style type="text/css">
         /* Reset & Base Styles */
         body,
@@ -58,9 +52,9 @@
             max-width: 600px;
             margin: 0 auto;
             background-color: #ffffff;
-            border-radius: 12px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
 
         .header {
@@ -81,10 +75,10 @@
         }
 
         .h1 {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 700;
             color: #1a202c;
-            margin-bottom: 20px;
+            margin: 0 0 20px 0;
             line-height: 1.3;
             text-align: center;
         }
@@ -93,15 +87,15 @@
             font-size: 16px;
             line-height: 1.6;
             color: #4a5568;
-            margin-bottom: 20px;
+            margin: 0 0 20px 0;
         }
 
-        /* Status Card */
+        /* Status Card - Red/Alert Theme */
         .status-card {
-            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-            border: 1px solid #fecaca;
+            background-color: #fef2f2;
+            border: 2px solid #fecaca;
             border-radius: 12px;
-            padding: 25px;
+            padding: 30px;
             margin: 30px 0;
             text-align: center;
         }
@@ -111,9 +105,10 @@
             color: #ffffff;
             padding: 4px 12px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 1px;
             display: inline-block;
             margin-bottom: 15px;
         }
@@ -122,21 +117,26 @@
             font-size: 20px;
             font-weight: 700;
             color: #991b1b;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
-        .status-desc {
+        .reason-box {
+            background-color: #ffffff;
+            border: 1px solid #fee2e2;
+            border-radius: 8px;
+            padding: 15px;
             font-size: 15px;
-            color: #b91c1c;
-            line-height: 1.4;
+            color: #7f1d1d;
+            line-height: 1.5;
+            text-align: left;
         }
 
         /* Footer */
         .footer {
-            background-color: #f8fafc;
+            background-color: #f1f5f9;
             padding: 30px 40px;
             text-align: center;
-            border-top: 1px solid #edf2f7;
+            border-top: 1px solid #e2e8f0;
         }
 
         .footer-text {
@@ -155,7 +155,7 @@
         /* Mobile Adjustments */
         @media screen and (max-width: 600px) {
             .content {
-                padding: 30px 20px !important;
+                padding: 25px 20px !important;
             }
 
             .h1 {
@@ -169,74 +169,83 @@
     </style>
 </head>
 
-<body>
-    <div style="background-color: #f4f7fa; padding: 40px 0;">
-        <table role="presentation" class="email-container" align="center" border="0" cellpadding="0" cellspacing="0">
-            <!-- Header Image -->
-            <tr>
-                <td class="header">
-                    <img src="https://ched-raise.wvsu.edu.ph/mail-header.png" alt="CHED RAISE 2026 Header" width="600">
-                </td>
-            </tr>
+<body width="100%" style="margin: 0; padding: 0 !important; mso-line-height-rule: exactly; background-color: #f4f7fa;">
+    <center style="width: 100%; background-color: #f4f7fa;">
+        <div
+            style="display: none; font-size: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all; font-family: sans-serif;">
+            Update regarding your registration for CHED RAISE.
+        </div>
 
-            <!-- Main Content -->
-            <tr>
-                <td class="content">
-                    <h1 class="h1">Update Regarding Your Registration</h1>
+        <div style="max-width: 600px; margin: 0 auto; padding: 40px 0;">
+            <table role="presentation" class="email-container" align="center" border="0" cellpadding="0" cellspacing="0"
+                width="100%">
+                <tr>
+                    <td class="header">
+                        <img src="https://ched-raise.wvsu.edu.ph/mail-header.png" alt="CHED RAISE Header" width="600"
+                            style="width: 100%; max-width: 600px; height: auto;">
+                    </td>
+                </tr>
 
-                    <p class="p">
-                        Hello <strong>{{name}}</strong>,
-                    </p>
+                <tr>
+                    <td class="content">
+                        <h1 class="h1">Registration Update</h1>
 
-                    <p class="p">
-                        Thank you for your interest in the <strong>CHED RAISE 2026</strong>. We have carefully
-                        reviewed your registration application.
-                    </p>
+                        <p class="p">
+                            Dear <strong>{{name}}</strong>,
+                        </p>
 
-                    <!-- Status Card -->
-                    <div class="status-card">
-                        <div class="status-badge">Update</div>
-                        <div class="status-title">Registration Declined</div>
-                        <div class="status-desc">
-                            We regret to inform you that we are unable to approve your registration at this time.
-                            <br><br>
-                            <strong>Reason:</strong> {{reason}}
+                        <p class="p">
+                            Thank you for your interest in the <strong>CHED RAISE 2026</strong> program. We have
+                            carefully reviewed your registration details.
+                        </p>
+
+                        <div class="status-card">
+                            <div class="status-badge">Application Status</div>
+                            <div class="status-title">Registration Declined</div>
+
+                            <p style="margin: 0 0 10px 0; font-size: 14px; color: #991b1b;">
+                                We regret to inform you that we are unable to approve your registration at this time.
+                            </p>
+
+                            <div class="reason-box">
+                                <strong
+                                    style="display:block; font-size: 12px; text-transform: uppercase; color: #ef4444; margin-bottom: 5px;">Reason:</strong>
+                                {{reason}}
+                            </div>
                         </div>
-                    </div>
 
-                    <p class="p">
-                        This decision may be due to various factors. We appreciate your understanding.
-                    </p>
+                        <p class="p">
+                            We appreciate your understanding regarding this outcome.
+                        </p>
 
-                    <p class="p" style="margin-top: 40px; border-top: 1px solid #edf2f7; padding-top: 25px;">
-                        If you have any questions or believe this decision was made in error, please feel free to
-                        contact our support team for clarification.
-                    </p>
+                        <p class="p"
+                            style="margin-top: 40px; border-top: 1px solid #edf2f7; padding-top: 25px; margin-bottom: 0;">
+                            If you believe this decision was made in error or requires further clarification, please
+                            contact our support team.
+                            <br><br>
+                            Best regards,<br>
+                            <strong>The CHED RAISE Team</strong>
+                        </p>
+                    </td>
+                </tr>
 
-                    <p class="p" style="margin-bottom: 0;">
-                        Best regards,<br>
-                        <strong>The CHED RAISE Team</strong>
-                    </p>
-                </td>
-            </tr>
-
-            <!-- Footer -->
-            <tr>
-                <td class="footer">
-                    <p class="footer-text">
-                        &copy; 2025 CHED RAISE 2026. All rights reserved.
-                    </p>
-                    <p class="footer-text footer-links">
-                        <a href="https://ched-raise.wvsu.edu.ph">Official Website</a> &nbsp;|&nbsp;
-                        <a href="mailto:helpdesk.chedraise@gmail.com">Contact Support</a>
-                    </p>
-                    <p class="footer-text" style="font-size: 11px; margin-top: 20px; opacity: 0.8;">
-                        This is an automated notification. Please do not reply directly to this email.
-                    </p>
-                </td>
-            </tr>
-        </table>
-    </div>
+                <tr>
+                    <td class="footer">
+                        <p class="footer-text">
+                            &copy; 2026 CHED RAISE. All rights reserved.
+                        </p>
+                        <p class="footer-text footer-links">
+                            <a href="https://ched-raise.wvsu.edu.ph">Official Website</a> &nbsp;|&nbsp;
+                            <a href="mailto:helpdesk.chedraise@gmail.com">Contact Support</a>
+                        </p>
+                        <p class="footer-text" style="font-size: 11px; margin-top: 20px; opacity: 0.6;">
+                            This is an automated system notification. Please do not reply directly to this email.
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </center>
 </body>
 
 </html>

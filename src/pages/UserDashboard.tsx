@@ -12,6 +12,12 @@ import axios from 'axios';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
     AlertDialog,
     AlertDialogAction,
     AlertDialogCancel,
@@ -42,7 +48,7 @@ import { toTitleCase } from '@/lib/utils/format';
 import { generateTicketCode } from '@/lib/raiseCodeUtils';
 import { Link } from 'react-router-dom';
 import { UserAvatar, getDeterministicAvatarColor } from '@/components/UserAvatar';
-import { PHILIPPINE_REGIONS } from '@/lib/regions';
+import { PHILIPPINE_REGIONS, getRegionShortName } from '@/lib/regions';
 // Recharts removed as we switched to list view
 
 const UserDashboard = () => {
@@ -63,7 +69,7 @@ const UserDashboard = () => {
     });
     const [submitting, setSubmitting] = useState(false);
     const [dashboardAlert, setDashboardAlert] = useState<{ show: boolean, message: string, variant?: 'default' | 'destructive', title?: string } | null>(null);
-    const [regionStats, setRegionStats] = useState<{ name: string; value: number }[]>([]);
+    const [regionStats, setRegionStats] = useState<{ name: string; value: number; avatars: { seed: string; color: string; id?: string; firstName?: string; ticketCode?: string }[] }[]>([]);
 
     // Edit State
     const [isEditOpen, setIsEditOpen] = useState(false);
@@ -83,26 +89,23 @@ const UserDashboard = () => {
     }, []);
 
     useEffect(() => {
-        const q = query(collection(db, 'registrations'));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const stats: Record<string, number> = {};
-            snapshot.docs.forEach(doc => {
-                const data = doc.data();
-                const region = data.region || 'Unknown';
-                if (region) {
-                    stats[region] = (stats[region] || 0) + 1;
+        // Fetch stats from public settings document (aggregated by Admin)
+        const unsub = onSnapshot(doc(db, 'settings', 'stats'), (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.regions) {
+                    setRegionStats(data.regions);
+                    console.log("📊 Loaded public stats from settings:", data.regions.length);
                 }
-            });
-
-            const chartData = Object.entries(stats)
-                .map(([name, value]) => ({ name, value }))
-                .sort((a, b) => b.value - a.value); // Sort by count descending
-
-            setRegionStats(chartData);
+            } else {
+                console.log("ℹ️ No public stats found");
+                setRegionStats([]);
+            }
         }, (error) => {
-            console.error("Error fetching region stats:", error);
+            console.error("Error fetching public stats:", error);
         });
-        return () => unsubscribe();
+
+        return () => unsub();
     }, []);
 
     useEffect(() => {
@@ -915,64 +918,78 @@ const UserDashboard = () => {
                                 </div>
                             </CardContent>
                         </Card>
-
-                        <Card className="glass-card border-none shadow-lg">
-                            <CardHeader>
-                                <CardTitle className="text-base flex items-center gap-2">
-                                    <BarChart3 className="h-4 w-4 text-primary" />
-                                    Participants by Region
-                                </CardTitle>
-                                <CardDescription>Distribution of attendees sorted by volume</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                                    {regionStats.length === 0 ? (
-                                        <div className="text-center py-8 text-muted-foreground">
-                                            No data available yet
-                                        </div>
-                                    ) : (
-                                        regionStats.map((stat, index) => {
-                                            const total = regionStats.reduce((acc, curr) => acc + curr.value, 0);
-                                            const percentage = ((stat.value / total) * 100).toFixed(1);
-
-                                            // Dynamic color based on index/rank
-                                            const isTop3 = index < 3;
-                                            const barColor = isTop3 ? 'bg-primary' : 'bg-primary/50';
-
-                                            return (
-                                                <div key={stat.name} className="space-y-1.5">
-                                                    <div className="flex items-center justify-between text-sm">
-                                                        <div className="flex items-center gap-2">
-                                                            <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${isTop3 ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
-                                                                {index + 1}
-                                                            </span>
-                                                            <span className="font-medium truncate max-w-[200px] sm:max-w-[300px]" title={stat.name}>
-                                                                {stat.name}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex items-center gap-2 text-xs">
-                                                            <span className="font-bold text-foreground">{stat.value}</span>
-                                                            <span className="text-muted-foreground">({percentage}%)</span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="h-2 w-full bg-secondary/50 rounded-full overflow-hidden">
-                                                        <motion.div
-                                                            initial={{ width: 0 }}
-                                                            animate={{ width: `${(stat.value / total) * 100}%` }}
-                                                            transition={{ duration: 1, delay: index * 0.1 }}
-                                                            className={`h-full ${barColor} rounded-full`}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            );
-                                        })
-                                    )}
-                                </div>
-                            </CardContent>
-                        </Card>
                     </motion.div>
                 </motion.div>
+                <Card className="glass-card border-none shadow-lg">
+                    <CardHeader>
+                        <CardTitle className="text-base flex items-center gap-2">
+                            <BarChart3 className="h-4 w-4 text-primary" />
+                            Who are RAISE-ing with us?
+                        </CardTitle>
+                        <CardDescription>Here are our current registrants so far.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                            {regionStats.length === 0 ? (
+                                <div className="text-center py-8 text-muted-foreground">
+                                    No data available yet
+                                </div>
+                            ) : (
+                                regionStats.map((stat, index) => {
+                                    const isTop3 = index < 3;
 
+                                    // Take only top 7 avatars
+                                    const displayAvatars = stat.avatars?.slice(0, 7) || [];
+                                    const hasMore = (stat.avatars?.length || 0) > 7 || stat.value > 7;
+
+                                    return (
+                                        <div key={stat.name} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                                            <div className="flex items-center gap-3">
+                                                <span className={`flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold shrink-0 ${isTop3 ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                                                    {index + 1}
+                                                </span>
+                                                <span className="font-medium text-sm truncate max-w-[120px] sm:max-w-[150px]" title={stat.name}>
+                                                    {getRegionShortName(stat.name)}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex items-center -space-x-2 overflow-hidden pl-2 pb-2 pt-1">
+                                                <TooltipProvider>
+                                                    {displayAvatars.map((avatar, i) => (
+                                                        <Tooltip key={i}>
+                                                            <TooltipTrigger asChild>
+                                                                <div className="relative z-10 inline-block h-8 w-8 rounded-full ring-2 ring-background transition-transform duration-200 hover:scale-125 hover:z-20 cursor-pointer">
+                                                                    <UserAvatar
+                                                                        seed={(registration && (avatar.id === registration.id || (registration.ticketCode && avatar.ticketCode === registration.ticketCode) || (registration.ticketCode && avatar.seed === registration.ticketCode))) ? (registration.avatarSeed || registration.ticketCode || registration.id) : avatar.seed}
+                                                                        size={32}
+                                                                        color={
+                                                                            (registration && (avatar.id === registration.id || (registration.ticketCode && avatar.ticketCode === registration.ticketCode) || (registration.ticketCode && avatar.seed === registration.ticketCode)))
+                                                                                ? registration.avatarColor
+                                                                                : ((!avatar.color || avatar.color === '#000000') ? undefined : avatar.color)
+                                                                        }
+                                                                        className="h-full w-full"
+                                                                    />
+                                                                </div>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p className="text-xs font-semibold">{avatar.firstName || 'Participant'}</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    ))}
+                                                </TooltipProvider>
+                                                {hasMore && (
+                                                    <div className="relative z-0 inline-block flex items-center justify-center h-8 w-8 rounded-full bg-muted ring-2 ring-background text-[10px] font-bold text-muted-foreground ml-1">
+                                                        +{stat.value - displayAvatars.length}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
                 <div className="mt-12 pt-8 border-t border-border/40 text-center">
                     <Link to="/privacy-policy" className="text-xs text-muted-foreground/60 hover:text-primary transition-colors">
                         Privacy Policy

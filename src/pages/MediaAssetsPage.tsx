@@ -74,7 +74,7 @@ const MediaAssetsPage = () => {
                             Media & <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">Resources</span>
                         </h1>
                         <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-                            Access official photos, videos, documents, and promotional materials for the CHED RAISE Summit 2025.
+                            Access official photos, videos, documents, and promotional materials for the CHED RAISE Summit 2026.
                         </p>
                     </motion.div>
 

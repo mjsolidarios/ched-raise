@@ -126,6 +126,9 @@ const RegistrationPage = () => {
                                     I agree to the <Link to="/privacy-policy" className="text-primary hover:underline">Privacy Policy</Link>
                                 </label>
                             </div>
+                            <p className="text-xs text-muted-foreground text-center">
+                                By creating an account, you agree to our <Link to="/privacy-policy" className="underline hover:text-primary">Privacy Policy</Link>.
+                            </p>
 
                             {status === 'exists' && <p className="text-destructive text-sm text-center">Reference with this email already exists.</p>}
                             {status === 'error' && <p className="text-destructive text-sm text-center">Something went wrong. Please try again.</p>}
