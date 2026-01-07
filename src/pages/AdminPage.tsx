@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { db, auth } from '@/lib/firebase';
-import { collection, addDoc, deleteDoc, updateDoc, doc, query, where, onSnapshot, orderBy, limit, setDoc, deleteField } from 'firebase/firestore';
+import { collection, deleteDoc, updateDoc, doc, query, where, onSnapshot, setDoc, deleteField } from 'firebase/firestore';
 import { onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, type User } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -233,7 +233,7 @@ const AdminPage = () => {
         }
     }, [registrations, adminRole]);
 
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     // Redirect non-admins
     // useEffect(() => {
