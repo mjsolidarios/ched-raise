@@ -78,7 +78,7 @@ export function Navbar() {
                 isMobile ? "flex-col items-start w-full gap-2" : "items-center"
             )}>
 
-                {["About", "Objectives", "Program"].map((item) => (
+                {["About", "Objectives", "Program", "FAQ"].map((item) => (
                     <a
                         key={item}
                         href={`/#${item.toLowerCase()}`}
