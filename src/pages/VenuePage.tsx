@@ -168,8 +168,8 @@ const VenuePage = () => {
         {
             icon: MapPin,
             title: 'Best Time to Visit',
-            description: 'December to May offers ideal weather. Visit in January (3rd or 4th week) for the spectacular Dinagyang Festival, one of the Philippines\' biggest celebrations.',
-            tip: 'Pro Tip: Book hotels months ahead for Dinagyang'
+            description: 'December to May offers ideal weather. Visit in February (3rd or 4th week) to witness the colorful Paraw Regatta Festival, the oldest traditional craft event in Asia.',
+            tip: 'Pro Tip: Catch the main sailing race at Villa Beach'
         },
         {
             icon: Lightbulb,

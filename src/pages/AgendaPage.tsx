@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 const AgendaPage = () => {
     const days = [
         {
-            date: "January 28, 2026",
+            date: "February 25, 2026",
             title: "Day 1: Opening & Keynotes",
             events: [
                 { time: "08:00 AM", title: "Registration & Breakfast", location: "Grand Foyer" },
@@ -20,7 +20,7 @@ const AgendaPage = () => {
             ]
         },
         {
-            date: "January 29, 2026",
+            date: "February 26, 2026",
             title: "Day 2: Workshops & Collaboration",
             events: [
                 { time: "09:00 AM", title: "Hands-on Workshop: Generative AI Tools", location: "Lab A" },
@@ -31,7 +31,7 @@ const AgendaPage = () => {
             ]
         },
         {
-            date: "January 30, 2026",
+            date: "February 27, 2026",
             title: "Day 3: Closing & Awards",
             events: [
                 { time: "09:00 AM", title: "Final Project Pitches", location: "Main Hall" },

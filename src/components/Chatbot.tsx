@@ -17,7 +17,7 @@ Event Details:
 - Name: CHED RAISE 2026
 - Full Name: National Industry–Academe Collaborative Conference
 - Theme: Responding through AI for Societal Empowerment
-- Date: January 28-30, 2026
+- Date: February 25-27, 2026
 - Venue: Iloilo Convention Center, Iloilo City, Philippines
 - Location: Iloilo Business Park, Mandurriao, Iloilo City
 - Registration Link: /login

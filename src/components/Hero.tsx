@@ -167,7 +167,7 @@ export function Hero() {
                         >
                             <Calendar className="h-5 w-5" />
                         </motion.div>
-                        <span className="font-semibold">January 28-30, 2026</span>
+                        <span className="font-semibold">February 25-27, 2026</span>
                     </div>
                     <div className="hidden md:block w-px h-10 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
                     <div className="flex items-center gap-3 text-slate-200 relative z-10">
@@ -183,7 +183,7 @@ export function Hero() {
 
                 {eventStatus !== 'finished' && (
                     <>
-                        <CountdownTimer targetDate="2026-01-28T08:00:00" />
+                        <CountdownTimer targetDate="2026-02-25T08:00:00" />
 
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
