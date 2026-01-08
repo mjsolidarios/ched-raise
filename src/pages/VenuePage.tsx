@@ -7,10 +7,20 @@ import { Link } from 'react-router-dom';
 import { useRef, useEffect } from 'react';
 import { Footer } from '@/components/Footer';
 import { ProgressiveImage } from '@/components/ui/ProgressiveImage';
+import { useGSAPScroll, parallax, staggerFadeIn, fadeInUp } from '@/hooks/useGSAPScroll';
 
 const VenuePage = () => {
     const heroRef = useRef<HTMLDivElement>(null);
     const attractionsRef = useRef<HTMLElement>(null);
+    const spotsRef = useRef<HTMLDivElement>(null);
+    const hotelsRef = useRef<HTMLDivElement>(null);
+    const tipsRef = useRef<HTMLDivElement>(null);
+    const ctaRef = useRef<HTMLDivElement>(null);
+    const heroBgRef = useRef<HTMLDivElement>(null);
+    const spotsBgRef = useRef<HTMLDivElement>(null);
+    const tipsBgRef = useRef<HTMLDivElement>(null);
+
+    const { gsap } = useGSAPScroll();
 
     useEffect(() => {
         const hero = heroRef.current;
@@ -43,6 +53,34 @@ const VenuePage = () => {
         section.addEventListener("mousemove", handleMouseMove);
         return () => section.removeEventListener("mousemove", handleMouseMove);
     }, []);
+
+    useEffect(() => {
+        // Scroll Animations
+        if (heroBgRef.current) parallax(heroBgRef.current, 0.3);
+        if (spotsBgRef.current) parallax(spotsBgRef.current, 0.2);
+        if (tipsBgRef.current) parallax(tipsBgRef.current, 0.2);
+
+        // Stagger reveals
+        if (attractionsRef.current) {
+            const cards = attractionsRef.current.querySelectorAll('.spotlight-card-wrapper');
+            staggerFadeIn(cards, { stagger: 0.1 });
+        }
+        if (spotsRef.current) {
+            const cards = spotsRef.current.querySelectorAll('.spotlight-card-wrapper');
+            staggerFadeIn(cards, { stagger: 0.1 });
+        }
+        if (hotelsRef.current) {
+            const cards = hotelsRef.current.querySelectorAll('.spotlight-card-wrapper');
+            staggerFadeIn(cards, { stagger: 0.1 });
+        }
+        if (tipsRef.current) {
+            const cards = tipsRef.current.querySelectorAll('.spotlight-card-wrapper');
+            staggerFadeIn(cards, { stagger: 0.1 });
+        }
+
+        if (ctaRef.current) fadeInUp(ctaRef.current);
+
+    }, [gsap]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -219,7 +257,7 @@ const VenuePage = () => {
         };
 
         return (
-            <motion.div variants={item}>
+            <motion.div variants={item} className="spotlight-card-wrapper">
                 <div
                     ref={cardRef}
                     onMouseMove={handleMouseMove}
@@ -246,7 +284,7 @@ const VenuePage = () => {
             {/* Hero and Attractions Section with Shared Background */}
             <div ref={heroRef} className="relative overflow-hidden group/hero">
                 {/* Background Image */}
-                <div className="absolute inset-0">
+                <div ref={heroBgRef} className="absolute inset-0">
                     <ProgressiveImage
                         src="/icc.webp"
                         alt="Iloilo Convention Center"
@@ -357,7 +395,7 @@ const VenuePage = () => {
 
             {/* Tourist Spots Section */}
             <section className="py-16 lg:py-24 relative overflow-hidden group/discover">
-                <div className="absolute inset-0">
+                <div ref={spotsBgRef} className="absolute inset-0">
                     <ProgressiveImage
                         src="/sail.webp"
                         alt="Iloilo Paraw Regatta Sails"
@@ -381,6 +419,7 @@ const VenuePage = () => {
                     </motion.div>
 
                     <motion.div
+                        ref={spotsRef}
                         variants={container}
                         initial="hidden"
                         whileInView="show"
@@ -505,6 +544,7 @@ const VenuePage = () => {
                     </motion.div>
 
                     <motion.div
+                        ref={hotelsRef}
                         variants={container}
                         initial="hidden"
                         whileInView="show"
@@ -549,7 +589,7 @@ const VenuePage = () => {
 
             {/* Travel Tips Section */}
             <section className="py-16 lg:py-24 relative overflow-hidden group/tips">
-                <div className="absolute inset-0">
+                <div ref={tipsBgRef} className="absolute inset-0">
                     <ProgressiveImage
                         src="/iloilo.webp"
                         alt="Iloilo City"
@@ -573,6 +613,7 @@ const VenuePage = () => {
                     </motion.div>
 
                     <motion.div
+                        ref={tipsRef}
                         variants={container}
                         initial="hidden"
                         whileInView="show"
@@ -616,6 +657,7 @@ const VenuePage = () => {
                 <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.05]" />
                 <div className="container mx-auto px-4 relative z-10">
                     <motion.div
+                        ref={ctaRef}
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}

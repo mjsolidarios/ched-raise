@@ -3,8 +3,9 @@ import { MapPin, Hotel, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { useGSAPScroll, staggerFadeIn } from '@/hooks/useGSAPScroll';
 
 const item = {
     hidden: { opacity: 0, y: 20 },
@@ -47,6 +48,19 @@ const SpotlightCard = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const ExploreIloilo = () => {
+    const cardsRef = useRef<HTMLDivElement>(null);
+    const { gsap } = useGSAPScroll();
+
+    useEffect(() => {
+        // Stagger location cards
+        if (cardsRef.current) {
+            const cards = cardsRef.current.querySelectorAll('.location-card');
+            if (cards.length > 0) {
+                staggerFadeIn(cards, { stagger: 0.15 });
+            }
+        }
+    }, [gsap]);
+
     const highlights = [
         {
             icon: MapPin,
@@ -87,7 +101,7 @@ export const ExploreIloilo = () => {
                     </p>
                 </motion.div>
 
-                <div className="grid md:grid-cols-3 gap-6 mb-12">
+                <div ref={cardsRef} className="grid md:grid-cols-3 gap-6 mb-12">
                     {highlights.map((highlight, index) => (
                         <motion.div
                             key={index}
@@ -95,6 +109,7 @@ export const ExploreIloilo = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, delay: index * 0.1 }}
+                            className="location-card"
                         >
                             <SpotlightCard key={index}>
                                 <Card className="glass-card h-full border-white/10 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden">

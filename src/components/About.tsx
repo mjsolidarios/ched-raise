@@ -1,15 +1,43 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { BrainCircuit, Lightbulb, Users, ShieldCheck } from "lucide-react"
 import { motion } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useEffect } from "react"
+import { useGSAPScroll, parallax, slideInLeft, staggerFadeIn } from "@/hooks/useGSAPScroll"
 
 export function About() {
+    const sectionRef = useRef<HTMLElement>(null);
+    const textRef = useRef<HTMLDivElement>(null);
+    const cardsRef = useRef<HTMLDivElement>(null);
+    const bgRef = useRef<HTMLDivElement>(null);
+    const { gsap } = useGSAPScroll();
+
+    useEffect(() => {
+        // Parallax background effect
+        if (bgRef.current) {
+            parallax(bgRef.current, 0.2);
+        }
+
+        // Slide in text from left
+        if (textRef.current) {
+            slideInLeft(textRef.current);
+        }
+
+        // Stagger cards
+        if (cardsRef.current) {
+            const cards = cardsRef.current.querySelectorAll('.feature-card');
+            if (cards.length > 0) {
+                staggerFadeIn(cards);
+            }
+        }
+    }, [gsap]);
+
     return (
-        <section id="about" className="py-24 relative overflow-hidden">
-            <div className="absolute inset-0 bg-slate-950/50" />
+        <section ref={sectionRef} id="about" className="py-24 relative overflow-hidden">
+            <div ref={bgRef} className="absolute inset-0 bg-slate-950/50" />
             <div className="container px-4 relative z-10">
                 <div className="grid md:grid-cols-2 gap-16 items-center">
                     <motion.div
+                        ref={textRef}
                         initial={{ opacity: 0, x: -50 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
@@ -37,7 +65,7 @@ export function About() {
                         </div>
                     </motion.div>
 
-                    <div className="grid sm:grid-cols-2 gap-4">
+                    <div ref={cardsRef} className="grid sm:grid-cols-2 gap-4">
                         {[
                             { icon: BrainCircuit, color: "text-blue-400", title: "AI-Ready", desc: "Operationalizing the National AI Upskilling Roadmap." },
                             { icon: Lightbulb, color: "text-accent", title: "Innovation", desc: "Creative and values-based solutions for SDGs." },
@@ -74,6 +102,7 @@ function SpotlightCard({ item, index }: { item: any, index: number }) {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
             whileHover={{ y: -8 }}
+            className="feature-card"
         >
             <Card
                 ref={divRef as any}

@@ -1,6 +1,7 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { motion } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useEffect } from "react"
+import { useGSAPScroll, parallax, staggerFadeIn, scaleIn } from "@/hooks/useGSAPScroll"
 
 const pillars = [
     { letter: "R", title: "Reimagine Education", desc: "Transform learning through AI-powered pedagogy and innovation", outcome: "Future-ready curricula" },
@@ -11,9 +12,34 @@ const pillars = [
 ]
 
 export function Objectives() {
+    const bgRef = useRef<HTMLDivElement>(null);
+    const pillarsRef = useRef<HTMLDivElement>(null);
+    const keyObjectivesRef = useRef<HTMLDivElement>(null);
+    const { gsap } = useGSAPScroll();
+
+    useEffect(() => {
+        // Parallax background effect
+        if (bgRef.current) {
+            parallax(bgRef.current, -0.3);
+        }
+
+        // Stagger RAISE pillars
+        if (pillarsRef.current) {
+            const cards = pillarsRef.current.querySelectorAll('.pillar-card');
+            if (cards.length > 0) {
+                staggerFadeIn(cards, { stagger: 0.2 });
+            }
+        }
+
+        // Scale in key objectives card
+        if (keyObjectivesRef.current) {
+            scaleIn(keyObjectivesRef.current);
+        }
+    }, [gsap]);
+
     return (
         <section id="objectives" className="py-24 relative">
-            <div className="absolute top-0 right-0 p-20 opacity-20 pointer-events-none overflow-hidden w-full">
+            <div ref={bgRef} className="absolute top-0 right-0 p-20 opacity-20 pointer-events-none overflow-hidden w-full">
                 <div className="w-96 h-96 bg-primary blur-[300px] rounded-full" />
             </div>
 
@@ -39,13 +65,15 @@ export function Objectives() {
                     </motion.p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-24">
+                <div ref={pillarsRef} className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-24">
                     {pillars.map((pillar, i) => (
                         <SpotlightCard key={i} pillar={pillar} index={i} />
                     ))}
                 </div>
 
-                <KeyObjectivesCard />
+                <div ref={keyObjectivesRef}>
+                    <KeyObjectivesCard />
+                </div>
             </div>
         </section>
     )
@@ -146,7 +174,7 @@ function SpotlightCard({ pillar, index }: { pillar: { letter: string, title: str
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
             viewport={{ once: true }}
-            className="h-full"
+            className="h-full pillar-card"
         >
             <Card
                 ref={divRef as any}
