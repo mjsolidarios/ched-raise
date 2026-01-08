@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { useRef, useEffect } from 'react';
 import { Footer } from '@/components/Footer';
 import { ProgressiveImage } from '@/components/ui/ProgressiveImage';
-import { useGSAPScroll, parallax, staggerFadeIn, fadeInUp } from '@/hooks/useGSAPScroll';
+import { useGSAPScroll, parallax, staggerFadeIn, fadeInUp, scaleIn } from '@/hooks/useGSAPScroll';
 
 const VenuePage = () => {
     const heroRef = useRef<HTMLDivElement>(null);
@@ -20,7 +20,54 @@ const VenuePage = () => {
     const spotsBgRef = useRef<HTMLDivElement>(null);
     const tipsBgRef = useRef<HTMLDivElement>(null);
 
+    // Hero content refs for entrance
+    const heroLogoRef = useRef<HTMLImageElement>(null);
+    const heroContentRef = useRef<HTMLDivElement>(null);
+
     const { gsap } = useGSAPScroll();
+
+    useEffect(() => {
+        // Scroll Animations
+        if (heroBgRef.current) parallax(heroBgRef.current, 0.3);
+        if (spotsBgRef.current) parallax(spotsBgRef.current, 0.4);
+        if (tipsBgRef.current) parallax(tipsBgRef.current, 0.3);
+
+        // Entrance animations for Hero (same as home page)
+        if (heroLogoRef.current) {
+            scaleIn(heroLogoRef.current, { delay: 0.2 });
+        }
+        if (heroContentRef.current) {
+            const elements = heroContentRef.current.children;
+            staggerFadeIn(elements, { stagger: 0.15, delay: 0.4 });
+        }
+
+        // Section header reveals
+        const headers = document.querySelectorAll('section > div > .text-center:first-child');
+        headers.forEach(header => {
+            fadeInUp(header, { duration: 0.8 });
+        });
+
+        // Stagger reveals for cards
+        if (attractionsRef.current) {
+            const cards = attractionsRef.current.querySelectorAll('.spotlight-card-wrapper');
+            staggerFadeIn(cards, { stagger: 0.1, delay: 0.2 });
+        }
+        if (spotsRef.current) {
+            const cards = spotsRef.current.querySelectorAll('.spotlight-card-wrapper');
+            staggerFadeIn(cards, { stagger: 0.1, delay: 0.2 });
+        }
+        if (hotelsRef.current) {
+            const cards = hotelsRef.current.querySelectorAll('.spotlight-card-wrapper');
+            staggerFadeIn(cards, { stagger: 0.1, delay: 0.2 });
+        }
+        if (tipsRef.current) {
+            const cards = tipsRef.current.querySelectorAll('.spotlight-card-wrapper');
+            staggerFadeIn(cards, { stagger: 0.1, delay: 0.2 });
+        }
+
+        if (ctaRef.current) fadeInUp(ctaRef.current);
+
+    }, [gsap]);
 
     useEffect(() => {
         const hero = heroRef.current;
@@ -53,34 +100,6 @@ const VenuePage = () => {
         section.addEventListener("mousemove", handleMouseMove);
         return () => section.removeEventListener("mousemove", handleMouseMove);
     }, []);
-
-    useEffect(() => {
-        // Scroll Animations
-        if (heroBgRef.current) parallax(heroBgRef.current, 0.3);
-        if (spotsBgRef.current) parallax(spotsBgRef.current, 0.2);
-        if (tipsBgRef.current) parallax(tipsBgRef.current, 0.2);
-
-        // Stagger reveals
-        if (attractionsRef.current) {
-            const cards = attractionsRef.current.querySelectorAll('.spotlight-card-wrapper');
-            staggerFadeIn(cards, { stagger: 0.1 });
-        }
-        if (spotsRef.current) {
-            const cards = spotsRef.current.querySelectorAll('.spotlight-card-wrapper');
-            staggerFadeIn(cards, { stagger: 0.1 });
-        }
-        if (hotelsRef.current) {
-            const cards = hotelsRef.current.querySelectorAll('.spotlight-card-wrapper');
-            staggerFadeIn(cards, { stagger: 0.1 });
-        }
-        if (tipsRef.current) {
-            const cards = tipsRef.current.querySelectorAll('.spotlight-card-wrapper');
-            staggerFadeIn(cards, { stagger: 0.1 });
-        }
-
-        if (ctaRef.current) fadeInUp(ctaRef.current);
-
-    }, [gsap]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -229,20 +248,7 @@ const VenuePage = () => {
         }
     ];
 
-    const container = {
-        hidden: { opacity: 0 },
-        show: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.08
-            }
-        }
-    };
 
-    const item = {
-        hidden: { opacity: 0, y: 20 },
-        show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
-    };
 
     const SpotlightCard = ({ children }: { children: React.ReactNode }) => {
         const cardRef = useRef<HTMLDivElement>(null);
@@ -257,7 +263,7 @@ const VenuePage = () => {
         };
 
         return (
-            <motion.div variants={item} className="spotlight-card-wrapper">
+            <div className="spotlight-card-wrapper">
                 <div
                     ref={cardRef}
                     onMouseMove={handleMouseMove}
@@ -275,7 +281,7 @@ const VenuePage = () => {
                     />
                     {children}
                 </div>
-            </motion.div>
+            </div>
         );
     };
 
@@ -318,13 +324,8 @@ const VenuePage = () => {
                 {/* Hero Section */}
                 <section className="relative py-20 lg:py-32">
                     <div className="container mx-auto px-4 relative z-10">
-                        <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8 }}
-                            className="text-center max-w-4xl mx-auto"
-                        >
-                            <img className="h-auto w-48 mx-auto mb-4" src="/icon-logo.png" alt="" />
+                        <div ref={heroContentRef} className="text-center max-w-4xl mx-auto">
+                            <img ref={heroLogoRef} className="h-auto w-48 mx-auto mb-4" src="/icon-logo.png" alt="" />
                             <h1 className="mt-4 text-5xl md:text-7xl font-bold mb-6 text-white bg-clip-text text-transparent leading-tight">
                                 Iloilo Convention Center
                             </h1>
@@ -334,17 +335,14 @@ const VenuePage = () => {
                             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                                 Experience world-class facilities inspired by Iloilo's rich culture and heritage, featuring iconic Paraw Regatta sails and Dinagyang warrior designs.
                             </p>
-                        </motion.div>
+                        </div>
                     </div>
                 </section>
 
                 {/* Tourist Attractions */}
                 <section ref={attractionsRef} className="relative py-16 lg:py-24 group/attractions">
                     <div className="container mx-auto px-4 relative z-10">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
+                        <div
                             className="text-center mb-12"
                         >
                             <Compass className="h-12 w-12 mx-auto mb-4 text-white" />
@@ -352,13 +350,9 @@ const VenuePage = () => {
                             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                                 Explore the state-of-the-art facilities of the Iloilo Convention Center
                             </p>
-                        </motion.div>
+                        </div>
 
-                        <motion.div
-                            variants={container}
-                            initial="hidden"
-                            whileInView="show"
-                            viewport={{ once: true }}
+                        <div
                             className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
                         >
                             {venueHighlights.map((attraction, index) => (
@@ -388,7 +382,7 @@ const VenuePage = () => {
                                     </Card>
                                 </SpotlightCard>
                             ))}
-                        </motion.div>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -405,10 +399,7 @@ const VenuePage = () => {
                 </div>
                 <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.03]" />
                 <div className="container mx-auto px-4 relative z-10">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
+                    <div
                         className="text-center mb-12"
                     >
                         <MapPin className="h-12 w-12 mx-auto mb-4 text-primary" />
@@ -416,14 +407,10 @@ const VenuePage = () => {
                         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                             Immerse yourself in the rich history, culture, and natural beauty of the "Heart of the Philippines"
                         </p>
-                    </motion.div>
+                    </div>
 
-                    <motion.div
+                    <div
                         ref={spotsRef}
-                        variants={container}
-                        initial="hidden"
-                        whileInView="show"
-                        viewport={{ once: true }}
                         className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto"
                     >
                         {[
@@ -517,8 +504,8 @@ const VenuePage = () => {
                                 </Card>
                             </SpotlightCard>
                         ))}
-                    </motion.div>
-                </div>
+                    </div>
+                </div >
 
                 {/* Photo Credit */}
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-white/70 z-10 opacity-70 hover:opacity-100 transition-opacity duration-300">
@@ -530,10 +517,7 @@ const VenuePage = () => {
             <section className="py-16 lg:py-24 bg-muted/30 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.03]" />
                 <div className="container mx-auto px-4 relative z-10">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
+                    <div
                         className="text-center mb-12"
                     >
                         <Hotel className="h-12 w-12 mx-auto mb-4 text-primary" />
@@ -541,14 +525,10 @@ const VenuePage = () => {
                         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                             From luxury hotels to budget-friendly options—find your perfect accommodation
                         </p>
-                    </motion.div>
+                    </div>
 
-                    <motion.div
+                    <div
                         ref={hotelsRef}
-                        variants={container}
-                        initial="hidden"
-                        whileInView="show"
-                        viewport={{ once: true }}
                         className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto"
                     >
                         {hotels.map((hotel, index) => (
@@ -583,7 +563,7 @@ const VenuePage = () => {
                                 </a>
                             </SpotlightCard>
                         ))}
-                    </motion.div>
+                    </div>
                 </div>
             </section>
 
@@ -599,10 +579,7 @@ const VenuePage = () => {
                 </div>
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] opacity-30" />
                 <div className="container mx-auto px-4 relative z-10">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
+                    <div
                         className="text-center mb-12"
                     >
                         <Lightbulb className="h-12 w-12 mx-auto mb-4 text-primary" />
@@ -610,14 +587,10 @@ const VenuePage = () => {
                         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                             Essential local knowledge for an unforgettable Iloilo experience
                         </p>
-                    </motion.div>
+                    </div>
 
-                    <motion.div
+                    <div
                         ref={tipsRef}
-                        variants={container}
-                        initial="hidden"
-                        whileInView="show"
-                        viewport={{ once: true }}
                         className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto"
                     >
                         {tips.map((tip, index) => (
@@ -644,7 +617,7 @@ const VenuePage = () => {
                                 </Card>
                             </SpotlightCard>
                         ))}
-                    </motion.div>
+                    </div>
                 </div>
                 {/* Photo Credit */}
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-white/70 z-10 opacity-70 hover:opacity-100 transition-opacity duration-300">
@@ -656,11 +629,8 @@ const VenuePage = () => {
             <section className="py-20 lg:py-32 bg-gradient-to-br from-primary/10 via-accent/10 to-primary/10 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.05]" />
                 <div className="container mx-auto px-4 relative z-10">
-                    <motion.div
+                    <div
                         ref={ctaRef}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
                         className="text-center max-w-3xl mx-auto"
                     >
                         <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
@@ -685,7 +655,7 @@ const VenuePage = () => {
                                 </Link>
                             </Button>
                         </motion.div>
-                    </motion.div>
+                    </div>
                 </div>
             </section>
             <Footer />

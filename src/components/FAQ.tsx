@@ -56,7 +56,7 @@ export function FAQ() {
 
                 <div ref={faqsRef} className="space-y-4">
                     {faqs.map((faq, index) => (
-                        <FAQItem key={index} faq={faq} index={index} />
+                        <FAQItem key={index} faq={faq} />
                     ))}
                 </div>
 
@@ -79,15 +79,11 @@ export function FAQ() {
     );
 }
 
-function FAQItem({ faq, index }: { faq: { question: string; answer: string }; index: number }) {
+function FAQItem({ faq }: { faq: { question: string; answer: string } }) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.1 }}
             className="faq-item"
         >
             <Card

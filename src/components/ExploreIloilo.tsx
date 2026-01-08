@@ -7,10 +7,7 @@ import { useRef, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { useGSAPScroll, staggerFadeIn } from '@/hooks/useGSAPScroll';
 
-const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
-};
+
 
 const SpotlightCard = ({ children }: { children: React.ReactNode }) => {
     const cardRef = useRef<HTMLDivElement>(null);
@@ -25,7 +22,7 @@ const SpotlightCard = ({ children }: { children: React.ReactNode }) => {
     };
 
     return (
-        <motion.div variants={item}>
+        <div>
             <div
                 ref={cardRef}
                 onMouseMove={handleMouseMove}
@@ -43,7 +40,7 @@ const SpotlightCard = ({ children }: { children: React.ReactNode }) => {
                 />
                 {children}
             </div>
-        </motion.div>
+        </div>
     );
 };
 
@@ -103,12 +100,8 @@ export const ExploreIloilo = () => {
 
                 <div ref={cardsRef} className="grid md:grid-cols-3 gap-6 mb-12">
                     {highlights.map((highlight, index) => (
-                        <motion.div
+                        <div
                             key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: index * 0.1 }}
                             className="location-card"
                         >
                             <SpotlightCard key={index}>
@@ -136,7 +129,7 @@ export const ExploreIloilo = () => {
                                     </CardContent>
                                 </Card>
                             </SpotlightCard>
-                        </motion.div>
+                        </div>
                     ))}
                 </div>
 

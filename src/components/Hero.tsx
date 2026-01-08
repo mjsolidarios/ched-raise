@@ -146,9 +146,6 @@ export function Hero() {
             <div className="container px-4 relative z-10 flex flex-col items-center">
                 <motion.div
                     ref={badgeRef}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
                     whileHover={{ scale: 1.05 }}
                 >
                     <Badge variant="outline" className="mb-12 py-1.5 px-4 border-primary/50 text-blue-200 bg-blue-900/30 hover:bg-blue-900/50 hover:border-primary/70 transition-all duration-300 uppercase tracking-widest text-xs font-semibold backdrop-blur-md shadow-lg shadow-primary/10">
@@ -194,9 +191,6 @@ export function Hero() {
 
                 <motion.div
                     ref={detailsRef}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
                     whileHover={{ scale: 1.02 }}
                     className="flex flex-col md:flex-row items-start md:items-center md:justify-center gap-4 md:gap-8 mb-8 p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 backdrop-blur-md shadow-2xl shadow-primary/5 relative overflow-hidden group"
                 >
@@ -228,9 +222,6 @@ export function Hero() {
 
                         <motion.div
                             ref={ctaRef}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: 0.5 }}
                             className="flex flex-col sm:flex-row items-center justify-center gap-4"
                         >
                             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

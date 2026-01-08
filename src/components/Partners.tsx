@@ -55,10 +55,6 @@ export function Partners() {
                             href="https://nisu.edu.ph"
                             target="_blank"
                             rel="noopener noreferrer"
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.5 }}
                             whileHover={{ scale: 1.05 }}
                             className="flex items-center gap-4 group cursor-pointer"
                         >
@@ -75,10 +71,6 @@ export function Partners() {
                             href="https://wvsu.edu.ph"
                             target="_blank"
                             rel="noopener noreferrer"
-                            initial={{ opacity: 0, x: 20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.5 }}
                             whileHover={{ scale: 1.05 }}
                             className="flex items-center gap-4 group cursor-pointer"
                         >
