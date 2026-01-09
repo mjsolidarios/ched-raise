@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Github } from '@uiw/react-color';
 import { GithubPlacement } from '@uiw/react-color-github';
 import { db, auth } from '@/lib/firebase';
@@ -41,6 +41,7 @@ import { Badge } from '@/components/ui/badge';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { Loader2, CalendarDays, Mail, Phone, CheckCircle2, XCircle, Clock, Pencil, InfoIcon, EditIcon, RefreshCcw, Circle, AlertCircle, MailCheckIcon, ClipboardCheck, BarChart3 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useGSAPScroll, fadeInUp, slideInLeft, slideInRight } from '@/hooks/useGSAPScroll';
 import { RegistrationProgress } from '@/components/RegistrationProgress';
 import { SchoolAutocomplete } from '@/components/SchoolAutocomplete';
 import { RegistrationBusinessCard } from '@/components/RegistrationBusinessCard';
@@ -80,6 +81,32 @@ const UserDashboard = () => {
     const [avatarSeed, setAvatarSeed] = useState<string>('');
     const [avatarColor, setAvatarColor] = useState<string>('#5b8def'); // Default primary color
     const [showColorPicker, setShowColorPicker] = useState(false);
+
+    // Animation Refs
+    const headerRef = useRef<HTMLDivElement>(null);
+    const registrationCardRef = useRef<HTMLDivElement>(null);
+    const statusCardRef = useRef<HTMLDivElement>(null);
+    const helpRef = useRef<HTMLDivElement>(null);
+    const statsRef = useRef<HTMLDivElement>(null);
+    const progressRef = useRef<HTMLDivElement>(null);
+
+    const { gsap } = useGSAPScroll();
+
+    useEffect(() => {
+        if (loading) return;
+
+        // Small timeout to ensure DOM is ready
+        const timer = setTimeout(() => {
+            if (headerRef.current) fadeInUp(headerRef.current);
+            if (progressRef.current) fadeInUp(progressRef.current, { delay: 0.1 });
+            if (registrationCardRef.current) slideInLeft(registrationCardRef.current, { delay: 0.2 });
+            if (statusCardRef.current) slideInRight(statusCardRef.current, { delay: 0.3 });
+            if (helpRef.current) fadeInUp(helpRef.current, { delay: 0.4 });
+            if (statsRef.current) fadeInUp(statsRef.current, { delay: 0.5 });
+        }, 100);
+
+        return () => clearTimeout(timer);
+    }, [loading, registration, gsap]);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -402,20 +429,7 @@ const UserDashboard = () => {
         }
     };
 
-    const container = {
-        hidden: { opacity: 0 },
-        show: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1
-            }
-        }
-    };
-
-    const item = {
-        hidden: { opacity: 0, y: 20 },
-        show: { opacity: 1, y: 0 }
-    };
+    // Variants removed in favor of GSAP
 
     const [eventStatus, setEventStatus] = useState<'ongoing' | 'finished'>('ongoing');
 
@@ -523,7 +537,7 @@ const UserDashboard = () => {
         <div className="container mx-auto px-4 py-6 sm:py-8 lg:py-12 min-h-[calc(100vh-64px)]">
             <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
                 {/* Header Welcome Section */}
-                <div className="mt-6 sm:mt-10 flex items-center justify-between pb-4 sm:pb-6 border-b border-border/40">
+                <div ref={headerRef} className="mt-6 sm:mt-10 flex items-center justify-between pb-4 sm:pb-6 border-b border-border/40 opacity-0">
                     <div>
                         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mt-10">My Registration</h1>
                         <p className="text-sm sm:text-base text-muted-foreground mt-1">Manage your event registration and view status.</p>
@@ -553,19 +567,17 @@ const UserDashboard = () => {
                     </motion.div>
                 )}
 
-                <RegistrationProgress status={registration ? registration.status : null} />
-                <motion.div
-                    variants={container}
-                    initial="hidden"
-                    animate="show"
+                <div ref={progressRef} className="opacity-0">
+                    <RegistrationProgress status={registration ? registration.status : null} />
+                </div>
+                <div
                     className="grid gap-4 sm:gap-6 lg:grid-cols-3"
                 >
                     {registration && (
-                        <motion.div
+                        <div
+                            ref={registrationCardRef}
                             key={registration.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="lg:col-span-3"
+                            className="lg:col-span-3 opacity-0"
                         >
                             <div className="max-w-3xl mx-auto space-y-6">
                                 <Card className="glass-card border-primary/20">
@@ -725,12 +737,12 @@ const UserDashboard = () => {
                                     )}
                                 </DialogContent>
                             </Dialog>
-                        </motion.div>
+                        </div>
                     )}
 
 
                     {/* Main Status / Form Card */}
-                    <motion.div variants={item} className="lg:col-span-2 space-y-6">
+                    <div ref={statusCardRef} className="lg:col-span-2 space-y-6 opacity-0">
                         <Card className="glass-card border-primary/10 overflow-hidden relative">
                             {/* Decorative gradient blob */}
                             <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
@@ -903,9 +915,9 @@ const UserDashboard = () => {
                                 )}
                             </CardContent>
                         </Card>
-                    </motion.div>
+                    </div>
 
-                    <motion.div variants={item} className="space-y-6">
+                    <div ref={helpRef} className="space-y-6 opacity-0">
                         <Card className="glass-card bg-primary/5 border-primary/10">
                             <CardHeader>
                                 <CardTitle className="text-base text-primary">Need Help?</CardTitle>
@@ -918,78 +930,80 @@ const UserDashboard = () => {
                                 </div>
                             </CardContent>
                         </Card>
-                    </motion.div>
-                </motion.div>
-                <Card className="glass-card border-none shadow-lg">
-                    <CardHeader>
-                        <CardTitle className="text-base flex items-center gap-2">
-                            <BarChart3 className="h-4 w-4 text-primary" />
-                            Who are RAISE-ing with us?
-                        </CardTitle>
-                        <CardDescription>Here are our current registrants so far.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                            {regionStats.length === 0 ? (
-                                <div className="text-center py-8 text-muted-foreground">
-                                    No data available yet
-                                </div>
-                            ) : (
-                                regionStats.map((stat, index) => {
-                                    const isTop3 = index < 3;
+                    </div>
+                </div>
+                <div ref={statsRef} className="opacity-0">
+                    <Card className="glass-card border-none shadow-lg">
+                        <CardHeader>
+                            <CardTitle className="text-base flex items-center gap-2">
+                                <BarChart3 className="h-4 w-4 text-primary" />
+                                Who are RAISE-ing with us?
+                            </CardTitle>
+                            <CardDescription>Here are our current registrants so far.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                                {regionStats.length === 0 ? (
+                                    <div className="text-center py-8 text-muted-foreground">
+                                        No data available yet
+                                    </div>
+                                ) : (
+                                    regionStats.map((stat, index) => {
+                                        const isTop3 = index < 3;
 
-                                    // Take only top 7 avatars
-                                    const displayAvatars = stat.avatars?.slice(0, 7) || [];
-                                    const hasMore = (stat.avatars?.length || 0) > 7 || stat.value > 7;
+                                        // Take only top 7 avatars
+                                        const displayAvatars = stat.avatars?.slice(0, 7) || [];
+                                        const hasMore = (stat.avatars?.length || 0) > 7 || stat.value > 7;
 
-                                    return (
-                                        <div key={stat.name} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-                                            <div className="flex items-center gap-3">
-                                                <span className={`flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold shrink-0 ${isTop3 ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
-                                                    {index + 1}
-                                                </span>
-                                                <span className="font-medium text-sm truncate max-w-[120px] sm:max-w-[150px]" title={stat.name}>
-                                                    {getRegionShortName(stat.name)}
-                                                </span>
+                                        return (
+                                            <div key={stat.name} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                                                <div className="flex items-center gap-3">
+                                                    <span className={`flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold shrink-0 ${isTop3 ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                                                        {index + 1}
+                                                    </span>
+                                                    <span className="font-medium text-sm truncate max-w-[120px] sm:max-w-[150px]" title={stat.name}>
+                                                        {getRegionShortName(stat.name)}
+                                                    </span>
+                                                </div>
+
+                                                <div className="flex items-center -space-x-2 overflow-hidden pl-2 pb-2 pt-1">
+                                                    <TooltipProvider>
+                                                        {displayAvatars.map((avatar, i) => (
+                                                            <Tooltip key={i}>
+                                                                <TooltipTrigger asChild>
+                                                                    <div className="relative z-10 inline-block h-8 w-8 rounded-full ring-2 ring-background transition-transform duration-200 hover:scale-125 hover:z-20 cursor-pointer">
+                                                                        <UserAvatar
+                                                                            seed={(registration && (avatar.id === registration.id || (registration.ticketCode && avatar.ticketCode === registration.ticketCode) || (registration.ticketCode && avatar.seed === registration.ticketCode))) ? (registration.avatarSeed || registration.ticketCode || registration.id) : avatar.seed}
+                                                                            size={32}
+                                                                            color={
+                                                                                (registration && (avatar.id === registration.id || (registration.ticketCode && avatar.ticketCode === registration.ticketCode) || (registration.ticketCode && avatar.seed === registration.ticketCode)))
+                                                                                    ? registration.avatarColor
+                                                                                    : ((!avatar.color || avatar.color === '#000000') ? undefined : avatar.color)
+                                                                            }
+                                                                            className="h-full w-full"
+                                                                        />
+                                                                    </div>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>
+                                                                    <p className="text-xs font-semibold">{avatar.firstName || 'Participant'}</p>
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        ))}
+                                                    </TooltipProvider>
+                                                    {hasMore && (
+                                                        <div className="relative z-0 inline-block flex items-center justify-center h-8 w-8 rounded-full bg-muted ring-2 ring-background text-[10px] font-bold text-muted-foreground ml-1">
+                                                            +{stat.value - displayAvatars.length}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-
-                                            <div className="flex items-center -space-x-2 overflow-hidden pl-2 pb-2 pt-1">
-                                                <TooltipProvider>
-                                                    {displayAvatars.map((avatar, i) => (
-                                                        <Tooltip key={i}>
-                                                            <TooltipTrigger asChild>
-                                                                <div className="relative z-10 inline-block h-8 w-8 rounded-full ring-2 ring-background transition-transform duration-200 hover:scale-125 hover:z-20 cursor-pointer">
-                                                                    <UserAvatar
-                                                                        seed={(registration && (avatar.id === registration.id || (registration.ticketCode && avatar.ticketCode === registration.ticketCode) || (registration.ticketCode && avatar.seed === registration.ticketCode))) ? (registration.avatarSeed || registration.ticketCode || registration.id) : avatar.seed}
-                                                                        size={32}
-                                                                        color={
-                                                                            (registration && (avatar.id === registration.id || (registration.ticketCode && avatar.ticketCode === registration.ticketCode) || (registration.ticketCode && avatar.seed === registration.ticketCode)))
-                                                                                ? registration.avatarColor
-                                                                                : ((!avatar.color || avatar.color === '#000000') ? undefined : avatar.color)
-                                                                        }
-                                                                        className="h-full w-full"
-                                                                    />
-                                                                </div>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                <p className="text-xs font-semibold">{avatar.firstName || 'Participant'}</p>
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    ))}
-                                                </TooltipProvider>
-                                                {hasMore && (
-                                                    <div className="relative z-0 inline-block flex items-center justify-center h-8 w-8 rounded-full bg-muted ring-2 ring-background text-[10px] font-bold text-muted-foreground ml-1">
-                                                        +{stat.value - displayAvatars.length}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    );
-                                })
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
+                                        );
+                                    })
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
                 <div className="mt-12 pt-8 border-t border-border/40 text-center">
                     <Link to="/privacy-policy" className="text-xs text-muted-foreground/60 hover:text-primary transition-colors">
                         Privacy Policy

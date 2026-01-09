@@ -569,11 +569,11 @@ const VenuePage = () => {
 
             {/* Travel Tips Section */}
             <section className="py-16 lg:py-24 relative overflow-hidden group/tips">
-                <div ref={tipsBgRef} className="absolute inset-0">
+                <div ref={tipsBgRef} className="absolute inset-x-0 -top-[40%] w-full h-[180%] z-0">
                     <ProgressiveImage
                         src="/iloilo.webp"
                         alt="Iloilo City"
-                        className="w-full h-full"
+                        className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-background/50" />
                 </div>
