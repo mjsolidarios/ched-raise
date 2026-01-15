@@ -1,19 +1,43 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { BrainCircuit, Lightbulb, Users, ShieldCheck } from "lucide-react"
 import { motion } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useEffect } from "react"
+import { useGSAPScroll, parallax, slideInLeft, staggerFadeIn } from "@/hooks/useGSAPScroll"
 
 export function About() {
+    const sectionRef = useRef<HTMLElement>(null);
+    const textRef = useRef<HTMLDivElement>(null);
+    const cardsRef = useRef<HTMLDivElement>(null);
+    const bgRef = useRef<HTMLDivElement>(null);
+    const { gsap } = useGSAPScroll();
+
+    useEffect(() => {
+        // Parallax background effect
+        if (bgRef.current) {
+            parallax(bgRef.current, 0.2);
+        }
+
+        // Slide in text from left
+        if (textRef.current) {
+            slideInLeft(textRef.current);
+        }
+
+        // Stagger cards
+        if (cardsRef.current) {
+            const cards = cardsRef.current.querySelectorAll('.feature-card');
+            if (cards.length > 0) {
+                staggerFadeIn(cards);
+            }
+        }
+    }, [gsap]);
+
     return (
-        <section id="about" className="py-24 relative overflow-hidden">
-            <div className="absolute inset-0 bg-slate-950/50" />
+        <section ref={sectionRef} id="about" className="py-24 relative overflow-hidden">
+            <div ref={bgRef} className="absolute inset-0 bg-slate-950/50" />
             <div className="container px-4 relative z-10">
                 <div className="grid md:grid-cols-2 gap-16 items-center">
-                    <motion.div
-                        initial={{ opacity: 0, x: -50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
+                    <div
+                        ref={textRef}
                         className="space-y-8"
                     >
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-sm text-slate-300">
@@ -35,16 +59,16 @@ export function About() {
                                 to ensure every Filipino is AI-ready, future-proof, and ethically grounded.
                             </p>
                         </div>
-                    </motion.div>
+                    </div>
 
-                    <div className="grid sm:grid-cols-2 gap-4">
+                    <div ref={cardsRef} className="grid sm:grid-cols-2 gap-4">
                         {[
                             { icon: BrainCircuit, color: "text-blue-400", title: "AI-Ready", desc: "Operationalizing the National AI Upskilling Roadmap." },
                             { icon: Lightbulb, color: "text-accent", title: "Innovation", desc: "Creative and values-based solutions for SDGs." },
                             { icon: ShieldCheck, color: "text-teal-400", title: "Ethical", desc: "Responsible adoption grounded in human values." },
                             { icon: Users, color: "text-blue-400", title: "Inclusivity", desc: "Strengthening collaboration between academe, industry, and government." }
                         ].map((item, index) => (
-                            <SpotlightCard key={index} item={item} index={index} />
+                            <SpotlightCard key={index} item={item} />
                         ))}
                     </div>
                 </div>
@@ -53,7 +77,7 @@ export function About() {
     )
 }
 
-function SpotlightCard({ item, index }: { item: any, index: number }) {
+function SpotlightCard({ item }: { item: any }) {
     const divRef = useRef<HTMLDivElement>(null)
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -69,11 +93,8 @@ function SpotlightCard({ item, index }: { item: any, index: number }) {
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
             whileHover={{ y: -8 }}
+            className="feature-card"
         >
             <Card
                 ref={divRef as any}

@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, MessageSquareText } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useGSAPScroll, staggerFadeIn } from "@/hooks/useGSAPScroll";
 
 const faqs = [
     {
@@ -23,6 +24,19 @@ const faqs = [
 ];
 
 export function FAQ() {
+    const faqsRef = useRef<HTMLDivElement>(null);
+    const { gsap } = useGSAPScroll();
+
+    useEffect(() => {
+        // Stagger FAQ items
+        if (faqsRef.current) {
+            const items = faqsRef.current.querySelectorAll('.faq-item');
+            if (items.length > 0) {
+                staggerFadeIn(items, { stagger: 0.1 });
+            }
+        }
+    }, [gsap]);
+
     return (
         <section id="faq" className="py-24 relative overflow-hidden bg-slate-950/30">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-950/50" />
@@ -40,9 +54,9 @@ export function FAQ() {
                     </p>
                 </div>
 
-                <div className="space-y-4">
+                <div ref={faqsRef} className="space-y-4">
                     {faqs.map((faq, index) => (
-                        <FAQItem key={index} faq={faq} index={index} />
+                        <FAQItem key={index} faq={faq} />
                     ))}
                 </div>
 
@@ -65,15 +79,12 @@ export function FAQ() {
     );
 }
 
-function FAQItem({ faq, index }: { faq: { question: string; answer: string }; index: number }) {
+function FAQItem({ faq }: { faq: { question: string; answer: string } }) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.1 }}
+            className="faq-item"
         >
             <Card
                 className={`glass-card border-white/10 transition-all duration-300 ${isOpen ? 'bg-white/10' : 'bg-white/5 hover:bg-white/10'}`}

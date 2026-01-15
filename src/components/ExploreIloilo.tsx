@@ -3,13 +3,11 @@ import { MapPin, Hotel, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { useGSAPScroll, staggerFadeIn } from '@/hooks/useGSAPScroll';
 
-const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
-};
+
 
 const SpotlightCard = ({ children }: { children: React.ReactNode }) => {
     const cardRef = useRef<HTMLDivElement>(null);
@@ -24,7 +22,7 @@ const SpotlightCard = ({ children }: { children: React.ReactNode }) => {
     };
 
     return (
-        <motion.div variants={item}>
+        <div>
             <div
                 ref={cardRef}
                 onMouseMove={handleMouseMove}
@@ -42,11 +40,24 @@ const SpotlightCard = ({ children }: { children: React.ReactNode }) => {
                 />
                 {children}
             </div>
-        </motion.div>
+        </div>
     );
 };
 
 export const ExploreIloilo = () => {
+    const cardsRef = useRef<HTMLDivElement>(null);
+    const { gsap } = useGSAPScroll();
+
+    useEffect(() => {
+        // Stagger location cards
+        if (cardsRef.current) {
+            const cards = cardsRef.current.querySelectorAll('.location-card');
+            if (cards.length > 0) {
+                staggerFadeIn(cards, { stagger: 0.15 });
+            }
+        }
+    }, [gsap]);
+
     const highlights = [
         {
             icon: MapPin,
@@ -87,14 +98,11 @@ export const ExploreIloilo = () => {
                     </p>
                 </motion.div>
 
-                <div className="grid md:grid-cols-3 gap-6 mb-12">
+                <div ref={cardsRef} className="grid md:grid-cols-3 gap-6 mb-12">
                     {highlights.map((highlight, index) => (
-                        <motion.div
+                        <div
                             key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: index * 0.1 }}
+                            className="location-card"
                         >
                             <SpotlightCard key={index}>
                                 <Card className="glass-card h-full border-white/10 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden">
@@ -121,7 +129,7 @@ export const ExploreIloilo = () => {
                                     </CardContent>
                                 </Card>
                             </SpotlightCard>
-                        </motion.div>
+                        </div>
                     ))}
                 </div>
 

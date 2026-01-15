@@ -7,6 +7,7 @@ import { Link } from "react-router-dom"
 import Typewriter from 'typewriter-effect';
 import { db } from '@/lib/firebase';
 import { doc, onSnapshot } from "firebase/firestore";
+import { useGSAPScroll, parallax, scaleIn, staggerFadeIn } from "@/hooks/useGSAPScroll"
 
 import { CountdownTimer } from "@/components/CountdownTimer"
 // import { Robot } from "@/components/Robot"
@@ -14,6 +15,15 @@ import { CountdownTimer } from "@/components/CountdownTimer"
 export function Hero() {
     const containerRef = useRef<HTMLElement>(null);
     const [eventStatus, setEventStatus] = useState<'ongoing' | 'finished'>('ongoing');
+    const blob1Ref = useRef<HTMLDivElement>(null);
+    const blob2Ref = useRef<HTMLDivElement>(null);
+    const blob3Ref = useRef<HTMLDivElement>(null);
+    const logoRef = useRef<HTMLDivElement>(null);
+    const badgeRef = useRef<HTMLDivElement>(null);
+    const detailsRef = useRef<HTMLDivElement>(null);
+    const ctaRef = useRef<HTMLDivElement>(null);
+
+    const { gsap } = useGSAPScroll();
 
     useEffect(() => {
         // Subscribe to global settings for event status
@@ -41,6 +51,31 @@ export function Hero() {
         return () => container.removeEventListener("mousemove", handleMouseMove);
     }, []);
 
+    // GSAP Scroll Animations
+    useEffect(() => {
+        // Parallax effect on background blobs
+        if (blob1Ref.current) {
+            parallax(blob1Ref.current, -0.3);
+        }
+        if (blob2Ref.current) {
+            parallax(blob2Ref.current, -0.4);
+        }
+        if (blob3Ref.current) {
+            parallax(blob3Ref.current, -0.2);
+        }
+
+        // Logo scale in animation
+        if (logoRef.current) {
+            scaleIn(logoRef.current, { delay: 0.3 });
+        }
+
+        // Stagger animation for badge, details, and CTA
+        const elements = [badgeRef.current, detailsRef.current, ctaRef.current].filter(Boolean);
+        if (elements.length > 0) {
+            staggerFadeIn(elements);
+        }
+    }, [gsap]);
+
     return (
         <section
             id="hero"
@@ -66,6 +101,7 @@ export function Hero() {
             {/* Enhanced Background Effects with Animation - Reduced on mobile */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl opacity-50 pointer-events-none overflow-hidden hidden md:block">
                 <motion.div
+                    ref={blob1Ref}
                     className="absolute top-[-10%] left-[20%] w-96 h-96 bg-primary blur-[100px] rounded-full mix-blend-screen gpu-accelerated"
                     animate={{
                         scale: [1, 1.2, 1],
@@ -78,6 +114,7 @@ export function Hero() {
                     }}
                 />
                 <motion.div
+                    ref={blob2Ref}
                     className="absolute bottom-[10%] right-[20%] w-[500px] h-[500px] bg-secondary blur-[100px] rounded-full mix-blend-screen gpu-accelerated"
                     animate={{
                         scale: [1, 1.3, 1],
@@ -91,6 +128,7 @@ export function Hero() {
                     }}
                 />
                 <motion.div
+                    ref={blob3Ref}
                     className="absolute top-[40%] left-[60%] w-80 h-80 bg-teal-400/40 blur-[80px] rounded-full mix-blend-screen gpu-accelerated"
                     animate={{
                         y: [0, -50, 0],
@@ -107,9 +145,7 @@ export function Hero() {
 
             <div className="container px-4 relative z-10 flex flex-col items-center">
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
+                    ref={badgeRef}
                     whileHover={{ scale: 1.05 }}
                 >
                     <Badge variant="outline" className="mb-12 py-1.5 px-4 border-primary/50 text-blue-200 bg-blue-900/30 hover:bg-blue-900/50 hover:border-primary/70 transition-all duration-300 uppercase tracking-widest text-xs font-semibold backdrop-blur-md shadow-lg shadow-primary/10">
@@ -121,6 +157,7 @@ export function Hero() {
                 </motion.div>
 
                 <motion.div
+                    ref={logoRef}
                     className="group relative mb-12"
                     whileHover={{ scale: 1.02 }}
                     transition={{ duration: 0.3 }}
@@ -153,9 +190,7 @@ export function Hero() {
                 </motion.div>
 
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
+                    ref={detailsRef}
                     whileHover={{ scale: 1.02 }}
                     className="flex flex-col md:flex-row items-start md:items-center md:justify-center gap-4 md:gap-8 mb-8 p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 backdrop-blur-md shadow-2xl shadow-primary/5 relative overflow-hidden group"
                 >
@@ -186,9 +221,7 @@ export function Hero() {
                         <CountdownTimer targetDate="2026-02-25T08:00:00" />
 
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: 0.5 }}
+                            ref={ctaRef}
                             className="flex flex-col sm:flex-row items-center justify-center gap-4"
                         >
                             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

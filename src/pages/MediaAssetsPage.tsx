@@ -1,10 +1,12 @@
 
-import { motion } from 'framer-motion';
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Play, Image as ImageIcon, FileText, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
+import { useRef, useEffect } from "react";
+import { useGSAPScroll, staggerFadeIn } from "@/hooks/useGSAPScroll";
 
 // Mock data for initial display
 const MEDIA_ASSETS = [
@@ -51,6 +53,22 @@ const handleDownload = (asset: any) => {
 };
 
 const MediaAssetsPage = () => {
+    const gridRef = useRef<HTMLDivElement>(null);
+    const headerRef = useRef<HTMLDivElement>(null);
+    const { gsap } = useGSAPScroll();
+
+    useEffect(() => {
+        if (headerRef.current) {
+            const elements = headerRef.current.children;
+            staggerFadeIn(elements, { stagger: 0.15 });
+        }
+
+        if (gridRef.current) {
+            const cards = gridRef.current.querySelectorAll('.asset-card-wrapper');
+            staggerFadeIn(cards, { stagger: 0.1, delay: 0.4 });
+        }
+    }, [gsap]);
+
     return (
         <div>
             <div className="min-h-screen bg-background pt-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden flex flex-col">
@@ -61,10 +79,8 @@ const MediaAssetsPage = () => {
                 </div>
 
                 <div className="max-w-7xl mx-auto relative z-10 flex-1 w-full pb-16">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
+                    <div
+                        ref={headerRef}
                         className="text-center mb-16"
                     >
                         <Badge variant="outline" className="mb-4 text-primary border-primary/50 px-4 py-1">
@@ -76,15 +92,13 @@ const MediaAssetsPage = () => {
                         <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
                             Access official photos, videos, documents, and promotional materials for the CHED RAISE Summit 2026.
                         </p>
-                    </motion.div>
+                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {MEDIA_ASSETS.map((asset, index) => (
-                            <motion.div
+                    <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {MEDIA_ASSETS.map((asset) => (
+                            <div
                                 key={asset.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
+                                className="asset-card-wrapper"
                             >
                                 <Card className="bg-slate-900/50 border-white/10 overflow-hidden hover:border-primary/50 transition-all duration-300 group h-full flex flex-col">
                                     <div className="relative aspect-video overflow-hidden">
@@ -135,7 +149,7 @@ const MediaAssetsPage = () => {
                                         </Button>
                                     </CardContent>
                                 </Card>
-                            </motion.div>
+                            </div>
                         ))}
                     </div>
                 </div>

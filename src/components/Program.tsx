@@ -3,15 +3,26 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Clock, ArrowRight } from "lucide-react"
 import { motion } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
+import { useGSAPScroll, parallax } from "@/hooks/useGSAPScroll"
 
 export function Program() {
+    const bgRef = useRef<HTMLDivElement>(null);
+    const { gsap } = useGSAPScroll();
+
+    useEffect(() => {
+        // Parallax background effect
+        if (bgRef.current) {
+            parallax(bgRef.current, 0.15);
+        }
+    }, [gsap]);
+
     return (
         <section id="program" className="py-24 bg-slate-950 relative">
             {/* Background decoration */}
-            <div className="absolute top-1/2 left-0 w-full h-[500px] bg-gradient-to-r from-blue-900/10 to-indigo-900/10 blur-3xl pointer-events-none -translate-y-1/2" />
+            <div ref={bgRef} className="absolute top-1/2 left-0 w-full h-[500px] bg-gradient-to-r from-blue-900/10 to-indigo-900/10 blur-3xl pointer-events-none -translate-y-1/2" />
 
             <div className="container px-4 relative z-10">
                 <div className="flex flex-col items-center mb-16">

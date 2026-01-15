@@ -1,5 +1,7 @@
 import { Separator } from "@/components/ui/separator"
 import { motion } from "framer-motion"
+import { useRef, useEffect } from "react"
+import { useGSAPScroll, fadeInUp } from "@/hooks/useGSAPScroll"
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 // Import Swiper styles
@@ -8,7 +10,21 @@ import 'swiper/css/autoplay';
 import { Autoplay } from 'swiper/modules';
 
 export function Partners() {
+    const leadInstitutionsRef = useRef<HTMLDivElement>(null);
+    const partnersSectionRef = useRef<HTMLDivElement>(null);
+    const { gsap } = useGSAPScroll();
 
+    useEffect(() => {
+        // Fade in lead institutions
+        if (leadInstitutionsRef.current) {
+            fadeInUp(leadInstitutionsRef.current);
+        }
+
+        // Fade in partners section
+        if (partnersSectionRef.current) {
+            fadeInUp(partnersSectionRef.current, { delay: 0.2 });
+        }
+    }, [gsap]);
 
     const PARTNERS = [
         { name: "CHED", logo: "/partners/ched-logo.svg", description: "Commission on Higher Education" },
@@ -32,17 +48,13 @@ export function Partners() {
                     <p className="text-slate-400">Collaborating for a future-ready Philippines</p>
                 </div>
 
-                <div className="mb-12">
+                <div ref={leadInstitutionsRef} className="mb-12">
                     <h3 className="text-sm font-semibold text-accent uppercase tracking-widest text-center mb-6">Lead Institutions</h3>
                     <div className="flex flex-wrap justify-center gap-6 md:gap-12">
                         <motion.a
                             href="https://nisu.edu.ph"
                             target="_blank"
                             rel="noopener noreferrer"
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.5 }}
                             whileHover={{ scale: 1.05 }}
                             className="flex items-center gap-4 group cursor-pointer"
                         >
@@ -59,10 +71,6 @@ export function Partners() {
                             href="https://wvsu.edu.ph"
                             target="_blank"
                             rel="noopener noreferrer"
-                            initial={{ opacity: 0, x: 20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.5 }}
                             whileHover={{ scale: 1.05 }}
                             className="flex items-center gap-4 group cursor-pointer"
                         >
@@ -79,7 +87,7 @@ export function Partners() {
 
                 <Separator className="bg-white/5 my-12" />
 
-                <div className="max-w-7xl mx-auto px-4 md:px-8">
+                <div ref={partnersSectionRef} className="max-w-7xl mx-auto px-4 md:px-8">
                     <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-widest text-center mb-12">In Coordination With</h3>
                     <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)] py-8">
                         <Swiper
