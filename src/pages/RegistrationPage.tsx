@@ -16,7 +16,9 @@ const RegistrationPage = () => {
         lastName: '',
         email: '',
         contactNumber: '',
-        schoolAffiliation: ''
+        schoolAffiliation: '',
+        registrantType: 'participant',
+        foodPreference: ''
     });
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState<'idle' | 'success' | 'error' | 'exists'>('idle');
@@ -31,6 +33,11 @@ const RegistrationPage = () => {
 
         if (!privacyPolicyAccepted) {
             alert('Please accept the privacy policy to proceed.');
+            return;
+        }
+
+        if (!formData.foodPreference) {
+            alert('Please select a food preference.');
             return;
         }
 
@@ -58,13 +65,24 @@ const RegistrationPage = () => {
                 email: formData.email,
                 contactNumber: formData.contactNumber,
                 schoolAffiliation: formData.schoolAffiliation,
+                registrantType: formData.registrantType,
+                foodPreference: formData.foodPreference,
                 status: 'pending',
                 ticketCode: ticketCode,
                 createdAt: serverTimestamp()
             });
 
             setStatus('success');
-            setFormData({ firstName: '', middleName: '', lastName: '', email: '', contactNumber: '', schoolAffiliation: '' });
+            setFormData({
+                firstName: '',
+                middleName: '',
+                lastName: '',
+                email: '',
+                contactNumber: '',
+                schoolAffiliation: '',
+                registrantType: 'participant',
+                foodPreference: ''
+            });
         } catch (error) {
             console.error("Error adding registration: ", error);
             setStatus('error');
@@ -117,6 +135,39 @@ const RegistrationPage = () => {
                                 <Label htmlFor="schoolAffiliation">Company / Institution</Label>
                                 <Input id="schoolAffiliation" name="schoolAffiliation" value={formData.schoolAffiliation} onChange={handleChange} placeholder="University of the Philippines" />
                             </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="registrantType">Registrant Type</Label>
+                                    <select
+                                        id="registrantType"
+                                        name="registrantType"
+                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        value={formData.registrantType}
+                                        onChange={(e) => setFormData({ ...formData, registrantType: e.target.value })}
+                                    >
+                                        <option value="participant">Participant</option>
+                                        <option value="speaker">Speaker</option>
+                                        <option value="exhibitor">Exhibitor</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="foodPreference">Food Preference <span className="text-destructive">*</span></Label>
+                                    <select
+                                        id="foodPreference"
+                                        name="foodPreference"
+                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        value={formData.foodPreference}
+                                        onChange={(e) => setFormData({ ...formData, foodPreference: e.target.value })}
+                                    >
+                                        <option value="" disabled>Select preference</option>
+                                        <option value="no_restriction">No Food Restriction</option>
+                                        <option value="halal">Halal</option>
+                                        <option value="vegetarian">Vegetarian</option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <div className="flex items-center space-x-2">
                                 <Checkbox id="privacy-policy" checked={privacyPolicyAccepted} onCheckedChange={(checked: boolean | "indeterminate") => setPrivacyPolicyAccepted(checked === true)} />
                                 <label

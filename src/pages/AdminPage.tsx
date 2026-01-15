@@ -550,10 +550,11 @@ const AdminPage = () => {
     };
 
     const handleExportCSV = () => {
+        // Update CSV Headers
         const headers = [
             "Ticket ID", "Last Name", "First Name", "Middle Name",
             "Email", "Contact Number", "School/Affiliation", "Region",
-            "Type", "Status", "Survey Completed?", "Date Registered"
+            "Type", "Food Preference", "Status", "Survey Completed?", "Date Registered"
         ];
 
         const csvContent = [
@@ -569,6 +570,7 @@ const AdminPage = () => {
                     `"${reg.schoolAffiliation || ''}"`,
                     `"${reg.region || ''}"`,
                     `"${reg.registrantType || ''}"`,
+                    `"${reg.foodPreference || ''}"`,
                     reg.status || 'pending',
                     reg.surveyCompleted ? 'Yes' : 'No',
                     reg.timestamp?.toDate ? new Date(reg.timestamp.toDate()).toLocaleDateString() : ''
@@ -982,6 +984,7 @@ const AdminPage = () => {
                                                         </button>
                                                     </TableHead>
                                                     <TableHead>Contact</TableHead>
+                                                    <TableHead>Food Preference</TableHead>
                                                     <TableHead>
                                                         <button
                                                             className="flex items-center gap-1 hover:text-foreground transition-colors"
@@ -1034,6 +1037,11 @@ const AdminPage = () => {
                                                             <TableCell>
                                                                 <div className="text-sm">{reg.email}</div>
                                                                 <div className="text-xs text-muted-foreground">{reg.contactNumber}</div>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <Badge variant="outline" className="capitalize">
+                                                                    {(reg.foodPreference || 'no_restriction').replace('_', ' ')}
+                                                                </Badge>
                                                             </TableCell>
                                                             <TableCell>
                                                                 <Badge

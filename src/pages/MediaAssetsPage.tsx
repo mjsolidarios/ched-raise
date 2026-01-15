@@ -14,7 +14,7 @@ const MEDIA_ASSETS = [
         type: "document",
         thumbnail: "/thumb-default.svg",
         date: "Dec 22, 2025",
-        description: "CHED Memo for RAISE Summit 2025.",
+        description: "CHED Memo for RAISE Summit 2026.",
         file: "/downloads/ched-raise-memo.pdf"
     },
     {
@@ -41,7 +41,7 @@ const MEDIA_ASSETS = [
         type: "document",
         thumbnail: "/thumb-default.svg",
         date: "Nov 28, 2025",
-        description: "Brand Guidelines for RAISE Summit 2025.",
+        description: "Brand Guidelines for RAISE Summit 2026.",
         file: "/downloads/ched-raise-brand-guidelines.pdf"
     }
 ];

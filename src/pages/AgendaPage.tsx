@@ -7,8 +7,10 @@ import { Badge } from '@/components/ui/badge';
 const AgendaPage = () => {
     const days = [
         {
-            date: "February 25, 2026",
             title: "Day 1: Opening & Keynotes",
+            monthDay: "February 25",
+            year: "2026",
+            weekday: "Wednesday",
             events: [
                 { time: "08:00 AM", title: "Registration & Breakfast", location: "Grand Foyer" },
                 { time: "09:00 AM", title: "Opening Ceremony", location: "Main Hall" },
@@ -20,8 +22,10 @@ const AgendaPage = () => {
             ]
         },
         {
-            date: "February 26, 2026",
             title: "Day 2: Workshops & Collaboration",
+            monthDay: "February 26",
+            year: "2026",
+            weekday: "Thursday",
             events: [
                 { time: "09:00 AM", title: "Hands-on Workshop: Generative AI Tools", location: "Lab A" },
                 { time: "11:00 AM", title: "Research Presentations", location: "Meeting Rooms 1-5" },
@@ -31,8 +35,10 @@ const AgendaPage = () => {
             ]
         },
         {
-            date: "February 27, 2026",
             title: "Day 3: Closing & Awards",
+            monthDay: "February 27",
+            year: "2026",
+            weekday: "Friday",
             events: [
                 { time: "09:00 AM", title: "Final Project Pitches", location: "Main Hall" },
                 { time: "11:30 AM", title: "Closing Keynote", location: "Main Hall" },
@@ -74,18 +80,23 @@ const AgendaPage = () => {
                                 transition={{ delay: index * 0.1 }}
                                 className="relative pl-8 md:pl-0"
                             >
-                                <div className="hidden md:block absolute left-[150px] top-0 bottom-0 w-px bg-border" />
+                                <div className="hidden md:block absolute left-[200px] top-0 bottom-0 w-px bg-border" />
 
                                 <div className="md:flex gap-16">
-                                    <div className="md:w-[150px] flex-shrink-0 mb-6 md:mb-0 md:text-right relative">
+                                    <div className="md:w-[200px] flex-shrink-0 mb-6 md:mb-0 md:text-right relative">
                                         <div className="sticky top-24">
-                                            <div className="flex items-center gap-2 justify-start md:justify-end text-primary font-semibold">
-                                                <Calendar className="h-4 w-4" />
-                                                <span>{day.date.split(',')[0]}</span>
+                                            <div className="flex flex-col items-end text-primary font-semibold pr-4">
+                                                <div className="flex items-center gap-2 whitespace-nowrap">
+                                                    <Calendar className="h-4 w-4 flex-shrink-0" />
+                                                    <span>{day.monthDay}</span>
+                                                </div>
+                                                <div className="text-xs text-muted-foreground/80 font-normal whitespace-nowrap">
+                                                    {day.year} ({day.weekday})
+                                                </div>
                                             </div>
                                             <div className="md:hidden absolute -left-[29px] top-1 h-3 w-3 rounded-full bg-primary ring-4 ring-background" />
                                             <div className="hidden md:block absolute -right-[5px] top-1.5 h-3 w-3 rounded-full bg-primary ring-4 ring-background" />
-                                            <p className="text-sm text-muted-foreground mt-1">{day.title.split(':')[0]}</p>
+                                            <p className="text-sm text-muted-foreground mt-4 text-right whitespace-nowrap">{day.title.split(':')[0]}</p>
                                         </div>
                                     </div>
 

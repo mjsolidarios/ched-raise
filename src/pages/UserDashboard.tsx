@@ -65,7 +65,8 @@ const UserDashboard = () => {
         schoolAffiliation: '',
         region: '',
         registrantType: '',
-        registrantTypeOther: ''
+        registrantTypeOther: '',
+        foodPreference: ''
     });
     const [submitting, setSubmitting] = useState(false);
     const [dashboardAlert, setDashboardAlert] = useState<{ show: boolean, message: string, variant?: 'default' | 'destructive', title?: string } | null>(null);
@@ -183,6 +184,10 @@ const UserDashboard = () => {
         setFormData({ ...formData, region: value });
     };
 
+    const handleFoodPreferenceChange = (value: string) => {
+        setFormData({ ...formData, foodPreference: value });
+    };
+
     const handleCancelRegistration = async () => {
         if (!registration?.id) return;
 
@@ -212,7 +217,8 @@ const UserDashboard = () => {
             schoolAffiliation: registration.schoolAffiliation || '',
             region: registration.region || '',
             registrantType: registration.registrantType || '',
-            registrantTypeOther: registration.registrantTypeOther || ''
+            registrantTypeOther: registration.registrantTypeOther || '',
+            foodPreference: registration.foodPreference || ''
         });
         setIsEditOpen(true);
     };
@@ -227,6 +233,10 @@ const UserDashboard = () => {
 
     const handleEditRegionChange = (value: string) => {
         setEditFormData({ ...editFormData, region: value });
+    };
+
+    const handleEditFoodPreferenceChange = (value: string) => {
+        setEditFormData({ ...editFormData, foodPreference: value });
     };
 
     const handleUpdateRegistration = async (e: React.FormEvent) => {
@@ -268,7 +278,7 @@ const UserDashboard = () => {
         e.preventDefault();
         setSubmitting(true);
 
-        if (!formData.lastName || !formData.firstName || !formData.middleName || !formData.contactNumber || !formData.schoolAffiliation || !formData.region || !formData.registrantType) {
+        if (!formData.lastName || !formData.firstName || !formData.middleName || !formData.contactNumber || !formData.schoolAffiliation || !formData.region || !formData.registrantType || !formData.foodPreference) {
             setDashboardAlert({
                 show: true,
                 message: "Please fill in all required fields.",
@@ -692,10 +702,24 @@ const UserDashboard = () => {
                                                         <SelectValue placeholder="Select type" />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        <SelectItem value="student">Student</SelectItem>
-                                                        <SelectItem value="faculty">Faculty</SelectItem>
-                                                        <SelectItem value="administrator">Administrator</SelectItem>
+                                                        <SelectItem value="participant">Participant</SelectItem>
+                                                        <SelectItem value="speaker">Speaker</SelectItem>
+                                                        <SelectItem value="exhibitor">Exhibitor</SelectItem>
                                                         <SelectItem value="others">Others</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="edit-foodPreference">Food Preference <span className="text-destructive">*</span></Label>
+                                                <Select onValueChange={handleEditFoodPreferenceChange} value={editFormData.foodPreference}>
+                                                    <SelectTrigger className="bg-background/50">
+                                                        <SelectValue placeholder="Select preference" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="no_restriction">No Food Restriction</SelectItem>
+                                                        <SelectItem value="halal">Halal</SelectItem>
+                                                        <SelectItem value="vegetarian">Vegetarian</SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                             </div>
@@ -875,6 +899,21 @@ const UserDashboard = () => {
                                                     <SelectItem value="others">Others</SelectItem>
                                                 </SelectContent>
                                             </Select>
+
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="foodPreference">Food Preference <span className="text-destructive">*</span></Label>
+                                            <Select onValueChange={handleFoodPreferenceChange} value={formData.foodPreference}>
+                                                <SelectTrigger className="bg-background/50">
+                                                    <SelectValue placeholder="Select preference" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="no_restriction">No Food Restriction</SelectItem>
+                                                    <SelectItem value="halal">Halal</SelectItem>
+                                                    <SelectItem value="vegetarian">Vegetarian</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                         </div>
 
                                         {formData.registrantType === 'others' && (
@@ -996,7 +1035,7 @@ const UserDashboard = () => {
                     </Link>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 
