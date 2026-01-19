@@ -1,4 +1,4 @@
-import { useRef, useLayoutEffect } from "react"
+import { useRef, useLayoutEffect, useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
@@ -37,6 +37,14 @@ export default function ProgramPage() {
     const tabsRef = useRef<HTMLDivElement>(null)
     const { gsap } = useGSAPScroll()
 
+    const [activeTab, setActiveTab] = useState("students")
+
+    const TABS = [
+        { id: "students", label: "Students", icon: BookOpen },
+        { id: "teachers", label: "Teachers", icon: Users },
+        { id: "admins", label: "Administrators", icon: Award }
+    ]
+
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
             if (headerRef.current) {
@@ -55,6 +63,11 @@ export default function ProgramPage() {
 
         return () => ctx.revert()
     }, [gsap])
+
+    // Scroll to top on mount
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     return (
         <div ref={containerRef} className="min-h-screen bg-slate-950 text-foreground relative overflow-hidden">
@@ -84,23 +97,26 @@ export default function ProgramPage() {
                 </div>
 
                 <div ref={tabsRef} className="">
-                    <Tabs defaultValue="students" className="max-w-6xl mx-auto">
-                        <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 bg-slate-900/50 border border-white/10 p-1.5 h-auto rounded-xl mb-12 backdrop-blur-md sticky top-4 z-50 shadow-2xl shadow-black/50">
-                            <TabsTrigger value="students" className="data-[state=active]:bg-primary data-[state=active]:text-white py-4 font-semibold rounded-lg transition-all text-slate-400 data-[state=active]:shadow-lg hover:text-white">
-                                <span className="flex items-center justify-center gap-2">
-                                    <BookOpen className="w-4 h-4" /> Students
-                                </span>
-                            </TabsTrigger>
-                            <TabsTrigger value="teachers" className="data-[state=active]:bg-primary data-[state=active]:text-white py-4 font-semibold rounded-lg transition-all text-slate-400 data-[state=active]:shadow-lg hover:text-white">
-                                <span className="flex items-center justify-center gap-2">
-                                    <Users className="w-4 h-4" /> Teachers
-                                </span>
-                            </TabsTrigger>
-                            <TabsTrigger value="admins" className="data-[state=active]:bg-primary data-[state=active]:text-white py-4 font-semibold rounded-lg transition-all text-slate-400 data-[state=active]:shadow-lg hover:text-white">
-                                <span className="flex items-center justify-center gap-2">
-                                    <Award className="w-4 h-4" /> Administrators
-                                </span>
-                            </TabsTrigger>
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="max-w-6xl mx-auto">
+                        <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 bg-slate-900/50 border border-white/10 p-1.5 h-auto rounded-full mb-12 backdrop-blur-md sticky top-4 z-50 shadow-2xl shadow-black/50">
+                            {TABS.map((tab) => (
+                                <TabsTrigger
+                                    key={tab.id}
+                                    value={tab.id}
+                                    className="relative py-4 font-semibold rounded-full transition-all text-slate-400 data-[state=active]:text-white hover:text-white"
+                                >
+                                    {activeTab === tab.id && (
+                                        <motion.div
+                                            layoutId="program-page-active-tab"
+                                            className="absolute inset-0 bg-primary rounded-full z-0 shadow-lg"
+                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                        />
+                                    )}
+                                    <span className="relative z-10 flex items-center justify-center gap-2">
+                                        <tab.icon className="w-4 h-4" /> {tab.label}
+                                    </span>
+                                </TabsTrigger>
+                            ))}
                         </TabsList>
 
                         <div className="min-h-[400px]">

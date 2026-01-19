@@ -13,6 +13,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom"
 import { auth, db } from '@/lib/firebase';
 import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { motion } from "framer-motion"
 
 import { cn } from "@/lib/utils"
 
@@ -63,9 +64,9 @@ export function Navbar() {
             <Link
                 to={href}
                 className={cn(
-                    "text-sm font-medium transition-all duration-300 relative py-2 px-4 rounded-full flex items-center gap-2 overflow-hidden",
+                    "text-sm font-medium transition-all duration-300 relative py-2 px-4 rounded-full flex items-center gap-2",
                     isActive
-                        ? "bg-primary text-white shadow-none ring-0 outline-none"
+                        ? "text-white shadow-none ring-0 outline-none"
                         : "text-slate-300 hover:text-white hover:bg-white/5"
                 )}
                 onClick={() => {
@@ -73,7 +74,14 @@ export function Navbar() {
                     setIsOpen(false);
                 }}
             >
-                {children}
+                {isActive && (
+                    <motion.div
+                        layoutId="navbar-active"
+                        className="absolute inset-0 bg-primary rounded-full z-0"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
+                )}
+                <span className="relative z-10 flex items-center gap-2">{children}</span>
             </Link>
         )
     }

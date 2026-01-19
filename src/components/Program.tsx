@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Clock, ArrowRight } from "lucide-react"
 import { motion } from "framer-motion"
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
 import { useGSAPScroll, parallax } from "@/hooks/useGSAPScroll"
@@ -19,6 +19,14 @@ export function Program() {
         }
     }, [gsap]);
 
+    const [activeTab, setActiveTab] = useState("students");
+
+    const tabs = [
+        { id: "students", label: "Students" },
+        { id: "teachers", label: "Teachers" },
+        { id: "admins", label: "Administrators" }
+    ];
+
     return (
         <section id="program" className="py-24 bg-slate-950 relative">
             {/* Background decoration */}
@@ -30,11 +38,24 @@ export function Program() {
                     <h2 className="text-3xl md:text-5xl font-bold text-white text-center">Breakout Sessions</h2>
                 </div>
 
-                <Tabs defaultValue="students" className="max-w-5xl mx-auto">
-                    <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 bg-slate-900/50 border border-white/10 p-1.5 h-auto rounded-xl mb-12 backdrop-blur-sm">
-                        <TabsTrigger value="students" className="data-[state=active]:bg-primary data-[state=active]:text-white py-3 font-semibold rounded-lg transition-all text-slate-400">Students</TabsTrigger>
-                        <TabsTrigger value="teachers" className="data-[state=active]:bg-primary data-[state=active]:text-white py-3 font-semibold rounded-lg transition-all text-slate-400">Teachers</TabsTrigger>
-                        <TabsTrigger value="admins" className="data-[state=active]:bg-primary data-[state=active]:text-white py-3 font-semibold rounded-lg transition-all text-slate-400">Administrators</TabsTrigger>
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="max-w-5xl mx-auto">
+                    <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 bg-slate-900/50 border border-white/10 p-1.5 h-auto rounded-full mb-12 backdrop-blur-sm relative">
+                        {tabs.map((tab) => (
+                            <TabsTrigger
+                                key={tab.id}
+                                value={tab.id}
+                                className="relative py-3 font-semibold rounded-full transition-all text-slate-400 data-[state=active]:text-white hover:text-white"
+                            >
+                                {activeTab === tab.id && (
+                                    <motion.div
+                                        layoutId="program-active-tab"
+                                        className="absolute inset-0 bg-primary rounded-full z-0"
+                                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                    />
+                                )}
+                                <span className="relative z-10">{tab.label}</span>
+                            </TabsTrigger>
+                        ))}
                     </TabsList>
 
                     <TabsContent value="students" className="space-y-4">

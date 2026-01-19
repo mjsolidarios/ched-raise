@@ -1,4 +1,4 @@
-import { useRef, useLayoutEffect } from "react"
+import { useRef, useLayoutEffect, useEffect } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
@@ -269,6 +269,11 @@ export default function ResourcePersonsPage() {
 
         return () => ctx.revert()
     }, [gsap])
+
+    // Scroll to top on mount
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     return (
         <div ref={containerRef} className="min-h-screen bg-slate-950 text-foreground relative overflow-hidden">

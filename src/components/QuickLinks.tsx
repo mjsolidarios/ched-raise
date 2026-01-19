@@ -37,7 +37,14 @@ export function QuickLinks() {
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
             if (containerRef.current) {
-                staggerFadeIn(Array.from(containerRef.current.children), { delay: 0.2 })
+                staggerFadeIn(Array.from(containerRef.current.children), {
+                    delay: 0.2,
+                    scrollTrigger: {
+                        trigger: containerRef.current,
+                        start: "top 95%",
+                        toggleActions: "play none none reverse"
+                    }
+                })
             }
         }, sectionRef)
         return () => ctx.revert()
