@@ -125,7 +125,7 @@ export function Program() {
                     className="flex justify-center mt-12"
                 >
                     <Button asChild size="lg" className="bg-gradient-to-r from-primary to-accent text-white hover:from-primary/90 hover:to-accent/90 h-14 px-10 text-lg font-bold shadow-[0_0_40px_rgba(8,52,159,0.4)] hover:shadow-[0_0_50px_rgba(8,52,159,0.6)] transition-all relative overflow-hidden group rounded-xl">
-                        <Link to="/agenda">
+                        <Link to="/agenda" onClick={() => window.scrollTo(0, 0)}>
                             <span className="relative z-10 flex items-center">
                                 View Full Agenda <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                             </span>

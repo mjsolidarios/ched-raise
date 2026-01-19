@@ -1,10 +1,10 @@
-import { useRef, useLayoutEffect } from "react"
+import { useRef, useLayoutEffect, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Calendar, Clock, MapPin, ArrowLeft, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
 import { Badge } from "@/components/ui/badge"
-import { useGSAPScroll, fadeInUp } from "@/hooks/useGSAPScroll"
+import { useGSAPScroll } from "@/hooks/useGSAPScroll"
 
 const AGENDA_DAYS = [
     {
@@ -73,6 +73,10 @@ export default function AgendaPage() {
     const daysContainerRef = useRef<HTMLDivElement>(null)
     const { gsap } = useGSAPScroll()
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
             if (headerRef.current) {
@@ -83,11 +87,20 @@ export default function AgendaPage() {
                 )
             }
             // Animate each day section as it comes into view
+            // Animate each day section immediately with stagger
             if (daysContainerRef.current) {
                 const daySections = daysContainerRef.current.children;
-                Array.from(daySections).forEach((section) => {
-                    fadeInUp(section as HTMLElement, { start: "top bottom-=100" })
-                })
+                gsap.fromTo(daySections,
+                    { opacity: 0, y: 60 },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 1,
+                        stagger: 0.2, // Stagger the animations
+                        ease: "power3.out",
+                        delay: 0.4 // Wait for header animation to start
+                    }
+                );
             }
         }, containerRef)
 
