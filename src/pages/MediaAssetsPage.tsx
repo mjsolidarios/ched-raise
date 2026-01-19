@@ -1,12 +1,11 @@
 
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Play, Image as ImageIcon, FileText, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Footer } from "@/components/Footer";
-import { useRef, useEffect } from "react";
-import { useGSAPScroll, staggerFadeIn } from "@/hooks/useGSAPScroll";
+import { Card, CardContent } from "@/components/ui/card";
+import { staggerFadeIn, useGSAPScroll } from "@/hooks/useGSAPScroll";
+import { Download, FileText, Image as ImageIcon, Play } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 // Mock data for initial display
 const MEDIA_ASSETS = [
@@ -146,7 +145,6 @@ const MediaAssetsPage = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
         </div>
     );
 };
