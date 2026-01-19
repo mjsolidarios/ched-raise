@@ -419,7 +419,7 @@ export const RegistrationBusinessCard = ({ registration, actions, hideFlipInstru
                 <div className="grid grid-cols-3 gap-2 sm:gap-4 text-sm mb-4 sm:mb-4">
                   <div>
                     <p className="uppercase tracking-wider text-muted-foreground font-semibold text-[8px] sm:text-sm">Valid Thru</p>
-                    <p className="font-mono text-[9px] sm:text-2xl">01/30</p>
+                    <p className="font-mono text-[9px] sm:text-2xl">02/30</p>
                   </div>
                   <div className="col-span-2">
                     <p className="uppercase tracking-wider text-muted-foreground font-semibold text-[8px] sm:text-sm">Email</p>

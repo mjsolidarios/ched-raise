@@ -76,13 +76,17 @@ export default function AgendaPage() {
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
             if (headerRef.current) {
-                fadeInUp(headerRef.current)
+                // Animate header immediately without scroll trigger
+                gsap.fromTo(headerRef.current,
+                    { opacity: 0, y: 30 },
+                    { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }
+                )
             }
             // Animate each day section as it comes into view
             if (daysContainerRef.current) {
                 const daySections = daysContainerRef.current.children;
                 Array.from(daySections).forEach((section) => {
-                    fadeInUp(section as HTMLElement, { start: "top 80%" })
+                    fadeInUp(section as HTMLElement, { start: "top bottom-=100" })
                 })
             }
         }, containerRef)

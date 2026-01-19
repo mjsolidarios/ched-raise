@@ -3,7 +3,14 @@ import { Canvas } from '@react-three/fiber';
 import { useGLTF, Float, ContactShadows, useAnimations, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 
-function RobotModel() {
+interface RobotProps {
+    scale?: number;
+    position?: [number, number, number];
+    rotation?: [number, number, number];
+    className?: string; // Allow custom classNames for sizing/positioning the container
+}
+
+function RobotModel({ scale = 7.5, position = [4, -5, -2], rotation = [0, Math.PI, 0] }: RobotProps) {
     const group = useRef<THREE.Group>(null);
     const { scene, animations } = useGLTF('/robot/scene.gltf');
     const { actions, names } = useAnimations(animations, group);
@@ -22,9 +29,9 @@ function RobotModel() {
         <group ref={group} dispose={null}>
             <primitive
                 object={scene}
-                scale={7.5}
-                position={[4, -5, -2]}
-                rotation={[0, Math.PI, 0]}
+                scale={scale}
+                position={position}
+                rotation={rotation}
             />
         </group>
     );
@@ -33,9 +40,9 @@ function RobotModel() {
 // Preload the model
 useGLTF.preload('/robot/scene.gltf');
 
-export function Robot() {
+export function Robot({ scale, position, rotation, className = "absolute inset-0 pointer-events-none z-20" }: RobotProps) {
     return (
-        <div className="absolute inset-0 pointer-events-none z-20">
+        <div className={className}>
             <Canvas
                 shadows
                 camera={{ position: [0, 0, 15], fov: 45 }}
@@ -59,13 +66,13 @@ export function Robot() {
                         floatIntensity={1}
                         floatingRange={[-0.3, 0.3]}
                     >
-                        <RobotModel />
+                        <RobotModel scale={scale} position={position} rotation={rotation} />
                     </Float>
 
                     <Environment preset="city" />
 
                     <ContactShadows
-                        position={[4, -6, -2]}
+                        position={[4, -6, -2]} // Adjust shadow position if needed based on robot props? For now keeping static or could be prop-driven too.
                         opacity={0.4}
                         scale={15}
                         blur={2}
