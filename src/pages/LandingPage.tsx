@@ -18,7 +18,6 @@ import { Program } from "@/components/Program"
 import { ExploreIloilo } from "@/components/ExploreIloilo"
 import { FAQ } from "@/components/FAQ"
 import { Partners } from "@/components/Partners"
-import { Footer } from "@/components/Footer"
 
 const LandingPage = () => {
     return (
@@ -33,7 +32,6 @@ const LandingPage = () => {
                 <FAQ />
                 <Partners />
             </main>
-            <Footer />
         </>
     );
 };

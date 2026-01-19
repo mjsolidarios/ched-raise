@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
+import { Footer } from './components/Footer';
 import { Chatbot } from './components/Chatbot';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -73,6 +74,7 @@ const App = () => {
                         <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                 </Suspense>
+                <Footer />
             </div>
         </Router>
     );

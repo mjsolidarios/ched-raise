@@ -18,7 +18,13 @@ export const useGSAPScroll = () => {
             isRegistered.current = true;
         }
 
+        // Force refresh to ensure positions are calculated correctly
+        const timer = setTimeout(() => {
+            ScrollTrigger.refresh();
+        }, 100);
+
         return () => {
+            clearTimeout(timer);
             // Cleanup all ScrollTriggers on unmount
             ScrollTrigger.getAll().forEach(trigger => trigger.kill());
         };
@@ -47,9 +53,9 @@ export const fadeInUp = (element: gsap.DOMTarget, options?: gsap.TweenVars) => {
             ease: 'power3.out',
             scrollTrigger: {
                 trigger: element,
-                start: 'top 85%',
-                end: 'top 60%',
-                toggleActions: 'play none none reverse',
+                start: 'top 95%', // Trigger earlier (when element is near bottom of screen)
+                end: 'bottom top',
+                toggleActions: 'play none none none', // Play once and stay
             },
             ...options,
         }
@@ -74,8 +80,8 @@ export const staggerFadeIn = (elements: gsap.DOMTarget, options?: gsap.TweenVars
             ease: 'power2.out',
             scrollTrigger: {
                 trigger: elements,
-                start: 'top 85%',
-                toggleActions: 'play none none reverse',
+                start: 'top 95%', // Trigger earlier
+                toggleActions: 'play none none none', // Play once and stay
             },
             ...options,
         }
@@ -99,8 +105,8 @@ export const scaleIn = (element: gsap.DOMTarget, options?: gsap.TweenVars) => {
             ease: 'back.out(1.2)',
             scrollTrigger: {
                 trigger: element,
-                start: 'top 80%',
-                toggleActions: 'play none none reverse',
+                start: 'top 90%',
+                toggleActions: 'play none none none',
             },
             ...options,
         }
@@ -141,8 +147,8 @@ export const slideInLeft = (element: gsap.DOMTarget, options?: gsap.TweenVars) =
             ease: 'power3.out',
             scrollTrigger: {
                 trigger: element,
-                start: 'top 80%',
-                toggleActions: 'play none none reverse',
+                start: 'top 90%',
+                toggleActions: 'play none none none',
             },
             ...options,
         }
@@ -166,8 +172,8 @@ export const slideInRight = (element: gsap.DOMTarget, options?: gsap.TweenVars) 
             ease: 'power3.out',
             scrollTrigger: {
                 trigger: element,
-                start: 'top 80%',
-                toggleActions: 'play none none reverse',
+                start: 'top 90%',
+                toggleActions: 'play none none none',
             },
             ...options,
         }
@@ -189,8 +195,8 @@ export const clipReveal = (element: gsap.DOMTarget, options?: gsap.TweenVars) =>
             ease: 'power2.inOut',
             scrollTrigger: {
                 trigger: element,
-                start: 'top 75%',
-                toggleActions: 'play none none reverse',
+                start: 'top 85%',
+                toggleActions: 'play none none none',
             },
             ...options,
         }
