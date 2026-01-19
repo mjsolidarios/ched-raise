@@ -5,7 +5,7 @@ import { Link } from "react-router-dom"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { useGSAPScroll, staggerFadeIn, fadeInUp } from "@/hooks/useGSAPScroll"
+import { useGSAPScroll } from "@/hooks/useGSAPScroll"
 import { UserAvatar, getDeterministicAvatarColor } from "@/components/UserAvatar"
 import { cn } from "@/lib/utils"
 
@@ -254,16 +254,16 @@ export default function ResourcePersonsPage() {
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
             if (headerRef.current) {
-                fadeInUp(headerRef.current)
+                gsap.fromTo(headerRef.current,
+                    { opacity: 0, y: 60 },
+                    { opacity: 1, y: 0, duration: 1, ease: 'power3.out' }
+                )
             }
             if (gridRef.current) {
-                staggerFadeIn(gridRef.current.children, {
-                    delay: 0.2,
-                    scrollTrigger: {
-                        trigger: gridRef.current,
-                        start: 'top 85%',
-                    }
-                })
+                gsap.fromTo(gridRef.current.children,
+                    { opacity: 0, y: 50 },
+                    { opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: 'power2.out', delay: 0.2 }
+                )
             }
         }, containerRef)
 

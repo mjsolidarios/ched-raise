@@ -6,7 +6,7 @@ import { ArrowLeft, BookOpen, Users, Award, Clock, ArrowRight } from "lucide-rea
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
-import { useGSAPScroll, fadeInUp } from "@/hooks/useGSAPScroll"
+import { useGSAPScroll } from "@/hooks/useGSAPScroll"
 
 const STUDENT_SESSIONS = [
     { title: "Machine Learning Made Simple: From Concepts to Applications", time: "Feb 25, 01:30 PM", type: "Workshop", speaker: "Dr. Chris Aliac", org: "Cebu Institute of Technology University" },
@@ -40,10 +40,16 @@ export default function ProgramPage() {
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
             if (headerRef.current) {
-                fadeInUp(headerRef.current)
+                gsap.fromTo(headerRef.current,
+                    { opacity: 0, y: 60 },
+                    { opacity: 1, y: 0, duration: 1, ease: 'power3.out' }
+                )
             }
             if (tabsRef.current) {
-                fadeInUp(tabsRef.current, { delay: 0.2 })
+                gsap.fromTo(tabsRef.current,
+                    { opacity: 0, y: 60 },
+                    { opacity: 1, y: 0, duration: 1, delay: 0.2, ease: 'power3.out' }
+                )
             }
         }, containerRef)
 
