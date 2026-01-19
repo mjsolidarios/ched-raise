@@ -67,7 +67,7 @@ export default function ProgramPage() {
             </div>
 
             <main className="container mx-auto px-4 pb-24 relative z-10">
-                <div ref={headerRef} className="max-w-4xl mx-auto text-center space-y-6 mb-16 opacity-0">
+                <div ref={headerRef} className="max-w-4xl mx-auto text-center space-y-6 mb-16">
                     <Badge variant="outline" className="border-green-500/30 text-green-400 bg-green-900/10 uppercase tracking-widest px-4 py-1">Comprehensive Tracks</Badge>
                     <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white">
                         Summit <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-400">Program</span>
@@ -77,7 +77,7 @@ export default function ProgramPage() {
                     </p>
                 </div>
 
-                <div ref={tabsRef} className="opacity-0">
+                <div ref={tabsRef} className="">
                     <Tabs defaultValue="students" className="max-w-6xl mx-auto">
                         <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 bg-slate-900/50 border border-white/10 p-1.5 h-auto rounded-xl mb-12 backdrop-blur-md sticky top-4 z-50 shadow-2xl shadow-black/50">
                             <TabsTrigger value="students" className="data-[state=active]:bg-primary data-[state=active]:text-white py-4 font-semibold rounded-lg transition-all text-slate-400 data-[state=active]:shadow-lg hover:text-white">
@@ -159,8 +159,7 @@ function ProgramCard({ title, time, type, speaker, org, index }: { title: string
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
         >
             <Card className="glass-card border-white/5 hover:border-primary/30 hover:bg-white/[0.02] transition-colors group">

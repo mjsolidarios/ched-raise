@@ -107,7 +107,7 @@ export default function AgendaPage() {
             </div>
 
             <main className="container mx-auto px-4 pb-24 relative z-10">
-                <div ref={headerRef} className="max-w-4xl mx-auto text-center space-y-6 mb-20 opacity-0">
+                <div ref={headerRef} className="max-w-4xl mx-auto text-center space-y-6 mb-20">
                     <Badge variant="outline" className="border-blue-500/30 text-blue-400 bg-blue-900/10 uppercase tracking-widest px-4 py-1">Official Schedule</Badge>
                     <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white">
                         Summit <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Agenda</span>
@@ -119,7 +119,7 @@ export default function AgendaPage() {
 
                 <div ref={daysContainerRef} className="space-y-12 max-w-5xl mx-auto">
                     {AGENDA_DAYS.map((day, index) => (
-                        <div key={index} className="opacity-0">
+                        <div key={index} className="">
                             <DaySection day={day} />
                         </div>
                     ))}
