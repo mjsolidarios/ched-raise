@@ -207,13 +207,13 @@ const UserDashboard = () => {
         setFormData({ ...formData, registrantType: value });
     };
 
-    const handleRegionChange = (value: string) => {
-        setFormData({ ...formData, region: value });
-    };
+    // const handleRegionChange = (value: string) => {
+    //     setFormData({ ...formData, region: value });
+    // };
 
-    const handleFoodPreferenceChange = (value: string) => {
-        setFormData({ ...formData, foodPreference: value });
-    };
+    // const handleFoodPreferenceChange = (value: string) => {
+    //     setFormData({ ...formData, foodPreference: value });
+    // };
 
     const handleCancelRegistration = async () => {
         if (!registration?.id) return;
