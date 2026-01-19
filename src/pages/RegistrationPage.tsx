@@ -109,6 +109,33 @@ const RegistrationPage = () => {
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-4">
+                            <div className="space-y-2 mb-4">
+                                <Label htmlFor="registrantType">Registrant Type</Label>
+                                <select
+                                    id="registrantType"
+                                    name="registrantType"
+                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    value={formData.registrantType}
+                                    onChange={(e) => {
+                                        const type = e.target.value;
+                                        const updates: any = { registrantType: type };
+                                        if (type === 'chedofficial') {
+                                            updates.schoolAffiliation = 'Not Applicable';
+                                        } else if (formData.schoolAffiliation === 'Not Applicable') {
+                                            updates.schoolAffiliation = '';
+                                        }
+                                        setFormData({ ...formData, ...updates });
+                                    }}
+                                >
+                                    <option value="participant">Participant</option>
+                                    <option value="shs">Senior High or High School</option>
+                                    <option value="speaker">Speaker</option>
+                                    <option value="exhibitor">Exhibitor</option>
+                                    <option value="chedofficial">CHED Official</option>
+                                    <option value="others">Others</option>
+                                </select>
+                            </div>
+
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="firstName">First Name</Label>
@@ -131,29 +158,14 @@ const RegistrationPage = () => {
                                 <Label htmlFor="contactNumber">Contact Number</Label>
                                 <Input id="contactNumber" name="contactNumber" required value={formData.contactNumber} onChange={handleChange} placeholder="0912 345 6789" />
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="schoolAffiliation">Company / Institution</Label>
-                                <Input id="schoolAffiliation" name="schoolAffiliation" value={formData.schoolAffiliation} onChange={handleChange} placeholder="University of the Philippines" />
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
+                            {formData.registrantType !== 'chedofficial' && (
                                 <div className="space-y-2">
-                                    <Label htmlFor="registrantType">Registrant Type</Label>
-                                    <select
-                                        id="registrantType"
-                                        name="registrantType"
-                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                        value={formData.registrantType}
-                                        onChange={(e) => setFormData({ ...formData, registrantType: e.target.value })}
-                                    >
-                                        <option value="participant">Participant</option>
-                                        <option value="shs">Senior High or High School</option>
-                                        <option value="speaker">Speaker</option>
-                                        <option value="exhibitor">Exhibitor</option>
-                                        <option value="chedofficial">CHED Official</option>
-                                        <option value="others">Others</option>
-                                    </select>
+                                    <Label htmlFor="schoolAffiliation">Company / Institution</Label>
+                                    <Input id="schoolAffiliation" name="schoolAffiliation" value={formData.schoolAffiliation} onChange={handleChange} placeholder="University of the Philippines" />
                                 </div>
+                            )}
+
+                            <div className="space-y-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="foodPreference">Food Preference <span className="text-destructive">*</span></Label>
                                     <select

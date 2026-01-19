@@ -369,7 +369,7 @@ export const RegistrationBusinessCard = ({ registration, actions, hideFlipInstru
                   <div className="mt-0.5 sm:mt-1 flex items-center gap-2 content-center shrink-0">
                     <div
                       ref={logoRef}
-                      className="h-6 w-32 sm:h-12 sm:w-64 cursor-pointer"
+                      className="h-7 w-36 sm:h-14 sm:w-72 cursor-pointer"
                       onMouseEnter={() => replayAnimation()}
                       onClick={replayAnimation}
                     >
@@ -410,7 +410,9 @@ export const RegistrationBusinessCard = ({ registration, actions, hideFlipInstru
                   </div>
                   <p className="text-3xl sm:text-6xl font-bold tracking-tight text-white leading-tight">{fullName}</p>
                   <p className="text-[10px] sm:text-2xl text-muted-foreground mt-0.5 sm:mt-2 line-clamp-1">
-                    {registrantTypeLabel}{registration.schoolAffiliation ? ` • ${registration.schoolAffiliation}` : ''}{registration.region ? ` • ${getRegionShortName(registration.region)}` : ''}
+                    {registration.registrantType === 'chedofficial' ? 'CHED Official' : registrantTypeLabel}
+                    {registration.registrantType !== 'chedofficial' && registration.schoolAffiliation && ` • ${registration.schoolAffiliation}`}
+                    {registration.region ? ` • ${getRegionShortName(registration.region)}` : ''}
                   </p>
                 </div>
 

@@ -665,51 +665,20 @@ const UserDashboard = () => {
                                     </DialogHeader>
                                     {editFormData && (
                                         <form onSubmit={handleUpdateRegistration} className="space-y-4 py-4">
-                                            <div className="grid grid-cols-3 gap-4">
-                                                <div className="space-y-2 col-span-1">
-                                                    <Label htmlFor="edit-lastName">Last Name <span className="text-destructive">*</span></Label>
-                                                    <Input id="edit-lastName" name="lastName" value={editFormData.lastName} onChange={handleEditChange} className="col-span-3" />
-                                                </div>
-                                                <div className="space-y-2 col-span-1">
-                                                    <Label htmlFor="edit-firstName">First Name <span className="text-destructive">*</span></Label>
-                                                    <Input id="edit-firstName" name="firstName" value={editFormData.firstName} onChange={handleEditChange} className="col-span-3" />
-                                                </div>
-                                                <div className="space-y-2 col-span-1">
-                                                    <Label htmlFor="edit-middleName">Middle Name <span className="text-destructive">*</span></Label>
-                                                    <Input id="edit-middleName" name="middleName" value={editFormData.middleName} onChange={handleEditChange} className="col-span-3" />
-                                                </div>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="edit-schoolAffiliation">School Affiliation <span className="text-destructive">*</span></Label>
-                                                <SchoolAutocomplete
-                                                    id="edit-schoolAffiliation"
-                                                    name="schoolAffiliation"
-                                                    value={editFormData.schoolAffiliation}
-                                                    onChange={(val) => setEditFormData((prev: any) => ({ ...prev, schoolAffiliation: val }))}
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="edit-region">Region <span className="text-destructive">*</span></Label>
-                                                <Select onValueChange={handleEditRegionChange} value={editFormData.region}>
-                                                    <SelectTrigger className="bg-background/50">
-                                                        <SelectValue placeholder="Select region" />
-                                                    </SelectTrigger>
-                                                    <SelectContent className="max-h-[200px]">
-                                                        {PHILIPPINE_REGIONS.map((region) => (
-                                                            <SelectItem key={region} value={region}>
-                                                                {region}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="edit-contactNumber">Contact Number <span className="text-destructive">*</span></Label>
-                                                <Input id="edit-contactNumber" name="contactNumber" value={editFormData.contactNumber} onChange={handleEditChange} className="col-span-3" />
-                                            </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="edit-registrantType">Registrant Type <span className="text-destructive">*</span></Label>
-                                                <Select onValueChange={handleEditSelectChange} value={editFormData.registrantType}>
+                                                <Select
+                                                    value={editFormData.registrantType}
+                                                    onValueChange={(val) => {
+                                                        handleEditSelectChange(val);
+                                                        if (val === 'chedofficial') {
+                                                            setEditFormData((prev: any) => ({ ...prev, schoolAffiliation: 'Not Applicable' }));
+                                                        } else if (editFormData.schoolAffiliation === 'Not Applicable') {
+                                                            // Clear it if switching back from chedofficial
+                                                            setEditFormData((prev: any) => ({ ...prev, schoolAffiliation: '' }));
+                                                        }
+                                                    }}
+                                                >
                                                     <SelectTrigger className="bg-background/50">
                                                         <SelectValue placeholder="Select type" />
                                                     </SelectTrigger>
@@ -736,6 +705,51 @@ const UserDashboard = () => {
                                                     />
                                                 </div>
                                             )}
+
+                                            <div className="grid grid-cols-3 gap-4">
+                                                <div className="space-y-2 col-span-1">
+                                                    <Label htmlFor="edit-lastName">Last Name <span className="text-destructive">*</span></Label>
+                                                    <Input id="edit-lastName" name="lastName" value={editFormData.lastName} onChange={handleEditChange} className="col-span-3" />
+                                                </div>
+                                                <div className="space-y-2 col-span-1">
+                                                    <Label htmlFor="edit-firstName">First Name <span className="text-destructive">*</span></Label>
+                                                    <Input id="edit-firstName" name="firstName" value={editFormData.firstName} onChange={handleEditChange} className="col-span-3" />
+                                                </div>
+                                                <div className="space-y-2 col-span-1">
+                                                    <Label htmlFor="edit-middleName">Middle Name <span className="text-destructive">*</span></Label>
+                                                    <Input id="edit-middleName" name="middleName" value={editFormData.middleName} onChange={handleEditChange} className="col-span-3" />
+                                                </div>
+                                            </div>
+                                            {editFormData.registrantType !== 'chedofficial' && (
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="edit-schoolAffiliation">School Affiliation <span className="text-destructive">*</span></Label>
+                                                    <SchoolAutocomplete
+                                                        id="edit-schoolAffiliation"
+                                                        name="schoolAffiliation"
+                                                        value={editFormData.schoolAffiliation}
+                                                        onChange={(val) => setEditFormData((prev: any) => ({ ...prev, schoolAffiliation: val }))}
+                                                    />
+                                                </div>
+                                            )}
+                                            <div className="space-y-2">
+                                                <Label htmlFor="edit-region">Region <span className="text-destructive">*</span></Label>
+                                                <Select onValueChange={handleEditRegionChange} value={editFormData.region}>
+                                                    <SelectTrigger className="bg-background/50">
+                                                        <SelectValue placeholder="Select region" />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="max-h-[200px]">
+                                                        {PHILIPPINE_REGIONS.map((region) => (
+                                                            <SelectItem key={region} value={region}>
+                                                                {region}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="edit-contactNumber">Contact Number <span className="text-destructive">*</span></Label>
+                                                <Input id="edit-contactNumber" name="contactNumber" value={editFormData.contactNumber} onChange={handleEditChange} className="col-span-3" />
+                                            </div>
 
                                             <div className="space-y-2">
                                                 <Label htmlFor="edit-foodPreference">Food Preference <span className="text-destructive">*</span></Label>
@@ -842,6 +856,49 @@ const UserDashboard = () => {
                                     </div>
                                 ) : (
                                     <form onSubmit={handleSubmit} className="space-y-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="registrantType">Registrant Type <span className="text-destructive">*</span></Label>
+                                            <Select
+                                                value={formData.registrantType}
+                                                onValueChange={(val) => {
+                                                    handleSelectChange(val);
+                                                    if (val === 'chedofficial') {
+                                                        setFormData(prev => ({ ...prev, schoolAffiliation: 'Not Applicable' }));
+                                                    } else if (formData.schoolAffiliation === 'Not Applicable') {
+                                                        // Clear it if switching back from chedofficial
+                                                        setFormData(prev => ({ ...prev, schoolAffiliation: '' }));
+                                                    }
+                                                }}
+                                            >
+                                                <SelectTrigger className="bg-background/50">
+                                                    <SelectValue placeholder="Select type" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="participant">Participant</SelectItem>
+                                                    <SelectItem value="shs">Senior High or High School</SelectItem>
+                                                    <SelectItem value="speaker">Speaker</SelectItem>
+                                                    <SelectItem value="exhibitor">Exhibitor</SelectItem>
+                                                    <SelectItem value="chedofficial">CHED Official</SelectItem>
+                                                    <SelectItem value="others">Others</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+
+                                        {formData.registrantType === 'others' && (
+                                            <div className="space-y-2">
+                                                <Label htmlFor="registrantTypeOther">Please specify <span className="text-destructive">*</span></Label>
+                                                <Input
+                                                    id="registrantTypeOther"
+                                                    name="registrantTypeOther"
+                                                    required
+                                                    value={formData.registrantTypeOther}
+                                                    onChange={handleChange}
+                                                    placeholder="e.g. Researcher, Guest"
+                                                    className="bg-background/50"
+                                                />
+                                            </div>
+                                        )}
+
                                         <div className="grid gap-3 sm:gap-4 sm:grid-cols-3">
                                             <div className="space-y-2">
                                                 <Label htmlFor="lastName">Last Name <span className="text-destructive">*</span></Label>
@@ -872,78 +929,17 @@ const UserDashboard = () => {
                                             </div>
                                         </div>
 
-                                        <div className="space-y-2">
-                                            <Label htmlFor="schoolAffiliation">School Affiliation <span className="text-destructive">*</span></Label>
-                                            <SchoolAutocomplete
-                                                id="schoolAffiliation"
-                                                name="schoolAffiliation"
-                                                value={formData.schoolAffiliation}
-                                                onChange={(val) => setFormData(prev => ({ ...prev, schoolAffiliation: val }))}
-                                                placeholder="e.g. University of the Philippines"
-                                                className="bg-background/50"
-                                                required
-                                            />
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label htmlFor="region">Region <span className="text-destructive">*</span></Label>
-                                            <Select onValueChange={handleRegionChange} value={formData.region}>
-                                                <SelectTrigger className="bg-background/50">
-                                                    <SelectValue placeholder="Select region" />
-                                                </SelectTrigger>
-                                                <SelectContent className="max-h-[200px]">
-                                                    {PHILIPPINE_REGIONS.map((region) => (
-                                                        <SelectItem key={region} value={region}>
-                                                            {region}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label htmlFor="foodPreference">Food Preference <span className="text-destructive">*</span></Label>
-                                            <Select onValueChange={handleFoodPreferenceChange} value={formData.foodPreference}>
-                                                <SelectTrigger className="bg-background/50">
-                                                    <SelectValue placeholder="Select preference" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="no_restriction">No Food Restriction</SelectItem>
-                                                    <SelectItem value="halal">Halal</SelectItem>
-                                                    <SelectItem value="vegetarian">Vegetarian</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label htmlFor="registrantType">Registrant Type <span className="text-destructive">*</span></Label>
-                                            <Select onValueChange={handleSelectChange} value={formData.registrantType}>
-                                                <SelectTrigger className="bg-background/50">
-                                                    <SelectValue placeholder="Select type" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="participant">Participant</SelectItem>
-                                                    <SelectItem value="shs">Senior High or High School</SelectItem>
-                                                    <SelectItem value="speaker">Speaker</SelectItem>
-                                                    <SelectItem value="exhibitor">Exhibitor</SelectItem>
-                                                    <SelectItem value="chedofficial">CHED Official</SelectItem>
-                                                    <SelectItem value="others">Others</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-
-                                        </div>
-
-                                        {formData.registrantType === 'others' && (
+                                        {formData.registrantType !== 'chedofficial' && (
                                             <div className="space-y-2">
-                                                <Label htmlFor="registrantTypeOther">Please specify <span className="text-destructive">*</span></Label>
-                                                <Input
-                                                    id="registrantTypeOther"
-                                                    name="registrantTypeOther"
-                                                    required
-                                                    value={formData.registrantTypeOther}
-                                                    onChange={handleChange}
-                                                    placeholder="e.g. Researcher, Guest"
+                                                <Label htmlFor="schoolAffiliation">School Affiliation <span className="text-destructive">*</span></Label>
+                                                <SchoolAutocomplete
+                                                    id="schoolAffiliation"
+                                                    name="schoolAffiliation"
+                                                    value={formData.schoolAffiliation}
+                                                    onChange={(val) => setFormData(prev => ({ ...prev, schoolAffiliation: val }))}
+                                                    placeholder="e.g. University of the Philippines"
                                                     className="bg-background/50"
+                                                    required
                                                 />
                                             </div>
                                         )}
