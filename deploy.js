@@ -59,9 +59,9 @@ async function uploadDirSmart(client, localDir, remoteDir) {
     // Ensure remote directory exists
     await client.ensureDir(remoteDir);
 
-    // Get list of remote files for comparison
-    const remoteFiles = await client.list(remoteDir);
-    const remoteFileMap = new Map(remoteFiles.map(f => [f.name, f.size]));
+    // Get list of local files
+    // const remoteFiles = await client.list(remoteDir); // Optimization: Skip listing since we overwrite all
+    // const remoteFileMap = new Map(remoteFiles.map(f => [f.name, f.size]));
 
     // Get list of local files
     const localFiles = fs.readdirSync(localDir);
@@ -76,27 +76,9 @@ async function uploadDirSmart(client, localDir, remoteDir) {
             console.log(`📂 Entering ${file}...`);
             await uploadDirSmart(client, localPath, remotePath);
         } else {
-            // Check if file needs upload
-            let shouldUpload = true;
-
-            if (remoteFileMap.has(file)) {
-                const remoteSize = remoteFileMap.get(file);
-                // If sizes match, skip upload (basic "smart" check)
-                if (remoteSize === stats.size) {
-                    shouldUpload = false;
-                    // console.log(`⏭️  Skipped ${file} (Unchanged: ${stats.size} bytes)`);
-                } else {
-                    console.log(`📝 Updating ${file} (Size changed: ${remoteSize} -> ${stats.size})`);
-                }
-            } else {
-                console.log(`✨ New file ${file}`);
-            }
-
-            if (shouldUpload) {
-                process.stdout.write(`   Uploading ${file}... `);
-                await client.uploadFrom(localPath, remotePath);
-                process.stdout.write('Done\n');
-            }
+            // Always upload/overwrite
+            console.log(`📝 Overwriting ${file}...`);
+            await client.uploadFrom(localPath, remotePath);
         }
     }
 }
