@@ -4,47 +4,66 @@ import { Calendar, Clock, MapPin, ArrowLeft, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
 import { Badge } from "@/components/ui/badge"
-import { useGSAPScroll, staggerFadeIn, fadeInUp } from "@/hooks/useGSAPScroll"
+import { useGSAPScroll, fadeInUp } from "@/hooks/useGSAPScroll"
 
 const AGENDA_DAYS = [
     {
-        title: "Day 1: Opening & Keynotes",
+        title: "Day 1: Connection & Strategy",
         monthDay: "February 25",
         year: "2026",
         weekday: "Wednesday",
         events: [
-            { time: "08:00 AM", title: "Registration & Breakfast", location: "Grand Foyer" },
-            { time: "09:00 AM", title: "Opening Ceremony", location: "Main Hall" },
-            { time: "10:30 AM", title: "Keynote: AI in Education", location: "Main Hall" },
-            { time: "12:00 PM", title: "Networking Lunch", location: "Banquet Hall" },
-            { time: "01:30 PM", title: "Panel Discussion: Future of ASEAN EdTech", location: "Main Hall" },
-            { time: "03:00 PM", title: "Breakout Sessions (Tracks A, B, C)", location: "Meeting Rooms 1-3" },
-            { time: "05:00 PM", title: "Welcome Dinner Reception", location: "Courtyard" },
+            { time: "08:00 AM", title: "Registration", resourcePerson: "Secretariat" },
+            { time: "09:00 AM", title: "Preliminaries", resourcePerson: "Secretariat" },
+            { time: "09:05 AM", title: "CHED RAISE 2026 Video Presentation", resourcePerson: "Secretariat" },
+            { time: "09:15 AM", title: "Opening", resourcePerson: "Host" },
+            { time: "09:18 AM", title: "Welcome Remarks from Host Institution", resourcePerson: "Dr. Bobby Gerardo" },
+            { time: "09:24 AM", title: "Fireside Chat Introduction: National AI Upskilling Roadmap", resourcePerson: "Sherwin Pelayo" },
+            { time: "09:29 AM", title: "Fireside Chat: AI in Education Government-Private Partnership", resourcePerson: "Chair Shirley Agrupis, Sec. Sonny Angara, DG Kiko Benitez, Fred Ayala, Michelle Alarcon" },
+            { time: "10:48 AM", title: "Turnover of Philippine Skills Framework for Analytics & AI", resourcePerson: "CHED, DepEd, TESDA, Host Universities" },
+            { time: "10:53 AM", title: "Turnover of CHEDx 2024 Coffee Table Book", resourcePerson: "CHED Officials & Presidents" },
+            { time: "10:59 AM", title: "Keynote: The National AI Strategy of the Philippines (NAIS-PH)", resourcePerson: "Sec. Renato Solidum, Jr." },
+            { time: "11:36 AM", title: "Launch of HUSAY Projects", resourcePerson: "Secretariat" },
+            { time: "11:50 AM", title: "Ribbon-Cutting of Exhibit Area", resourcePerson: "Chair Agrupis, Dr. Muyong, Dr. Gerardo, Dr. Villaruz" },
+            { time: "12:00 PM", title: "Lunch (Exhibitors' Videos)", resourcePerson: "Secretariat" },
+            { time: "01:30 PM", title: "Breakout Sessions Start", resourcePerson: "Various Speakers" },
+            { time: "04:45 PM", title: "Transition back to Plenary", resourcePerson: "Host" },
+            { time: "05:00 PM", title: "Day 1 Highlights", resourcePerson: "(TBD) CHED" },
+            { time: "05:15 PM", title: "Closing Spiel", resourcePerson: "Host" },
         ]
     },
     {
-        title: "Day 2: Workshops & Collaboration",
+        title: "Day 2: Breakouts & Deep Dives",
         monthDay: "February 26",
         year: "2026",
         weekday: "Thursday",
         events: [
-            { time: "09:00 AM", title: "Hands-on Workshop: Generative AI Tools", location: "Lab A" },
-            { time: "11:00 AM", title: "Research Presentations", location: "Meeting Rooms 1-5" },
-            { time: "12:30 PM", title: "Lunch Break", location: "Banquet Hall" },
-            { time: "02:00 PM", title: "Project Collaboration Sessions", location: "Innovation Hub" },
-            { time: "04:00 PM", title: "Industry Partner Showcase", location: "Exhibition Hall" },
+            { time: "08:00 AM", title: "Registration", resourcePerson: "Secretariat" },
+            { time: "09:00 AM", title: "Opening & Day 1 Recap", resourcePerson: "Host & Dr. Joselito Villaruz" },
+            { time: "09:14 AM", title: "Panel Discussion: AI Requirements in the Industry", resourcePerson: "Jonathan De Luzuriaga, Arup Maity, TBD, Michelle Alarcon" },
+            { time: "10:30 AM", title: "Breakout Sessions (Admins, Teachers, Students)", resourcePerson: "Various Speakers" },
+            { time: "12:00 PM", title: "Lunch (Exhibitors' Videos)", resourcePerson: "Secretariat" },
+            { time: "01:15 PM", title: "Breakout Sessions Continue", resourcePerson: "Various Speakers" },
+            { time: "03:00 PM", title: "Breakout Sessions Continue", resourcePerson: "Various Speakers" },
+            { time: "04:30 PM", title: "Transition back to Plenary", resourcePerson: "Host" },
+            { time: "04:40 PM", title: "Day 2 Highlights", resourcePerson: "(TBD) CHED" },
+            { time: "04:55 PM", title: "Closing Spiel", resourcePerson: "Host" },
         ]
     },
     {
-        title: "Day 3: Closing & Awards",
+        title: "Day 3: Policy & Commitments",
         monthDay: "February 27",
         year: "2026",
         weekday: "Friday",
         events: [
-            { time: "09:00 AM", title: "Final Project Pitches", location: "Main Hall" },
-            { time: "11:30 AM", title: "Closing Keynote", location: "Main Hall" },
-            { time: "12:30 PM", title: "Awards Ceremony & Closing Remarks", location: "Main Hall" },
-            { time: "01:30 PM", title: "Farewell Lunch", location: "Banquet Hall" },
+            { time: "08:00 AM", title: "Registration", resourcePerson: "Secretariat" },
+            { time: "09:00 AM", title: "Opening & Day 2 Recap", resourcePerson: "Host & (TBD)" },
+            { time: "09:13 AM", title: "Presentation: Draft AI Policy in Education", resourcePerson: "(TBD) CHED" },
+            { time: "09:43 AM", title: "Q&A: Draft AI Policy", resourcePerson: "Host" },
+            { time: "09:55 AM", title: "Commitment Signing", resourcePerson: "Selected HEIs, Students, Industry" },
+            { time: "10:01 AM", title: "Closing Remarks", resourcePerson: "Dr. Raul Muyong" },
+            { time: "10:15 AM", title: "Company/HEI Tours", resourcePerson: "Secretariat" },
+            { time: "12:15 PM", title: "Lunch", resourcePerson: "Secretariat" },
         ]
     }
 ];
@@ -102,7 +121,7 @@ export default function AgendaPage() {
                 <div ref={daysContainerRef} className="space-y-12 max-w-5xl mx-auto">
                     {AGENDA_DAYS.map((day, index) => (
                         <div key={index} className="opacity-0">
-                            <DaySection day={day} index={index} />
+                            <DaySection day={day} />
                         </div>
                     ))}
                 </div>
@@ -122,7 +141,7 @@ export default function AgendaPage() {
     )
 }
 
-function DaySection({ day, index }: { day: typeof AGENDA_DAYS[0], index: number }) {
+function DaySection({ day }: { day: typeof AGENDA_DAYS[0] }) {
     return (
         <div className="relative pl-4 md:pl-0">
             {/* Timeline Line (Desktop) */}
@@ -160,7 +179,7 @@ function DaySection({ day, index }: { day: typeof AGENDA_DAYS[0], index: number 
 
                     <div className="space-y-4">
                         {day.events.map((event, eIndex) => (
-                            <EventCard key={eIndex} event={event} index={eIndex} />
+                            <EventCard key={eIndex} event={event} />
                         ))}
                     </div>
                 </div>
@@ -169,7 +188,7 @@ function DaySection({ day, index }: { day: typeof AGENDA_DAYS[0], index: number 
     )
 }
 
-function EventCard({ event, index }: { event: any, index: number }) {
+function EventCard({ event }: { event: any }) {
     return (
         <motion.div
             whileHover={{ scale: 1.01, x: 4 }}
@@ -182,10 +201,12 @@ function EventCard({ event, index }: { event: any, index: number }) {
                 </div>
                 <div className="flex-1">
                     <h4 className="font-semibold text-slate-200 group-hover:text-white text-lg transition-colors">{event.title}</h4>
-                    <div className="flex items-center gap-2 text-xs text-slate-500 mt-2 group-hover:text-slate-400 transition-colors">
-                        <MapPin className="h-3 w-3 text-slate-600 group-hover:text-blue-500/70" />
-                        {event.location}
-                    </div>
+                    {event.resourcePerson && (
+                        <div className="flex items-center gap-2 text-xs text-slate-500 mt-2 group-hover:text-slate-400 transition-colors">
+                            <MapPin className="h-3 w-3 text-slate-600 group-hover:text-blue-500/70" />
+                            {event.resourcePerson}
+                        </div>
+                    )}
                 </div>
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-4 top-1/2 -translate-y-1/2 text-blue-500/50">
                     <ArrowRight className="w-5 h-5" />

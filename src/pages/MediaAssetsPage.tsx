@@ -19,15 +19,7 @@ const MEDIA_ASSETS = [
         description: "CHED Memo for RAISE Summit 2026.",
         file: "/downloads/ched-raise-memo.pdf"
     },
-    {
-        id: 1,
-        title: "Event Brochure",
-        type: "document",
-        thumbnail: "/thumb-default.svg",
-        date: "Dec 10, 2025",
-        description: "Download the official event brochure with schedule and speaker info.",
-        file: "/downloads/ched-raise-event-brochure.pdf"
-    },
+
     {
         id: 2,
         title: "Press Kit",

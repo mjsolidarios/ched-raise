@@ -6,7 +6,30 @@ import { ArrowLeft, BookOpen, Users, Award, Clock, ArrowRight } from "lucide-rea
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
-import { useGSAPScroll, fadeInUp, staggerFadeIn } from "@/hooks/useGSAPScroll"
+import { useGSAPScroll, fadeInUp } from "@/hooks/useGSAPScroll"
+
+const STUDENT_SESSIONS = [
+    { title: "Machine Learning Made Simple: From Concepts to Applications", time: "Feb 25, 01:30 PM", type: "Workshop", speaker: "Dr. Chris Aliac", org: "Cebu Institute of Technology University" },
+    { title: "Demystifying the AI World: Core Concepts of AI, ML, DL", time: "Feb 25, 03:15 PM", type: "Workshop", speaker: "Dr. Ace Lagman", org: "FEU Institute of Technology" },
+    { title: "Automating Intelligence: The Power of RAG in Document Processing", time: "Feb 26, 10:30 AM", type: "Workshop", speaker: "Dr. Gregg Gabison", org: "Raybiz Technologies, Inc." },
+    { title: "Think Before You Prompt: A Framework for Responsible AI-Supported Learning", time: "Feb 26, 01:15 PM", type: "Workshop", speaker: "Dr. Dave Marcial", org: "Siliman University" },
+    { title: "Open Forum: \"To AI or Not to AI\"", time: "Feb 26, 03:00 PM", type: "Forum", speaker: "Sherwin Pelayo", org: "AAP | PCORP" }
+]
+
+const TEACHER_SESSIONS = [
+    { title: "Prompting Literacy: Building the Foundation for AI-Enhanced Teaching", time: "Feb 25, 01:30 PM", type: "Workshop", speaker: "Facilitators", org: "Batangas State University" },
+    { title: "Teaching Smarter with AI: Lesson Planning Made Simple", time: "Feb 25, 03:15 PM", type: "Workshop", speaker: "Facilitators", org: "Polytechnic University of the Philippines" },
+    { title: "Assessments in the Age of AI: Creating, Checking, and Curating with Confidence", time: "Feb 26, 10:30 AM", type: "Workshop", speaker: "Facilitators", org: "National Teachers College" },
+    { title: "From Slides to Stories: Enhancing Presentations with AI Tools", time: "Feb 26, 01:15 PM", type: "Workshop", speaker: "Facilitators", org: "Iloilo State University of Fisheries Science and Technology" },
+    { title: "Your AI Teaching Companion: Personal Productivity and Reflective Practice", time: "Feb 26, 03:00 PM", type: "Workshop", speaker: "Facilitators", org: "Bulacan State University" }
+]
+
+const ADMIN_SESSIONS = [
+    { title: "Crafting an AI Policy for Education", time: "Feb 25, 01:30 PM", type: "President's Forum", speaker: "Sherwin Pelayo", org: "AAP | PCORP" },
+    { title: "Setting Up the Infrastructure for an AI Program", time: "Feb 26, 10:30 AM", type: "Workshop", speaker: "Dr. Prospero Naval", org: "University of the Philippines" },
+    { title: "Designing Curricula Aligned with the Philippine Skills Framework for Analytics & AI", time: "Feb 26, 01:15 PM", type: "Workshop", speaker: "Oliver Malabanan", org: "De La Salle University" },
+    { title: "Developing a Research Agenda in the Age of Intelligence", time: "Feb 26, 03:00 PM", type: "Workshop", speaker: "Dr. Jaime Caro", org: "Techfactors, Inc." }
+]
 
 export default function ProgramPage() {
     const containerRef = useRef<HTMLDivElement>(null)
@@ -79,25 +102,15 @@ export default function ProgramPage() {
                                 <SessionTrack
                                     title="Student Track: Future-Ready Skills"
                                     description="Equipping the next generation with AI literacy and practical skills."
-                                    sessions={[
-                                        { title: "Demystifying the AI World", time: "10:30 AM - 11:30 AM", type: "Foundational", desc: "Distinguish between AI, Machine Learning (ML), and Deep Learning (DL) through practical solutions." },
-                                        { title: "Teaching Machines to See", time: "01:00 PM - 02:00 PM", type: "Computer Vision", desc: "Understanding classification, object detection, and segmentation to solve societal problems." },
-                                        { title: "The Next Frontier: AI Agents", time: "02:30 PM - 03:30 PM", type: "Advanced", desc: "Defining AI Agents and showcasing how they address real-world problems." },
-                                        { title: "Building Smarter Chatbots", time: "04:00 PM - 05:00 PM", type: "RAG & LLMs", desc: "Understanding limitations of pre-trained LLMs and learning about Retrieval-Augmented Generation." }
-                                    ]}
+                                    sessions={STUDENT_SESSIONS}
                                 />
                             </TabsContent>
 
                             <TabsContent value="teachers" className="space-y-6 focus-visible:outline-none">
                                 <SessionTrack
-                                    title="Teacher Track: Pedrogogical Innovation"
+                                    title="Teacher Track: Pedagogical Innovation"
                                     description="Empowering educators to integrate AI tools effectively in the classroom."
-                                    sessions={[
-                                        { title: "Teaching Smarter with AI", time: "10:30 AM - 11:30 AM", type: "Pedagogy Tools", desc: "Learn to use tools like ChatGPT and Canva for lesson planning and prompt engineering." },
-                                        { title: "Assessments in the Age of AI", time: "01:00 PM - 02:00 PM", type: "Evaluation", desc: "Automate quizzes, ethically detect AI-assisted work, and explore authentic assessment models." },
-                                        { title: "From Slides to Stories", time: "02:30 PM - 03:30 PM", type: "Content Creation", desc: "Create compelling materials using Canva, Gamma, and NotebookLM." },
-                                        { title: "Your AI Teaching Companion", time: "04:00 PM - 05:00 PM", type: "Productivity", desc: "Explore AI assistants for organizing tasks, tracking progress, and managing administrative work." }
-                                    ]}
+                                    sessions={TEACHER_SESSIONS}
                                 />
                             </TabsContent>
 
@@ -105,10 +118,7 @@ export default function ProgramPage() {
                                 <SessionTrack
                                     title="Admin Track: Strategic Leadership"
                                     description="Guiding institutions through the digital transformation policy and strategy."
-                                    sessions={[
-                                        { title: "Crafting an AI policy for Education", time: "10:30 AM - 12:30 PM", type: "Governance", desc: "Develop a draft institutional AI policy covering ethics, data privacy, academic integrity, and inclusivity." },
-                                        { title: "Designing Curricula Aligned with PSF", time: "02:00 PM - 04:00 PM", type: "Strategic Planning", desc: "Map programs against Philippine Skills Framework competency levels and national workforce goals." }
-                                    ]}
+                                    sessions={ADMIN_SESSIONS}
                                 />
                             </TabsContent>
                         </div>
@@ -145,8 +155,7 @@ function SessionTrack({ title, description, sessions }: { title: string, descrip
     )
 }
 
-function ProgramCard({ title, time, type, desc, index }: { title: string, time: string, type: string, desc: string, index: number }) {
-    // We handle animation within the card for staggering
+function ProgramCard({ title, time, type, speaker, org, index }: { title: string, time: string, type: string, speaker: string, org: string, index: number }) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -167,7 +176,8 @@ function ProgramCard({ title, time, type, desc, index }: { title: string, time: 
                     </div>
                     <div>
                         <h4 className="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">{title}</h4>
-                        <p className="text-slate-400 leading-relaxed">{desc}</p>
+                        <p className="text-slate-300 font-medium">{speaker}</p>
+                        <p className="text-slate-500 text-sm">{org}</p>
                     </div>
                 </CardContent>
             </Card>
