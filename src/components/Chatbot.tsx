@@ -55,6 +55,64 @@ Key Topics & Program Focus:
 - Innovation and Technology Integration
 - Sustainable Development
 
+Detailed Agenda:
+
+Day 1 - Feb 25 (Wednesday)
+- 8:00 AM: Registration & Morning Coffee
+- 9:00 AM: Preliminaries (Doxology, National Anthem, CHED Hymn)
+- 9:18 AM: Welcome Remarks by Dr. Bobby Gerardo (Northern Iloilo State University)
+- 9:29 AM: Fireside Chat: "AI in Basic Education, Higher Education, Lifelong Learning"
+  - Panelists: Chair Shirley Agrupis (CHED), Sec. Sonny Angara (DepEd), DG Kiko Benitez (TESDA), Fred Ayala (PSAC), Michelle Alarcon (AAP)
+  - Moderator: Sherwin Pelayo (AAP)
+- 10:59 AM: Keynote: "The National AI Strategy of the Philippines (NAIS-PH)" by Sec. Renato Solidum Jr. (DOST)
+- 11:50 AM: Ribbon-Cutting of Exhibit Area
+- 12:00 PM: Lunch
+- 1:30 PM: Breakout Sessions
+  - Presidents' Forum: "Crafting an AI Policy for Education" (Facilitator: Sherwin Pelayo)
+  - Admins & Teachers: "Prompting Literacy" (Batangas State U) then "Teaching Smarter with AI" (PUP)
+  - Students: "Machine Learning Made Simple" (Dr. Chris Aliac) then "Demystifying the AI World" (Dr. Ace Lagman)
+- 5:00 PM: Day 1 Highlights & Closing
+
+Day 2 - Feb 26 (Thursday)
+- 9:02 AM: Day 1 Recap by Dr. Joselito Villaruz (West Visayas State University)
+- 9:14 AM: Panel Discussion: "AI Requirements in the Industry"
+  - Panelists: Jonathan De Luzuriaga (Spring Valley), Arup Maity (Xamun), Michelle Alarcon (AAP), Iloilo Chamber Rep
+  - Moderator: Jaime Noel Santos (Thames International)
+- 10:30 AM: Breakout Sessions
+  - Administrators: "Setting Up AI Infrastructure" (Dr. Prospero Naval, UP), "Curriculum Design" (Oliver Malabanan, DLSU), "Research Agenda" (Dr. Jaime Caro, Techfactors)
+  - Teachers: "Assessments in Age of AI" (National Teachers College), "Enhancing Presentations" (Iloilo State U), "Productivity & Reflective Practice" (Bulacan State U)
+  - Students: "Automating Intelligence (RAG)" (Dr. Gregg Gabison), "Responsible AI Learning" (Dr. Dave Marcial), Open Forum "To AI or Not to AI" (Sherwin Pelayo)
+- 4:40 PM: Day 2 Highlights & Closing
+
+Day 3 - Feb 27 (Friday)
+- 9:02 AM: Day 2 Recap
+- 9:13 AM: Presentation: Draft AI Policy in Education
+- 9:55 AM: Commitment Signing
+- 10:01 AM: Closing Remarks by Dr. Raul Muyong (CHED Region 6)
+- 10:15 AM: Company/HEI Tours
+- 12:15 PM: Lunch & End of Conference
+
+Resource Persons & Speakers:
+- Dr. Bobby Gerardo (Pres. NISU): Welcome Remarks
+- Sherwin Pelayo (AAP): Fireside Chat Moderator, Policy Facilitator, Student Forum
+- Chair Shirley Agrupis (CHED): Fireside Chat Panel
+- Sec. Sonny Angara (DepEd): Fireside Chat Panel
+- DG Kiko Benitez (TESDA): Fireside Chat Panel
+- Fred Ayala (PSAC): Fireside Chat Panel
+- Michelle Alarcon (AAP): Fireside Chat Panel, Industry Panel
+- Sec. Renato Solidum Jr. (DOST): Keynote Speaker (NAIS-PH)
+- Dr. Chris Aliac (Cebu Inst. of Tech): Machine Learning (Students)
+- Dr. Ace Lagman (FEU Tech): AI Concepts (Students)
+- Jonathan De Luzuriaga (Spring Valley): Industry Panel
+- Arup Maity (Xamun): Industry Panel
+- Dr. Prospero Naval (UP): AI Infrastructure
+- Oliver Malabanan (DLSU): AI Curricula
+- Dr. Jaime Caro (Techfactors): Research Agenda
+- Dr. Gregg Gabison (Raybiz): RAG (Students)
+- Dr. Dave Marcial (Siliman U): Responsible AI (Students)
+- Dr. Raul Muyong (CHED RO6): Closing Remarks
+- Dr. Joselito Villaruz (Pres. WVSU): Day 1 Recap
+
 FAQs:
 
 Q: How do I register for the event?
@@ -76,16 +134,16 @@ Q: What's the best way to get to the venue?
 A: The Iloilo Convention Center is located in Iloilo Business Park. You can take jeepneys (₱13-15), Grab taxis, or tricycles from your hotel.
 
 Q: Are meals included?
-A: Please refer to your registration package details for information about included meals and refreshments.
+A: Yes, lunch is provided on all three days, along with morning and afternoon refreshments.
 
 Q: What should I bring?
-A: Bring your registration confirmation, valid ID, business cards for networking, and any personal items you may need.
+A: Bring your registration confirmation (digital or printed ID), valid ID, business cards for networking, and a device for note-taking.
 
 Q: Is there parking available?
 A: Yes, the Iloilo Convention Center has parking facilities available for attendees.
 
 Q: What time does registration open?
-A: Registration typically opens early morning on the first day. Specific times will be communicated closer to the event date.
+A: Registration opens at 8:00 AM daily.
 
 Travel Tips:
 - Best time to visit: December to May for ideal weather
