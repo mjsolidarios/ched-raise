@@ -1,4 +1,5 @@
 import { type ReactNode, useState, useRef, useEffect } from 'react';
+import { useRive, Layout, Fit, Alignment } from '@rive-app/react-canvas';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { CheckCircle, Clock, RotateCw, XCircle, Download } from 'lucide-react';
@@ -159,6 +160,45 @@ export const RegistrationBusinessCard = ({ registration, actions, hideFlipInstru
     mq.addEventListener('change', updateLines);
     return () => mq.removeEventListener('change', updateLines);
   }, []);
+
+  const { RiveComponent, rive } = useRive({
+    src: '/ched_raise_anim.riv',
+    autoplay: true,
+    layout: new Layout({
+      fit: Fit.Contain,
+      alignment: Alignment.CenterLeft,
+    }),
+  });
+
+  const logoRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && rive) {
+          rive.reset();
+          rive.play();
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (logoRef.current) {
+      observer.observe(logoRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [rive]);
+
+  const replayAnimation = (e?: React.MouseEvent | React.TouchEvent) => {
+    // Prevent card flip when interacting with logo
+    e?.stopPropagation();
+
+    if (rive) {
+      rive.reset();
+      rive.play();
+    }
+  };
 
   useFitText(nameRef, maxLines);
 
@@ -327,12 +367,14 @@ export const RegistrationBusinessCard = ({ registration, actions, hideFlipInstru
               <div className="relative flex flex-col h-full">
                 <div className="flex items-start justify-between gap-2 sm:gap-4">
                   <div className="mt-0.5 sm:mt-1 flex items-center gap-2 content-center shrink-0">
-                    <img
-                      src="/logo-light.svg"
-                      alt="RAISE logo"
-                      className="h-3.5 sm:h-7"
-                      draggable={false}
-                    />
+                    <div
+                      ref={logoRef}
+                      className="h-6 w-32 sm:h-12 sm:w-64 cursor-pointer"
+                      onMouseEnter={() => replayAnimation()}
+                      onClick={replayAnimation}
+                    >
+                      <RiveComponent />
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>

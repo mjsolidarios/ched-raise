@@ -722,6 +722,19 @@ const UserDashboard = () => {
                                                 </Select>
                                             </div>
 
+                                            {editFormData.registrantType === 'others' && (
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="edit-registrantTypeOther">Please specify <span className="text-destructive">*</span></Label>
+                                                    <Input
+                                                        id="edit-registrantTypeOther"
+                                                        name="registrantTypeOther"
+                                                        value={editFormData.registrantTypeOther}
+                                                        onChange={handleEditChange}
+                                                        className="col-span-3"
+                                                    />
+                                                </div>
+                                            )}
+
                                             <div className="space-y-2">
                                                 <Label htmlFor="edit-foodPreference">Food Preference <span className="text-destructive">*</span></Label>
                                                 <Select onValueChange={handleEditFoodPreferenceChange} value={editFormData.foodPreference}>
@@ -736,18 +749,6 @@ const UserDashboard = () => {
                                                 </Select>
                                             </div>
 
-                                            {editFormData.registrantType === 'others' && (
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="edit-registrantTypeOther">Please specify <span className="text-destructive">*</span></Label>
-                                                    <Input
-                                                        id="edit-registrantTypeOther"
-                                                        name="registrantTypeOther"
-                                                        value={editFormData.registrantTypeOther}
-                                                        onChange={handleEditChange}
-                                                        className="col-span-3"
-                                                    />
-                                                </div>
-                                            )}
                                             <DialogFooter>
                                                 <Button type="submit" disabled={editing}>
                                                     {editing ? (
@@ -899,6 +900,20 @@ const UserDashboard = () => {
                                         </div>
 
                                         <div className="space-y-2">
+                                            <Label htmlFor="foodPreference">Food Preference <span className="text-destructive">*</span></Label>
+                                            <Select onValueChange={handleFoodPreferenceChange} value={formData.foodPreference}>
+                                                <SelectTrigger className="bg-background/50">
+                                                    <SelectValue placeholder="Select preference" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="no_restriction">No Food Restriction</SelectItem>
+                                                    <SelectItem value="halal">Halal</SelectItem>
+                                                    <SelectItem value="vegetarian">Vegetarian</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+
+                                        <div className="space-y-2">
                                             <Label htmlFor="registrantType">Registrant Type <span className="text-destructive">*</span></Label>
                                             <Select onValueChange={handleSelectChange} value={formData.registrantType}>
                                                 <SelectTrigger className="bg-background/50">
@@ -912,20 +927,6 @@ const UserDashboard = () => {
                                                 </SelectContent>
                                             </Select>
 
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label htmlFor="foodPreference">Food Preference <span className="text-destructive">*</span></Label>
-                                            <Select onValueChange={handleFoodPreferenceChange} value={formData.foodPreference}>
-                                                <SelectTrigger className="bg-background/50">
-                                                    <SelectValue placeholder="Select preference" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="no_restriction">No Food Restriction</SelectItem>
-                                                    <SelectItem value="halal">Halal</SelectItem>
-                                                    <SelectItem value="vegetarian">Vegetarian</SelectItem>
-                                                </SelectContent>
-                                            </Select>
                                         </div>
 
                                         {formData.registrantType === 'others' && (
@@ -942,6 +943,7 @@ const UserDashboard = () => {
                                                 />
                                             </div>
                                         )}
+
 
                                         <Button type="submit" className="w-full bg-primary hover:bg-primary/90 mt-4" size="lg" disabled={submitting}>
                                             {submitting ? (

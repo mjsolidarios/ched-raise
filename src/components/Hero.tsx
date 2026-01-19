@@ -11,6 +11,7 @@ import { useGSAPScroll, parallax, scaleIn, staggerFadeIn } from "@/hooks/useGSAP
 
 import { CountdownTimer } from "@/components/CountdownTimer"
 // import { Robot } from "@/components/Robot"
+import { useRive, Layout, Fit, Alignment } from '@rive-app/react-canvas';
 
 export function Hero() {
     const containerRef = useRef<HTMLElement>(null);
@@ -75,6 +76,33 @@ export function Hero() {
             staggerFadeIn(elements);
         }
     }, [gsap]);
+
+    const { RiveComponent, rive } = useRive({
+        src: '/ched_raise_anim.riv',
+        autoplay: true,
+        layout: new Layout({
+            fit: Fit.Contain,
+            alignment: Alignment.Center,
+        }),
+    });
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting && rive) {
+                    rive.reset();
+                    rive.play();
+                }
+            },
+            { threshold: 0.5 }
+        );
+
+        if (logoRef.current) {
+            observer.observe(logoRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, [rive]);
 
     return (
         <section
@@ -158,13 +186,18 @@ export function Hero() {
 
                 <motion.div
                     ref={logoRef}
-                    className="group relative mb-12"
+                    className="group relative mb-4 w-full max-w-5xl aspect-[3/1] flex items-center justify-center -mt-12"
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
                     whileHover={{ scale: 1.02 }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.5 }}
                 >
                     {/* Glow effect */}
-                    <div className="absolute inset-0 bg-primary/30 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out" />
-                    <img src="/logo-dark.svg" alt="CHED RAISE" className="w-128 relative z-10 transition-all duration-500 group-hover:drop-shadow-[0_0_20px_rgba(91,141,239,0.8)]" />
+                    <div className="absolute inset-0 bg-primary/30 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none" />
+
+                    <div className="w-full h-full relative z-10 transition-all duration-500 group-hover:drop-shadow-[0_0_20px_rgba(91,141,239,0.8)]">
+                        <RiveComponent />
+                    </div>
                 </motion.div>
 
                 <motion.div
