@@ -204,7 +204,7 @@ export function Hero() {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
-                    className="text-lg md:text-2xl text-center font-medium text-blue-200 mb-8 -mt-16 relative z-20"
+                    className="text-xs sm:text-sm md:text-2xl text-center font-medium text-blue-200 mb-8 -mt-4 md:-mt-16 relative z-20"
                 >
                     <Typewriter
                         options={{

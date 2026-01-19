@@ -2,11 +2,12 @@ import { useRef, useLayoutEffect } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
-import { ArrowLeft, Linkedin, Twitter, Globe, ArrowRight } from "lucide-react"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { useGSAPScroll, staggerFadeIn, fadeInUp } from "@/hooks/useGSAPScroll"
 import { UserAvatar, getDeterministicAvatarColor } from "@/components/UserAvatar"
+import { cn } from "@/lib/utils"
 
 // Mock Data for Resource Persons
 const SPEAKERS = [
@@ -107,6 +108,22 @@ const SPEAKERS = [
         bio: "Presenting 'The National AI Strategy of the Philippines (NAIS-PH)'."
     },
     {
+        name: "Batangas State University",
+        role: "Facilitators",
+        org: "Batangas State University",
+        image: "",
+        topic: "Workshop Facilitator",
+        bio: "Facilitating 'Prompting Literacy: Building the Foundation for AI-Enhanced Teaching'."
+    },
+    {
+        name: "Polytechnic University of the Philippines",
+        role: "Facilitators",
+        org: "Polytechnic University of the Philippines",
+        image: "",
+        topic: "Workshop Facilitator",
+        bio: "Facilitating 'Teaching Smarter with AI: Lesson Planning Made Simple'."
+    },
+    {
         name: "Dr. Chris Jordan Aliac",
         role: "AI FabLab Manager",
         org: "Cebu Institute of Technology University",
@@ -179,6 +196,30 @@ const SPEAKERS = [
         bio: "Facilitating 'Developing a Research Agenda in the Age of Intelligence'."
     },
     {
+        name: "National Teachers College",
+        role: "Facilitators",
+        org: "National Teachers College",
+        image: "",
+        topic: "Workshop Facilitator",
+        bio: "Facilitating 'Assessments in the Age of AI: Creating, Checking, and Curating with Confidence'."
+    },
+    {
+        name: "Iloilo State University of Fisheries Science and Technology",
+        role: "Facilitators",
+        org: "Iloilo State University of Fisheries Science and Technology",
+        image: "",
+        topic: "Workshop Facilitator",
+        bio: "Facilitating 'From Slides to Stories: Enhancing Presentations with AI Tools'."
+    },
+    {
+        name: "Bulacan State University",
+        role: "Facilitators",
+        org: "Bulacan State University",
+        image: "",
+        topic: "Workshop Facilitator",
+        bio: "Facilitating 'Your AI Teaching Companion: Personal Productivity and Reflective Practice'."
+    },
+    {
         name: "Dr. Gregg Gabison",
         role: "Country Manager",
         org: "Raybiz Technologies, Inc.",
@@ -193,6 +234,14 @@ const SPEAKERS = [
         image: "",
         topic: "Workshop Facilitator",
         bio: "Facilitating 'Think Before You Prompt: A Framework for Responsible AI-Supported Learning'."
+    },
+    {
+        name: "Dr. Jimmy Catanes",
+        role: "Director",
+        org: "CHED OPSD",
+        image: "",
+        topic: "Presentation",
+        bio: "Presenting the 'Draft AI Policy in Education'."
     }
 ]
 
@@ -276,7 +325,10 @@ function SpeakerCard({ name, role, org, image, topic, bio }: typeof SPEAKERS[0])
 
             <CardContent className="p-0 flex-1 flex flex-col relative z-10">
                 <div className="p-6 md:p-8 flex flex-col items-center text-center border-b border-white/5 bg-white/[0.01]">
-                    <div className="w-24 h-24 rounded-full p-1 bg-gradient-to-br from-white/10 to-transparent mb-4 group-hover:scale-105 transition-transform duration-500">
+                    <div className={cn(
+                        "w-24 h-24 p-1 bg-gradient-to-br from-white/10 to-transparent mb-4 group-hover:scale-105 transition-transform duration-500",
+                        image ? "rounded-full" : "rounded-xl"
+                    )}>
                         {image ? (
                             <img src={image} alt={name} className="w-full h-full rounded-full bg-slate-800 object-cover" />
                         ) : (
@@ -303,17 +355,7 @@ function SpeakerCard({ name, role, org, image, topic, bio }: typeof SPEAKERS[0])
                         </p>
                     </div>
 
-                    <div className="flex justify-center gap-4 pt-4 border-t border-white/5 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
-                        <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-white hover:bg-white/10 rounded-full">
-                            <Linkedin className="w-4 h-4" />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-white hover:bg-white/10 rounded-full">
-                            <Twitter className="w-4 h-4" />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-white hover:bg-white/10 rounded-full">
-                            <Globe className="w-4 h-4" />
-                        </Button>
-                    </div>
+
                 </div>
             </CardContent>
         </Card>

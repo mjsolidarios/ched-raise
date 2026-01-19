@@ -16,7 +16,6 @@ const AGENDA_DAYS = [
             { time: "08:00 AM", title: "Registration", resourcePerson: "Secretariat" },
             { time: "09:00 AM", title: "Preliminaries", resourcePerson: "Secretariat" },
             { time: "09:05 AM", title: "CHED RAISE 2026 Video Presentation", resourcePerson: "Secretariat" },
-            { time: "09:15 AM", title: "Opening", resourcePerson: "Host" },
             { time: "09:18 AM", title: "Welcome Remarks from Host Institution", resourcePerson: "Dr. Bobby Gerardo" },
             { time: "09:24 AM", title: "Fireside Chat Introduction: National AI Upskilling Roadmap", resourcePerson: "Sherwin Pelayo" },
             { time: "09:29 AM", title: "Fireside Chat: AI in Education Government-Private Partnership", resourcePerson: "Chair Shirley Agrupis, Sec. Sonny Angara, DG Kiko Benitez, Fred Ayala, Michelle Alarcon" },
@@ -40,7 +39,7 @@ const AGENDA_DAYS = [
         events: [
             { time: "08:00 AM", title: "Registration", resourcePerson: "Secretariat" },
             { time: "09:00 AM", title: "Opening & Day 1 Recap", resourcePerson: "Host & Dr. Joselito Villaruz" },
-            { time: "09:14 AM", title: "Panel Discussion: AI Requirements in the Industry", resourcePerson: "Jonathan De Luzuriaga, Arup Maity, TBD, Michelle Alarcon" },
+            { time: "09:14 AM", title: "Panel Discussion: AI Requirements in the Industry", resourcePerson: "Jonathan De Luzuriaga, Arup Maity, Fulbert Woo, Michelle Alarcon" },
             { time: "10:30 AM", title: "Breakout Sessions (Admins, Teachers, Students)", resourcePerson: "Various Speakers" },
             { time: "12:00 PM", title: "Lunch (Exhibitors' Videos)", resourcePerson: "Secretariat" },
             { time: "01:15 PM", title: "Breakout Sessions Continue", resourcePerson: "Various Speakers" },
@@ -58,7 +57,7 @@ const AGENDA_DAYS = [
         events: [
             { time: "08:00 AM", title: "Registration", resourcePerson: "Secretariat" },
             { time: "09:00 AM", title: "Opening & Day 2 Recap", resourcePerson: "Host & (TBD)" },
-            { time: "09:13 AM", title: "Presentation: Draft AI Policy in Education", resourcePerson: "(TBD) CHED" },
+            { time: "09:13 AM", title: "Presentation: Draft AI Policy in Education", resourcePerson: "Dir. Jimmy Catanes, CHED OPSD" },
             { time: "09:43 AM", title: "Q&A: Draft AI Policy", resourcePerson: "Host" },
             { time: "09:55 AM", title: "Commitment Signing", resourcePerson: "Selected HEIs, Students, Industry" },
             { time: "10:01 AM", title: "Closing Remarks", resourcePerson: "Dr. Raul Muyong" },

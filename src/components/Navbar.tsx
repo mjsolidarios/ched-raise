@@ -1,6 +1,13 @@
 import { Button } from "@/components/ui/button"
 import { Menu, LogOut, LogIn } from "lucide-react"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { ChevronDown } from "lucide-react"
 import { useState, useEffect } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { auth, db } from '@/lib/firebase';
@@ -78,21 +85,33 @@ export function Navbar() {
                 isMobile ? "flex-col items-start w-full gap-2" : "items-center"
             )}>
 
-                {["About", "Objectives", "Program", "FAQ"].map((item) => (
-                    <a
-                        key={item}
-                        href={`/#${item.toLowerCase()}`}
-                        className={cn(
-                            "text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 py-2 px-3 rounded-full transition-all",
-                            isMobile && "w-full text-left pl-4"
-                        )}
-                        onClick={() => setIsOpen(false)}
-                    >
-                        {item}
-                    </a>
-                ))}
-                <NavLink href="/venue">
-                    Venue
+                <DropdownMenu>
+                    <DropdownMenuTrigger className={cn(
+                        "text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 py-2 px-3 rounded-full transition-all flex items-center gap-1 outline-none ring-0 focus:ring-0",
+                        isMobile && "w-full justify-between pl-4"
+                    )}>
+                        Event Details <ChevronDown className="h-3 w-3 opacity-50" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="bg-slate-950/90 backdrop-blur-xl border-white/10 text-slate-300">
+                        {["About", "Objectives", "Venue", "FAQ"].map((item) => (
+                            <DropdownMenuItem key={item} asChild className="focus:bg-white/10 focus:text-white cursor-pointer">
+                                <a
+                                    href={item === "Venue" ? "/venue" : `/#${item.toLowerCase()}`}
+                                    className="w-full h-full block"
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    {item}
+                                </a>
+                            </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
+                <NavLink href="/program">
+                    Program
+                </NavLink>
+                <NavLink href="/resource-persons">
+                    Resource Persons
                 </NavLink>
                 <NavLink href="/media">
                     Media
@@ -178,6 +197,7 @@ export function Navbar() {
                             </Button>
                         </SheetTrigger>
                         <SheetContent side="right" className="bg-background/95 backdrop-blur-xl border-l border-white/10">
+                            <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                             <div className="flex flex-col gap-6 mt-10">
                                 <NavLinks isMobile={true} />
                                 {user ? (
