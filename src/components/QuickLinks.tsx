@@ -37,7 +37,7 @@ export function QuickLinks() {
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
             if (containerRef.current) {
-                staggerFadeIn(containerRef.current.children, { delay: 0.2 })
+                staggerFadeIn(Array.from(containerRef.current.children), { delay: 0.2 })
             }
         }, sectionRef)
         return () => ctx.revert()
@@ -57,7 +57,7 @@ export function QuickLinks() {
                     <p className="text-slate-400 text-lg">Navigate through the core components of the CHED-RAISE Summit 2026.</p>
                 </div>
 
-                <div ref={containerRef} className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto opacity-0">
+                <div ref={containerRef} className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                     {LINKS.map((link, index) => (
                         <LinkCard key={index} {...link} />
                     ))}

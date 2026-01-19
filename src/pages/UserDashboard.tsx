@@ -715,8 +715,10 @@ const UserDashboard = () => {
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         <SelectItem value="participant">Participant</SelectItem>
+                                                        <SelectItem value="shs">Senior High or High School</SelectItem>
                                                         <SelectItem value="speaker">Speaker</SelectItem>
                                                         <SelectItem value="exhibitor">Exhibitor</SelectItem>
+                                                        <SelectItem value="chedofficial">CHED Official</SelectItem>
                                                         <SelectItem value="others">Others</SelectItem>
                                                     </SelectContent>
                                                 </Select>
@@ -920,9 +922,11 @@ const UserDashboard = () => {
                                                     <SelectValue placeholder="Select type" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="student">Student</SelectItem>
-                                                    <SelectItem value="faculty">Faculty</SelectItem>
-                                                    <SelectItem value="administrator">Administrator</SelectItem>
+                                                    <SelectItem value="participant">Participant</SelectItem>
+                                                    <SelectItem value="shs">Senior High or High School</SelectItem>
+                                                    <SelectItem value="speaker">Speaker</SelectItem>
+                                                    <SelectItem value="exhibitor">Exhibitor</SelectItem>
+                                                    <SelectItem value="chedofficial">CHED Official</SelectItem>
                                                     <SelectItem value="others">Others</SelectItem>
                                                 </SelectContent>
                                             </Select>

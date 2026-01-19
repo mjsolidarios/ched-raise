@@ -114,11 +114,6 @@ export default function AgendaPage() {
                                 Explorer Detailed Tracks <ArrowRight className="w-4 h-4" />
                             </Link>
                         </Button>
-                        <Button asChild variant="outline" size="lg" className="rounded-full border-white/10 text-slate-300 hover:bg-white/5 hover:text-white transition-all">
-                            <Link to="/attendance" className="gap-2">
-                                Check Attendance Info
-                            </Link>
-                        </Button>
                     </div>
                 </div>
 

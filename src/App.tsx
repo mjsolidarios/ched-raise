@@ -65,7 +65,11 @@ const App = () => {
                         <Route path="/program" element={<ProgramPage />} />
                         <Route path="/resource-persons" element={<ResourcePersonsPage />} />
                         <Route path="/media" element={<MediaAssetsPage />} />
-                        <Route path="/attendance" element={<AttendancePage />} />
+                        <Route path="/attendance" element={
+                            <ProtectedRoute allowedRoles={['regional_admin', 'super_admin']}>
+                                <AttendancePage />
+                            </ProtectedRoute>
+                        } />
                         <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                 </Suspense>

@@ -147,8 +147,11 @@ const RegistrationPage = () => {
                                         onChange={(e) => setFormData({ ...formData, registrantType: e.target.value })}
                                     >
                                         <option value="participant">Participant</option>
+                                        <option value="shs">Senior High or High School</option>
                                         <option value="speaker">Speaker</option>
                                         <option value="exhibitor">Exhibitor</option>
+                                        <option value="chedofficial">CHED Official</option>
+                                        <option value="others">Others</option>
                                     </select>
                                 </div>
                                 <div className="space-y-2">

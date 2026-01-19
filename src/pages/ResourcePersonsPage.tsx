@@ -1,61 +1,198 @@
 import { useRef, useLayoutEffect } from "react"
-import { motion } from "framer-motion"
+
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
 import { ArrowLeft, Linkedin, Twitter, Globe, ArrowRight } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { useGSAPScroll, staggerFadeIn, fadeInUp } from "@/hooks/useGSAPScroll"
+import { UserAvatar, getDeterministicAvatarColor } from "@/components/UserAvatar"
 
 // Mock Data for Resource Persons
 const SPEAKERS = [
     {
-        name: "Dr. Elena Rivera",
-        role: "AI Ethics Researcher",
-        org: "Tech Institute",
-        image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Elena&backgroundColor=b6e3f4",
-        topic: "Keynote: AI in Education",
-        bio: "Leading expert in ethical AI deployment in educational settings, advocating for inclusive and transparent algorithms."
+        name: "Dr. Bobby Gerardo",
+        role: "President",
+        org: "Northern Iloilo State University",
+        image: "",
+        topic: "Welcome Remarks",
+        bio: "Also presenting: Turnover of Philippine Skills Framework, Coffee Table Book, and Exhibit Ribbon-Cutting."
     },
     {
-        name: "Prof. James Chen",
-        role: "Director of Innovation",
-        org: "Future Learning Lab",
-        image: "https://api.dicebear.com/7.x/avataaars/svg?seed=James&backgroundColor=c0aede",
-        topic: "Panel: Future of EdTech",
-        bio: "Pioneering research in adaptive learning systems and personalized education pathways driven by machine learning."
+        name: "Sherwin Pelayo",
+        role: "Executive Director",
+        org: "Analytics & AI Association of the Philippines",
+        image: "",
+        topic: "Fireside Chat Introduction",
+        bio: "Leading sessions on 'National AI Upskilling Roadmap', Government-Private Sector Partnership, AI Policy, and Student Open Forum."
     },
     {
-        name: "Sarah Al-Fayed",
-        role: "Head of Product",
-        org: "EduAI Solutions",
-        image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah&backgroundColor=ffdfbf",
-        topic: "Workshop: GenAI Tools",
-        bio: "Product strategist focused on building intuitive AI tools for teachers, simplifying complex technologies for classroom use."
+        name: "Chair Shirley Agrupis",
+        role: "Chair",
+        org: "CHED",
+        image: "",
+        topic: "Fireside Chat Panel",
+        bio: "Participating in: AI in Education Partnership, Turnover of Skills Framework, Coffee Table Book, and Ribbon-Cutting."
     },
     {
-        name: "Dr. Marcus Thorne",
-        role: "Policy Advisor",
-        org: "National Education Board",
-        image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus&backgroundColor=d1d4f9",
-        topic: "Crafting AI Policy",
-        bio: "Advisor to national bodies on integrating AI into curriculum standards and workforce development frameworks."
+        name: "Sec. Juan Edgardo \"Sonny\" Angara",
+        role: "Secretary",
+        org: "DepEd",
+        image: "",
+        topic: "Fireside Chat Panel",
+        bio: "Participating in: AI in Education Partnership and Turnover of Skills Framework."
     },
     {
-        name: "Lara Croft",
-        role: "Lead Developer",
-        org: "Code Academy",
-        image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Lara&backgroundColor=ffdfbf",
-        topic: "Building Smarter Chatbots",
-        bio: "Full-stack developer specializing in conversational AI and RAG architectures for educational support bots."
+        name: "Dir. Gen. Jose Francisco \"Kiko\" Benitez",
+        role: "Director General",
+        org: "TESDA",
+        image: "",
+        topic: "Fireside Chat Panel",
+        bio: "Participating in: AI in Education Partnership and Turnover of Skills Framework."
     },
     {
-        name: "Ken Ryu",
-        role: "Creative Director",
-        org: "Digital Arts Uni",
-        image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ken&backgroundColor=b6e3f4",
-        topic: "From Slides to Stories",
-        bio: "Award-winning designer teaching educators how to leverage generative design tools for captivating learning materials."
+        name: "Fred Ayala",
+        role: "Chair",
+        org: "Private Sector Jobs and Skills Corp.",
+        image: "",
+        topic: "Fireside Chat Panel",
+        bio: "Participating in: AI in Education Partnership and Turnover of Skills Framework."
+    },
+    {
+        name: "Michelle Alarcon",
+        role: "President",
+        org: "Analytics & AI Association of the Philippines",
+        image: "",
+        topic: "Fireside Chat Panel",
+        bio: "Participating in: AI in Education Partnership, Turnover of Skills Framework, and Industry AI Requirements Panel."
+    },
+    {
+        name: "Dr. Joselito Villaruz",
+        role: "President",
+        org: "West Visayas State University",
+        image: "",
+        topic: "Welcome Remarks",
+        bio: "Participating in: Turnover of Skills Framework, Coffee Table Book, and Exhibit Ribbon-Cutting."
+    },
+    {
+        name: "Dr. Maricar Casquejo",
+        role: "Director",
+        org: "CHED Region 9",
+        image: "",
+        topic: "Turnover Ceremony",
+        bio: "Participating in the turnover of the CHEDx 2024 Coffee Table Book."
+    },
+    {
+        name: "Dr. Raul Muyong",
+        role: "Regional Director",
+        org: "CHED Region 6",
+        image: "",
+        topic: "Closing Remarks",
+        bio: "Participating in: Turnover of Coffee Table Book and Exhibit Ribbon-Cutting."
+    },
+    {
+        name: "Dr. Bonifacio Gabales Jr.",
+        role: "President",
+        org: "University of Southeastern Philippines",
+        image: "",
+        topic: "Turnover Ceremony",
+        bio: "Participating in the turnover of the CHEDx 2024 Coffee Table Book."
+    },
+    {
+        name: "Sec. Renato Solidum, Jr.",
+        role: "Secretary",
+        org: "DOST",
+        image: "",
+        topic: "Keynote: NAIS-PH",
+        bio: "Presenting 'The National AI Strategy of the Philippines (NAIS-PH)'."
+    },
+    {
+        name: "Dr. Chris Jordan Aliac",
+        role: "AI FabLab Manager",
+        org: "Cebu Institute of Technology University",
+        image: "",
+        topic: "Workshop Facilitator",
+        bio: "Facilitating 'Machine Learning Made Simple: From Concepts to Applications'."
+    },
+    {
+        name: "Dr. Ace Lagman",
+        role: "Senior Director",
+        org: "FEU Institute of Technology",
+        image: "",
+        topic: "Workshop Facilitator",
+        bio: "Facilitating 'Demystifying the AI World: Core Concepts of AI, ML, DL'."
+    },
+    {
+        name: "Jonathan De Luzuriaga",
+        role: "President",
+        org: "Spring Valley Tech Corp. / PSIA",
+        image: "",
+        topic: "Panelist",
+        bio: "Participating in the panel 'AI Requirements in the Industry'."
+    },
+    {
+        name: "Arup Maity",
+        role: "President",
+        org: "Xamun / PSIA",
+        image: "",
+        topic: "Panelist",
+        bio: "Participating in the panel 'AI Requirements in the Industry'."
+    },
+    {
+        name: "Fulbert Woo",
+        role: "Regional Governor",
+        org: "PCCI Western Visayas",
+        image: "",
+        topic: "Panelist",
+        bio: "Participating in the panel 'AI Requirements in the Industry'."
+    },
+    {
+        name: "Jaime Noel Santos",
+        role: "President",
+        org: "Thames International Business School",
+        image: "",
+        topic: "Moderator",
+        bio: "Moderating the panel 'AI Requirements in the Industry'."
+    },
+    {
+        name: "Dr. Prospero Naval",
+        role: "Professor",
+        org: "University of the Philippines",
+        image: "",
+        topic: "Workshop Facilitator",
+        bio: "Facilitating 'Setting Up the Infrastructure for an AI Program'."
+    },
+    {
+        name: "Oliver Malabanan",
+        role: "Professor",
+        org: "De La Salle University",
+        image: "",
+        topic: "Workshop Facilitator",
+        bio: "Facilitating 'Designing Curricula Aligned with the Philippine Skills Framework for Analytics & AI'."
+    },
+    {
+        name: "Dr. Jaime Caro",
+        role: "Chief Academic Officer",
+        org: "Techfactors Inc.",
+        image: "",
+        topic: "Workshop Facilitator",
+        bio: "Facilitating 'Developing a Research Agenda in the Age of Intelligence'."
+    },
+    {
+        name: "Dr. Gregg Gabison",
+        role: "Country Manager",
+        org: "Raybiz Technologies, Inc.",
+        image: "",
+        topic: "Workshop Facilitator",
+        bio: "Facilitating 'Automating Intelligence: The Power of RAG in Document Processing'."
+    },
+    {
+        name: "Dr. Dave Marcial",
+        role: "Director",
+        org: "Siliman University",
+        image: "",
+        topic: "Workshop Facilitator",
+        bio: "Facilitating 'Think Before You Prompt: A Framework for Responsible AI-Supported Learning'."
     }
 ]
 
@@ -71,7 +208,13 @@ export default function ResourcePersonsPage() {
                 fadeInUp(headerRef.current)
             }
             if (gridRef.current) {
-                staggerFadeIn(gridRef.current.children, { delay: 0.2 })
+                staggerFadeIn(gridRef.current.children, {
+                    delay: 0.2,
+                    scrollTrigger: {
+                        trigger: gridRef.current,
+                        start: 'top 85%',
+                    }
+                })
             }
         }, containerRef)
 
@@ -104,7 +247,7 @@ export default function ResourcePersonsPage() {
                     </p>
                 </div>
 
-                <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto opacity-0">
+                <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
                     {SPEAKERS.map((speaker, index) => (
                         <div key={index} className="h-full">
                             <SpeakerCard {...speaker} />
@@ -134,7 +277,16 @@ function SpeakerCard({ name, role, org, image, topic, bio }: typeof SPEAKERS[0])
             <CardContent className="p-0 flex-1 flex flex-col relative z-10">
                 <div className="p-6 md:p-8 flex flex-col items-center text-center border-b border-white/5 bg-white/[0.01]">
                     <div className="w-24 h-24 rounded-full p-1 bg-gradient-to-br from-white/10 to-transparent mb-4 group-hover:scale-105 transition-transform duration-500">
-                        <img src={image} alt={name} className="w-full h-full rounded-full bg-slate-800 object-cover" />
+                        {image ? (
+                            <img src={image} alt={name} className="w-full h-full rounded-full bg-slate-800 object-cover" />
+                        ) : (
+                            <UserAvatar
+                                seed={name}
+                                size={96} // 24 * 4px = 96px
+                                className="w-full h-full"
+                                color={getDeterministicAvatarColor(name)}
+                            />
+                        )}
                     </div>
                     <h3 className="text-xl font-bold text-white mb-1 group-hover:text-purple-300 transition-colors">{name}</h3>
                     <p className="text-sm font-medium text-primary mb-1">{role}</p>
