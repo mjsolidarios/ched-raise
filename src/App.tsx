@@ -19,6 +19,8 @@ const AgendaPage = lazy(() => import('./pages/AgendaPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const MediaAssetsPage = lazy(() => import('./pages/MediaAssetsPage'));
 const AttendancePage = lazy(() => import('./pages/AttendancePage'));
+const ProgramPage = lazy(() => import('./pages/ProgramPage'));
+const ResourcePersonsPage = lazy(() => import('./pages/ResourcePersonsPage'));
 
 // Loading component
 const PageLoader = () => (
@@ -60,6 +62,8 @@ const App = () => {
                         } />
                         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                         <Route path="/agenda" element={<AgendaPage />} />
+                        <Route path="/program" element={<ProgramPage />} />
+                        <Route path="/resource-persons" element={<ResourcePersonsPage />} />
                         <Route path="/media" element={<MediaAssetsPage />} />
                         <Route path="/attendance" element={<AttendancePage />} />
                         <Route path="*" element={<NotFoundPage />} />

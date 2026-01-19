@@ -13,6 +13,7 @@
 import { Hero } from "@/components/Hero"
 import { About } from "@/components/About"
 import { Objectives } from "@/components/Objectives"
+import { QuickLinks } from "@/components/QuickLinks"
 import { Program } from "@/components/Program"
 import { ExploreIloilo } from "@/components/ExploreIloilo"
 import { FAQ } from "@/components/FAQ"
@@ -26,6 +27,7 @@ const LandingPage = () => {
                 <Hero />
                 <About />
                 <Objectives />
+                <QuickLinks />
                 <Program />
                 <ExploreIloilo />
                 <FAQ />

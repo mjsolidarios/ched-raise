@@ -186,7 +186,7 @@ export function Hero() {
 
                 <motion.div
                     ref={logoRef}
-                    className="group relative mb-4 w-full max-w-5xl aspect-[3/1] flex items-center justify-center -mt-12"
+                    className="group relative w-full max-w-5xl aspect-[3/1] flex items-center justify-center -mt-12"
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     whileHover={{ scale: 1.02 }}
@@ -204,7 +204,7 @@ export function Hero() {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
-                    className="text-lg md:text-2xl text-center font-medium text-blue-200 mb-8"
+                    className="text-lg md:text-2xl text-center font-medium text-blue-200 mb-8 -mt-4 relative z-20"
                 >
                     <Typewriter
                         options={{
