@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { db, auth } from '@/lib/firebase';
-import { collection, deleteDoc, updateDoc, doc, query, where, onSnapshot, setDoc, deleteField } from 'firebase/firestore';
+import { collection, deleteDoc, updateDoc, doc, query, where, onSnapshot, setDoc, deleteField, getDoc } from 'firebase/firestore';
 import { onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, type User } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,7 +21,7 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu"
-import { Users, Clock, CheckCircle2, XCircle, Search, Loader2, Scan, Keyboard, Mail, Trash2, MoreHorizontal, Copy, BarChart3, ArrowUpDown, ArrowUp, ArrowDown, Filter, ShieldCheck, Activity } from 'lucide-react';
+import { Users, Clock, CheckCircle2, XCircle, Search, Loader2, Scan, Keyboard, Mail, Trash2, MoreHorizontal, Copy, BarChart3, ArrowUpDown, ArrowUp, ArrowDown, Filter, ShieldCheck, Activity, MapPin } from 'lucide-react';
 // Recharts removed as we switched to list view
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -100,6 +100,14 @@ const AdminPage = () => {
         isOpen: false,
         id: null
     });
+
+    // Change Region State
+    const [changeRegionDialog, setChangeRegionDialog] = useState<{ isOpen: boolean; userId: string | null; currentRegion: string | null }>({
+        isOpen: false,
+        userId: null,
+        currentRegion: null
+    });
+    const [selectedRegion, setSelectedRegion] = useState<string>('');
 
 
     useEffect(() => {
@@ -435,10 +443,19 @@ const AdminPage = () => {
             // Sync to user_roles collection for Firestore Rules
             const reg = registrations.find(r => r.id === id);
             if (reg && reg.uid) {
-                await setDoc(doc(db, 'user_roles', reg.uid), {
-                    role: 'super_admin',
-                    region: deleteField()
-                });
+                const userRoleRef = doc(db, 'user_roles', reg.uid);
+                const userRoleSnap = await getDoc(userRoleRef);
+
+                if (userRoleSnap.exists()) {
+                    await updateDoc(userRoleRef, {
+                        role: 'super_admin',
+                        region: deleteField()
+                    });
+                } else {
+                    await setDoc(userRoleRef, {
+                        role: 'super_admin'
+                    });
+                }
             }
 
             toast.success("User promoted to Super Admin");
@@ -473,6 +490,38 @@ const AdminPage = () => {
             toast.error("Failed to sync permissions", { id: toastId });
         } finally {
             setIsSyncing(false);
+        }
+    };
+
+    const initiateChangeRegion = (userId: string, currentRegion: string | null) => {
+        setChangeRegionDialog({ isOpen: true, userId, currentRegion });
+        setSelectedRegion(currentRegion || '');
+    };
+
+    const handleConfirmChangeRegion = async () => {
+        const { userId } = changeRegionDialog;
+        if (!userId || !selectedRegion) return;
+
+        try {
+            const ref = doc(db, 'registrations', userId);
+            await updateDoc(ref, {
+                region: selectedRegion
+            });
+
+            // If user is a regional admin, sync the new region to user_roles
+            const reg = registrations.find(r => r.id === userId);
+            if (reg && reg.uid && reg.role === 'regional_admin') {
+                const userRoleRef = doc(db, 'user_roles', reg.uid);
+                await setDoc(userRoleRef, {
+                    region: selectedRegion
+                }, { merge: true });
+            }
+
+            toast.success("User region updated successfully");
+            setChangeRegionDialog({ isOpen: false, userId: null, currentRegion: null });
+        } catch (error) {
+            console.error("Error updating region", error);
+            toast.error("Failed to update user region");
         }
     };
 
@@ -1082,6 +1131,12 @@ const AdminPage = () => {
                                                                 {reg.role === 'regional_admin' && (
                                                                     <Badge variant="secondary" className="mt-1 text-[10px] h-5">Regional Admin</Badge>
                                                                 )}
+                                                                {reg.role === 'super_admin' && (
+                                                                    <Badge className="mt-1 text-[10px] h-5 bg-indigo-500 hover:bg-indigo-600 border-indigo-500/20 text-white gap-1">
+                                                                        <ShieldCheck className="h-3 w-3" />
+                                                                        Super Admin
+                                                                    </Badge>
+                                                                )}
                                                             </TableCell>
                                                             <TableCell>
                                                                 <div className="text-sm">{reg.email}</div>
@@ -1177,6 +1232,10 @@ const AdminPage = () => {
                                                                                 <DropdownMenuItem onClick={() => promoteToSuperAdmin(reg.id)}>
                                                                                     <ShieldCheck className="mr-2 h-4 w-4 text-primary" />
                                                                                     Promote to Super Admin
+                                                                                </DropdownMenuItem>
+                                                                                <DropdownMenuItem onClick={() => initiateChangeRegion(reg.id, reg.region)}>
+                                                                                    <MapPin className="mr-2 h-4 w-4" />
+                                                                                    Change Region
                                                                                 </DropdownMenuItem>
                                                                                 <DropdownMenuItem onClick={() => handleDeleteRegistration(reg.id)} className="text-destructive focus:text-destructive">
                                                                                     <Trash2 className="mr-2 h-4 w-4" />
@@ -1405,6 +1464,40 @@ const AdminPage = () => {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            <Dialog open={changeRegionDialog.isOpen} onOpenChange={(open) => setChangeRegionDialog(prev => ({ ...prev, isOpen: open }))}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Change User Region</DialogTitle>
+                        <DialogDescription>
+                            Select the new region for this user. If the user is a Regional Admin, their administrative access will be moved to this new region.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4 space-y-4">
+                        <div className="space-y-2">
+                            <Label>Select Region</Label>
+                            <Select value={selectedRegion} onValueChange={setSelectedRegion}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a region" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {PHILIPPINE_REGIONS.map((region) => (
+                                        <SelectItem key={region} value={region}>
+                                            {getRegionShortName(region)}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setChangeRegionDialog({ isOpen: false, userId: null, currentRegion: null })}>Cancel</Button>
+                        <Button onClick={handleConfirmChangeRegion} disabled={!selectedRegion || selectedRegion === changeRegionDialog.currentRegion}>
+                            Update Region
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div >
     );
 };
