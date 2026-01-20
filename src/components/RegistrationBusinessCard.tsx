@@ -369,7 +369,7 @@ export const RegistrationBusinessCard = ({ registration, actions, hideFlipInstru
                   <div className="mt-0.5 sm:mt-1 flex items-center gap-2 content-center shrink-0">
                     <div
                       ref={logoRef}
-                      className="h-7 w-36 sm:h-14 sm:w-72 cursor-pointer"
+                      className="h-6 w-28 sm:h-14 sm:w-72 cursor-pointer"
                       onMouseEnter={() => replayAnimation()}
                       onClick={replayAnimation}
                     >
@@ -408,7 +408,7 @@ export const RegistrationBusinessCard = ({ registration, actions, hideFlipInstru
                       />
                     </div>
                   </div>
-                  <p className="text-3xl sm:text-6xl font-bold tracking-tight text-white leading-tight">{fullName}</p>
+                  <p ref={nameRef} className="text-2xl sm:text-6xl font-bold tracking-tight text-white leading-tight w-full">{fullName}</p>
                   <p className="text-[10px] sm:text-2xl text-muted-foreground mt-0.5 sm:mt-2 line-clamp-1">
                     {registration.registrantType === 'chedofficial' ? 'CHED Official' : registrantTypeLabel}
                     {registration.registrantType !== 'chedofficial' && registration.schoolAffiliation && ` • ${registration.schoolAffiliation}`}
@@ -416,7 +416,7 @@ export const RegistrationBusinessCard = ({ registration, actions, hideFlipInstru
                   </p>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 sm:gap-4 text-sm mb-4 sm:mb-4">
+                <div className="grid grid-cols-3 gap-2 sm:gap-4 text-sm mb-2 sm:mb-4">
                   <div>
                     <p className="uppercase tracking-wider text-muted-foreground font-semibold text-[8px] sm:text-sm">Valid Thru</p>
                     <p className="font-mono text-[9px] sm:text-2xl">02/30</p>

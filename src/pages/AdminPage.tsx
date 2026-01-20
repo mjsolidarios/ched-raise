@@ -95,6 +95,12 @@ const AdminPage = () => {
         reg: null
     });
 
+    // Promote Super Admin State
+    const [promoteSuperAdminConfirmation, setPromoteSuperAdminConfirmation] = useState<{ isOpen: boolean; id: string | null }>({
+        isOpen: false,
+        id: null
+    });
+
 
     useEffect(() => {
         // Subscribe to global settings
@@ -191,6 +197,11 @@ const AdminPage = () => {
         if (registrations.length > 0 && adminRole === 'super_admin') {
             console.log("🔄 Syncing public stats...");
             const stats: Record<string, { count: number, avatars: { seed: string, color: string, firstName?: string, id?: string, ticketCode?: string }[] }> = {};
+
+            // Initialize all regions with 0
+            PHILIPPINE_REGIONS.forEach(region => {
+                stats[region] = { count: 0, avatars: [] };
+            });
 
             // Re-calculate stats from the full list
             registrations.forEach(repo => { // repo? variable naming in map below suggests 'registrationsData' items
@@ -398,6 +409,44 @@ const AdminPage = () => {
         } catch (error) {
             console.error("Error promoting user", error);
             toast.error("Failed to promote user");
+        }
+    };
+
+    const promoteToSuperAdmin = async (id: string) => {
+        if (adminRole !== 'super_admin') {
+            toast.error("Only Super Admins can promote users.");
+            return;
+        }
+
+        setPromoteSuperAdminConfirmation({ isOpen: true, id });
+    };
+
+    const handleConfirmPromoteSuperAdmin = async () => {
+        const id = promoteSuperAdminConfirmation.id;
+        if (!id) return;
+
+        try {
+            const ref = doc(db, 'registrations', id);
+            await updateDoc(ref, {
+                role: 'super_admin',
+                region: deleteField()
+            });
+
+            // Sync to user_roles collection for Firestore Rules
+            const reg = registrations.find(r => r.id === id);
+            if (reg && reg.uid) {
+                await setDoc(doc(db, 'user_roles', reg.uid), {
+                    role: 'super_admin',
+                    region: deleteField()
+                });
+            }
+
+            toast.success("User promoted to Super Admin");
+        } catch (error) {
+            console.error("Error promoting user", error);
+            toast.error("Failed to promote user");
+        } finally {
+            setPromoteSuperAdminConfirmation({ isOpen: false, id: null });
         }
     };
 
@@ -1125,6 +1174,10 @@ const AdminPage = () => {
                                                                                     <CheckCircle2 className="mr-2 h-4 w-4" />
                                                                                     Promote to Regional Admin
                                                                                 </DropdownMenuItem>
+                                                                                <DropdownMenuItem onClick={() => promoteToSuperAdmin(reg.id)}>
+                                                                                    <ShieldCheck className="mr-2 h-4 w-4 text-primary" />
+                                                                                    Promote to Super Admin
+                                                                                </DropdownMenuItem>
                                                                                 <DropdownMenuItem onClick={() => handleDeleteRegistration(reg.id)} className="text-destructive focus:text-destructive">
                                                                                     <Trash2 className="mr-2 h-4 w-4" />
                                                                                     Delete Registration
@@ -1330,6 +1383,25 @@ const AdminPage = () => {
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={handleConfirmDeleteSurvey}>Delete Survey</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={promoteSuperAdminConfirmation.isOpen} onOpenChange={(open) => setPromoteSuperAdminConfirmation(prev => ({ ...prev, isOpen: open }))}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Promote to Super Admin?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to promote this user to <strong>Super Admin</strong>?
+                            <br /><br />
+                            <span className="text-amber-500 font-medium">Warning:</span> This will grant them <strong>full access</strong> to the entire system, including all regions and settings. This action cannot be easily undone by them.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmPromoteSuperAdmin} className="bg-primary hover:bg-primary/90">
+                            Promote to Super Admin
+                        </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
