@@ -8,7 +8,9 @@ import {
     orderBy,
     Timestamp,
     deleteDoc,
-    doc
+    doc,
+    onSnapshot,
+    type Unsubscribe
 } from 'firebase/firestore';
 
 export interface AttendanceRecord {
@@ -135,6 +137,48 @@ export async function getAttendanceRecords(): Promise<AttendanceRecord[]> {
         console.error('Error fetching attendance records:', error);
         return [];
     }
+}
+
+/**
+ * Subscribe to all attendance records (Real-time)
+ */
+export function subscribeToAttendance(callback: (records: AttendanceRecord[]) => void): Unsubscribe {
+    const attendanceRef = collection(db, 'attendance');
+    const q = query(attendanceRef, orderBy('timestamp', 'desc'));
+
+    return onSnapshot(q, (snapshot) => {
+        const records = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        } as AttendanceRecord));
+        callback(records);
+    }, (error) => {
+        console.error('Error subscribing to attendance records:', error);
+        callback([]);
+    });
+}
+
+/**
+ * Subscribe to attendance records for a specific registration (Real-time)
+ */
+export function subscribeToUserAttendance(registrationId: string, callback: (records: AttendanceRecord[]) => void): Unsubscribe {
+    const attendanceRef = collection(db, 'attendance');
+    const q = query(
+        attendanceRef,
+        where('registrationId', '==', registrationId),
+        orderBy('timestamp', 'desc')
+    );
+
+    return onSnapshot(q, (snapshot) => {
+        const records = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        } as AttendanceRecord));
+        callback(records);
+    }, (error) => {
+        console.error('Error subscribing to user attendance:', error);
+        callback([]);
+    });
 }
 
 /**

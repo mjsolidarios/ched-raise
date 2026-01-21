@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Scan, Keyboard, CheckCircle, XCircle, Loader2, RefreshCw } from 'lucide-react';
+import { Scan, Keyboard, CheckCircle, XCircle, Loader2, RefreshCw, Pause, Play } from 'lucide-react';
 import { recordAttendance } from '@/lib/attendanceService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -19,7 +19,9 @@ export function AttendanceScanner({ scannedBy, onSuccess }: AttendanceScannerPro
     const [isProcessing, setIsProcessing] = useState(false);
     const [lastResult, setLastResult] = useState<{ success: boolean; message: string } | null>(null);
     const [scannerError, setScannerError] = useState<string | null>(null);
+    const [isPaused, setIsPaused] = useState(false);
     const scannerRef = useRef<Html5Qrcode | null>(null);
+    const isScannerRunning = useRef(false);
     const scannerContainerId = "attendance-scanner-reader";
 
     // Initialize/Cleanup Scanner
@@ -30,15 +32,17 @@ export function AttendanceScanner({ scannedBy, onSuccess }: AttendanceScannerPro
             if (mode !== 'scan') return;
 
             // Cleanup previous instance if any
-            if (scannerRef.current) {
+            if (scannerRef.current && isScannerRunning.current) {
                 try {
                     await scannerRef.current.stop();
                     scannerRef.current.clear();
+                    isScannerRunning.current = false;
                 } catch (e) {
                     console.warn("Cleanup error:", e);
                 }
-                scannerRef.current = null;
             }
+            // If instance exists but not running (failed start or cleared), just null it
+            scannerRef.current = null;
 
             // Small delay to ensure DOM is ready
             await new Promise(resolve => setTimeout(resolve, 100));
@@ -71,13 +75,27 @@ export function AttendanceScanner({ scannedBy, onSuccess }: AttendanceScannerPro
                         // ignore frame errors
                     }
                 );
-                setScannerError(null);
+
+                if (isMounted) {
+                    isScannerRunning.current = true;
+                    setScannerError(null);
+                } else {
+                    // Start finished but we unmounted
+                    try {
+                        await html5QrCode.stop();
+                        html5QrCode.clear();
+                    } catch (e) { console.warn("Unmount cleanup error", e); }
+                }
+
             } catch (err) {
                 console.error("Failed to start scanner", err);
                 if (isMounted) {
                     setScannerError("Could not access camera. Please ensure permissions are granted.");
                     toast.error("Camera access failed");
                 }
+                // Ensure ref is null if start failed
+                scannerRef.current = null;
+                isScannerRunning.current = false;
             }
         };
 
@@ -87,7 +105,8 @@ export function AttendanceScanner({ scannedBy, onSuccess }: AttendanceScannerPro
 
         return () => {
             isMounted = false;
-            if (scannerRef.current) {
+            if (scannerRef.current && isScannerRunning.current) {
+                isScannerRunning.current = false; // Mark as stopping immediately
                 scannerRef.current.stop().then(() => {
                     scannerRef.current?.clear();
                 }).catch(err => {
@@ -168,6 +187,28 @@ export function AttendanceScanner({ scannedBy, onSuccess }: AttendanceScannerPro
         setTimeout(() => setMode('scan'), 100);
     };
 
+    const togglePause = async () => {
+        if (!scannerRef.current) return;
+
+        if (isPaused) {
+            try {
+                await scannerRef.current.resume();
+                setIsPaused(false);
+            } catch (e) {
+                console.warn("Resume error", e);
+                toast.error("Failed to resume scanner");
+            }
+        } else {
+            try {
+                await scannerRef.current.pause();
+                setIsPaused(true);
+            } catch (e) {
+                console.warn("Pause error", e);
+                setIsPaused(true); // Treat as paused anyway UI wise
+            }
+        }
+    };
+
     return (
         <Card className="glass-card border-white/10">
             <CardHeader>
@@ -219,6 +260,39 @@ export function AttendanceScanner({ scannedBy, onSuccess }: AttendanceScannerPro
                         {!scannerError && <p className="text-xs text-center text-muted-foreground p-2 absolute bottom-0 left-0 right-0 bg-black/50 z-10">
                             Point camera at QR code
                         </p>}
+
+                        {/* Pause Overlay */}
+                        {isPaused && (
+                            <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-20 backdrop-blur-sm">
+                                <Pause className="h-12 w-12 text-white/50 mb-2" />
+                                <p className="text-white font-medium">Scanner Paused</p>
+                                <Button variant="secondary" size="sm" className="mt-4" onClick={togglePause}>
+                                    <Play className="h-4 w-4 mr-2" /> Resume
+                                </Button>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Scanner Controls */}
+                {mode === 'scan' && !scannerError && (
+                    <div className="flex justify-center">
+                        <Button
+                            variant={isPaused ? "default" : "secondary"}
+                            size="sm"
+                            onClick={togglePause}
+                            className="w-full"
+                        >
+                            {isPaused ? (
+                                <>
+                                    <Play className="h-4 w-4 mr-2" /> Resume Scanning
+                                </>
+                            ) : (
+                                <>
+                                    <Pause className="h-4 w-4 mr-2" /> Pause Scanning
+                                </>
+                            )}
+                        </Button>
                     </div>
                 )}
 

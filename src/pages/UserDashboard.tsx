@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Github } from '@uiw/react-color';
 import { GithubPlacement } from '@uiw/react-color-github';
 import { db, auth } from '@/lib/firebase';
-import { deleteAttendanceForRegistration } from '@/lib/attendanceService';
+import { deleteAttendanceForRegistration, subscribeToUserAttendance, type AttendanceRecord } from '@/lib/attendanceService';
 import { SearchableSelect } from '@/components/SearchableSelect';
 
 import { collection, addDoc, deleteDoc, updateDoc, doc, serverTimestamp, query, where, onSnapshot, getDocs } from 'firebase/firestore';
@@ -40,7 +40,7 @@ import {
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { onAuthStateChanged, type User } from 'firebase/auth';
-import { Loader2, CalendarDays, Mail, Phone, CheckCircle2, XCircle, Clock, Pencil, InfoIcon, EditIcon, RefreshCcw, Circle, AlertCircle, MailCheckIcon, ClipboardCheck, BarChart3 } from 'lucide-react';
+import { Loader2, CalendarDays, Mail, Phone, CheckCircle2, XCircle, Clock, Pencil, Info, Edit, RefreshCcw, Circle, AlertCircle, MailCheckIcon, ClipboardCheck, BarChart3, Scan, Keyboard } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useGSAPScroll, fadeInUp, slideInLeft, slideInRight } from '@/hooks/useGSAPScroll';
 import { RegistrationProgress } from '@/components/RegistrationProgress';
@@ -82,6 +82,9 @@ const UserDashboard = () => {
     const [avatarSeed, setAvatarSeed] = useState<string>('');
     const [avatarColor, setAvatarColor] = useState<string>('#5b8def'); // Default primary color
     const [showColorPicker, setShowColorPicker] = useState(false);
+
+    // Attendance State
+    const [attendanceHistory, setAttendanceHistory] = useState<AttendanceRecord[]>([]);
 
     // Animation Refs
     const headerRef = useRef<HTMLDivElement>(null);
@@ -198,6 +201,17 @@ const UserDashboard = () => {
 
         return () => unsubscribe();
     }, [user]);
+
+    // Subscribe to attendance history
+    useEffect(() => {
+        if (!registration?.id) return;
+
+        const unsubscribe = subscribeToUserAttendance(registration.id, (records) => {
+            setAttendanceHistory(records);
+        });
+
+        return () => unsubscribe();
+    }, [registration?.id]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -633,7 +647,7 @@ const UserDashboard = () => {
                                 </Card>
 
                                 <div className="flex items-center justify-center">
-                                    <p className="text-sm sm:text-base text-muted-foreground mt-1 flex items-center"><InfoIcon className="w-4 h-4 mr-2" /> Tap the card to view your code or <EditIcon className="w-4 h-4 mx-2" /> to update your registration details.</p>
+                                    <p className="text-sm sm:text-base text-muted-foreground mt-1 flex items-center"><Info className="w-4 h-4 mr-2" /> Tap the card to view your code or <Edit className="w-4 h-4 mx-2" /> to update your registration details.</p>
                                 </div>
 
                                 <RegistrationBusinessCard
@@ -653,6 +667,137 @@ const UserDashboard = () => {
                                         </Button>
                                     }
                                 />
+                            </div>
+
+                            {/* Attendance History */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2 }}
+                                className="max-w-3xl mx-auto"
+                            >
+                                <Card className="glass-card border-white/10">
+                                    <CardHeader>
+                                        <CardTitle className="text-lg flex items-center gap-2">
+                                            <Clock className="h-5 w-5 text-primary" />
+                                            Attendance History
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        {attendanceHistory.length === 0 ? (
+                                            <div className="text-center py-8 text-muted-foreground">
+                                                <p>No attendance records found yet.</p>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-3">
+                                                {attendanceHistory.map((record) => (
+                                                    <div key={record.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-lg bg-white/5 border border-white/10 gap-3 sm:gap-0">
+                                                        <div className="flex items-center gap-3">
+                                                            {record.method === 'scan' ? (
+                                                                <div className="p-2 rounded-full bg-blue-500/10 text-blue-500">
+                                                                    <Scan className="h-4 w-4" />
+                                                                </div>
+                                                            ) : (
+                                                                <div className="p-2 rounded-full bg-purple-500/10 text-purple-500">
+                                                                    <Keyboard className="h-4 w-4" />
+                                                                </div>
+                                                            )}
+                                                            <div>
+                                                                <p className="font-medium text-sm">
+                                                                    {record.method === 'scan' ? 'Scanned Entry' : 'Manual Entry'}
+                                                                </p>
+                                                                <p className="text-xs text-muted-foreground">
+                                                                    {new Date(record.timestamp.seconds * 1000).toLocaleDateString()}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-end w-full sm:w-auto pl-11 sm:pl-0">
+                                                            <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 mb-0 sm:mb-1">
+                                                                Present
+                                                            </Badge>
+                                                            <p className="text-xs text-muted-foreground font-mono">
+                                                                {new Date(record.timestamp.seconds * 1000).toLocaleTimeString()}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
+
+                            <div ref={statsRef} className="opacity-0 max-w-3xl mx-auto pt-8">
+                                <Card className="glass-card border-none shadow-lg">
+                                    <CardHeader>
+                                        <CardTitle className="text-base flex items-center gap-2">
+                                            <BarChart3 className="h-4 w-4 text-primary" />
+                                            Who are RAISE-ing with us?
+                                        </CardTitle>
+                                        <CardDescription>Here are our current registrants so far.</CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                                            {regionStats.length === 0 ? (
+                                                <div className="text-center py-8 text-muted-foreground">
+                                                    No data available yet
+                                                </div>
+                                            ) : (
+                                                regionStats.map((stat, index) => {
+                                                    const isTop3 = index < 3;
+
+                                                    // Take only top 7 avatars
+                                                    const displayAvatars = stat.avatars?.slice(0, 7) || [];
+                                                    const hasMore = (stat.avatars?.length || 0) > 7 || stat.value > 7;
+
+                                                    return (
+                                                        <div key={stat.name} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                                                            <div className="flex items-center gap-3">
+                                                                <span className={`flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold shrink-0 ${isTop3 ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                                                                    {index + 1}
+                                                                </span>
+                                                                <span className="font-medium text-sm truncate max-w-[120px] sm:max-w-[150px]" title={stat.name}>
+                                                                    {getRegionShortName(stat.name)}
+                                                                </span>
+                                                            </div>
+
+                                                            <div className="flex items-center -space-x-2 overflow-hidden pl-2 pb-2 pt-1">
+                                                                <TooltipProvider>
+                                                                    {displayAvatars.map((avatar, i) => (
+                                                                        <Tooltip key={i}>
+                                                                            <TooltipTrigger asChild>
+                                                                                <div className="relative z-10 inline-block h-8 w-8 rounded-full ring-2 ring-background transition-transform duration-200 hover:scale-125 hover:z-20 cursor-pointer">
+                                                                                    <UserAvatar
+                                                                                        seed={(registration && (avatar.id === registration.id || (registration.ticketCode && avatar.ticketCode === registration.ticketCode) || (registration.ticketCode && avatar.seed === registration.ticketCode))) ? (registration.avatarSeed || registration.ticketCode || registration.id) : avatar.seed}
+                                                                                        size={32}
+                                                                                        color={
+                                                                                            (registration && (avatar.id === registration.id || (registration.ticketCode && avatar.ticketCode === registration.ticketCode) || (registration.ticketCode && avatar.seed === registration.ticketCode)))
+                                                                                                ? registration.avatarColor
+                                                                                                : ((!avatar.color || avatar.color === '#000000') ? undefined : avatar.color)
+                                                                                        }
+                                                                                        className="h-full w-full"
+                                                                                    />
+                                                                                </div>
+                                                                            </TooltipTrigger>
+                                                                            <TooltipContent>
+                                                                                <p className="text-xs font-semibold">{avatar.firstName || 'Participant'}</p>
+                                                                            </TooltipContent>
+                                                                        </Tooltip>
+                                                                    ))}
+                                                                </TooltipProvider>
+                                                                {hasMore && (
+                                                                    <div className="relative z-0 inline-block flex items-center justify-center h-8 w-8 rounded-full bg-muted ring-2 ring-background text-[10px] font-bold text-muted-foreground ml-1">
+                                                                        +{stat.value - displayAvatars.length}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })
+                                            )}
+                                        </div>
+                                    </CardContent>
+                                </Card>
                             </div>
 
                             <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
@@ -1026,80 +1171,9 @@ const UserDashboard = () => {
                         </Card>
                     </div>
                 </div>
-                <div ref={statsRef} className="opacity-0">
-                    <Card className="glass-card border-none shadow-lg">
-                        <CardHeader>
-                            <CardTitle className="text-base flex items-center gap-2">
-                                <BarChart3 className="h-4 w-4 text-primary" />
-                                Who are RAISE-ing with us?
-                            </CardTitle>
-                            <CardDescription>Here are our current registrants so far.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                                {regionStats.length === 0 ? (
-                                    <div className="text-center py-8 text-muted-foreground">
-                                        No data available yet
-                                    </div>
-                                ) : (
-                                    regionStats.map((stat, index) => {
-                                        const isTop3 = index < 3;
-
-                                        // Take only top 7 avatars
-                                        const displayAvatars = stat.avatars?.slice(0, 7) || [];
-                                        const hasMore = (stat.avatars?.length || 0) > 7 || stat.value > 7;
-
-                                        return (
-                                            <div key={stat.name} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-                                                <div className="flex items-center gap-3">
-                                                    <span className={`flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold shrink-0 ${isTop3 ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
-                                                        {index + 1}
-                                                    </span>
-                                                    <span className="font-medium text-sm truncate max-w-[120px] sm:max-w-[150px]" title={stat.name}>
-                                                        {getRegionShortName(stat.name)}
-                                                    </span>
-                                                </div>
-
-                                                <div className="flex items-center -space-x-2 overflow-hidden pl-2 pb-2 pt-1">
-                                                    <TooltipProvider>
-                                                        {displayAvatars.map((avatar, i) => (
-                                                            <Tooltip key={i}>
-                                                                <TooltipTrigger asChild>
-                                                                    <div className="relative z-10 inline-block h-8 w-8 rounded-full ring-2 ring-background transition-transform duration-200 hover:scale-125 hover:z-20 cursor-pointer">
-                                                                        <UserAvatar
-                                                                            seed={(registration && (avatar.id === registration.id || (registration.ticketCode && avatar.ticketCode === registration.ticketCode) || (registration.ticketCode && avatar.seed === registration.ticketCode))) ? (registration.avatarSeed || registration.ticketCode || registration.id) : avatar.seed}
-                                                                            size={32}
-                                                                            color={
-                                                                                (registration && (avatar.id === registration.id || (registration.ticketCode && avatar.ticketCode === registration.ticketCode) || (registration.ticketCode && avatar.seed === registration.ticketCode)))
-                                                                                    ? registration.avatarColor
-                                                                                    : ((!avatar.color || avatar.color === '#000000') ? undefined : avatar.color)
-                                                                            }
-                                                                            className="h-full w-full"
-                                                                        />
-                                                                    </div>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent>
-                                                                    <p className="text-xs font-semibold">{avatar.firstName || 'Participant'}</p>
-                                                                </TooltipContent>
-                                                            </Tooltip>
-                                                        ))}
-                                                    </TooltipProvider>
-                                                    {hasMore && (
-                                                        <div className="relative z-0 inline-block flex items-center justify-center h-8 w-8 rounded-full bg-muted ring-2 ring-background text-[10px] font-bold text-muted-foreground ml-1">
-                                                            +{stat.value - displayAvatars.length}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        );
-                                    })
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
             </div>
-        </div >
+        </div>
+
     );
 };
 

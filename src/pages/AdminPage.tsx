@@ -28,7 +28,7 @@ import { Link } from 'react-router-dom';
 import { UserAvatar, getDeterministicAvatarColor } from '@/components/UserAvatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AttendanceScanner } from '@/components/AttendanceScanner';
-import { getAttendanceRecords, getAttendanceStats, type AttendanceRecord, type AttendanceStats } from '@/lib/attendanceService';
+import { getAttendanceRecords, getAttendanceStats, deleteAttendanceRecord, subscribeToAttendance, type AttendanceRecord, type AttendanceStats } from '@/lib/attendanceService';
 import { getRegionShortName, PHILIPPINE_REGIONS } from '@/lib/regions';
 import axios from 'axios';
 import {
@@ -108,6 +108,9 @@ const AdminPage = () => {
         currentRegion: null
     });
     const [selectedRegion, setSelectedRegion] = useState<string>('');
+
+    // Delete Attendance State
+    const [attendanceRecordToDelete, setAttendanceRecordToDelete] = useState<string | null>(null);
 
 
     useEffect(() => {
@@ -305,19 +308,26 @@ const AdminPage = () => {
         }
     }, [user, userDataLoaded, adminRole, adminRegion]);
 
-    // Load attendance data
+    // Load attendance data (Real-time)
     useEffect(() => {
-        if (user) {
-            loadAttendanceData();
-        }
+        if (!user) return;
+
+        // Initial Stats Load
+        getAttendanceStats().then(setAttendanceStats);
+
+        // Subscribe to Records
+        const unsubscribe = subscribeToAttendance((records) => {
+            setAttendanceRecords(records);
+            // Refresh stats when records change
+            getAttendanceStats().then(setAttendanceStats);
+        });
+
+        return () => unsubscribe();
     }, [user]);
 
     const loadAttendanceData = async () => {
-        const [records, stats] = await Promise.all([
-            getAttendanceRecords(),
-            getAttendanceStats()
-        ]);
-        setAttendanceRecords(records);
+        // Fallback or manual refresh if needed, but subscription handles main data
+        const stats = await getAttendanceStats();
         setAttendanceStats(stats);
     };
 
@@ -638,6 +648,25 @@ const AdminPage = () => {
             toast.error("Failed to delete survey entry.");
         } finally {
             setDeleteSurveyConfirmation({ isOpen: false, reg: null });
+        }
+    };
+
+    const handleConfirmDeleteAttendance = async () => {
+        if (!attendanceRecordToDelete) return;
+
+        try {
+            const result = await deleteAttendanceRecord(attendanceRecordToDelete);
+            if (result.success) {
+                toast.success(result.message);
+                loadAttendanceData(); // Refresh list
+            } else {
+                toast.error(result.message);
+            }
+        } catch (error) {
+            console.error("Error deleting attendance record", error);
+            toast.error("Failed to delete attendance record");
+        } finally {
+            setAttendanceRecordToDelete(null);
         }
     };
 
@@ -1497,7 +1526,7 @@ const AdminPage = () => {
                                                 ) : (
                                                     filteredAttendanceRecords.map((record) => (
                                                         <motion.div key={record.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="p-4 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-colors">
-                                                            <div className="flex items-start justify-between">
+                                                            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-0">
                                                                 <div className="flex-1">
                                                                     <div className="flex items-center gap-2 mb-1">
                                                                         <h3 className="font-semibold">{record.attendeeName}</h3>
@@ -1508,9 +1537,22 @@ const AdminPage = () => {
                                                                     <p className="text-sm text-muted-foreground">{record.attendeeEmail}</p>
                                                                     <p className="text-xs text-muted-foreground font-mono mt-1">ID: {record.ticketCode}</p>
                                                                 </div>
-                                                                <div className="text-right">
-                                                                    <p className="text-sm font-medium">{record.timestamp.toDate().toLocaleDateString()}</p>
-                                                                    <p className="text-xs text-muted-foreground">{record.timestamp.toDate().toLocaleTimeString()}</p>
+                                                                <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto mt-2 sm:mt-0">
+                                                                    <div className="text-left sm:text-right mr-4 sm:mr-0">
+                                                                        <p className="text-sm font-medium">{record.timestamp.toDate().toLocaleDateString()}</p>
+                                                                        <p className="text-xs text-muted-foreground">{record.timestamp.toDate().toLocaleTimeString()}</p>
+                                                                    </div>
+                                                                    {adminRole === 'super_admin' && record.id && (
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            size="icon"
+                                                                            className="h-8 w-8 ml-2 text-red-500 hover:text-red-400 hover:bg-red-950/20"
+                                                                            onClick={() => setAttendanceRecordToDelete(record.id!)}
+                                                                            title="Delete Record"
+                                                                        >
+                                                                            <Trash2 className="h-4 w-4" />
+                                                                        </Button>
+                                                                    )}
                                                                 </div>
                                                             </div>
                                                         </motion.div>
@@ -1632,6 +1674,26 @@ const AdminPage = () => {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            <AlertDialog open={!!attendanceRecordToDelete} onOpenChange={(open) => !open && setAttendanceRecordToDelete(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Attendance Record?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently remove the attendance record for this user.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleConfirmDeleteAttendance}
+                            className="bg-red-500 hover:bg-red-600 text-white"
+                        >
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div >
     );
 };

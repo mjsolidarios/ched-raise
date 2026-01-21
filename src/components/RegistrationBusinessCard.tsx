@@ -202,46 +202,32 @@ export const RegistrationBusinessCard = ({ registration, actions, hideFlipInstru
 
   useFitText(nameRef, maxLines);
 
-  const handleDownload = async (e: React.MouseEvent) => {
+  const handleDownload = async (e: React.MouseEvent, side: 'front' | 'back') => {
     e.stopPropagation();
 
-    if (frontRef.current && backRef.current) {
-      try {
-        const { offsetWidth, offsetHeight } = frontRef.current;
-        const options = {
-          cacheBust: true,
-          pixelRatio: 2,
-          width: offsetWidth,
-          height: offsetHeight,
-          fontEmbedCSS: '',
-          backgroundColor: '#0f172a', // Dark blue background (slate-900)
-        };
+    const element = side === 'front' ? frontRef.current : backRef.current;
+    if (!element) return;
 
-        const dataUrlFront = await toPng(frontRef.current, options);
-        // Create a dummy link to trigger download
-        const link = document.createElement('a');
-        link.download = `raise-id-${registration.id}-front.png`;
-        link.href = dataUrlFront;
-        link.click();
+    try {
+      const { offsetWidth, offsetHeight } = element;
+      const options = {
+        cacheBust: true,
+        pixelRatio: 2,
+        width: offsetWidth,
+        height: offsetHeight,
+        fontEmbedCSS: '',
+        backgroundColor: '#0f172a', // Dark blue background (slate-900)
+        style: side === 'back' ? { transform: 'none' } : undefined // Ensure back isn't mirrored if it was flipped
+      };
 
-        // Small delay to ensure browser handles first download
-        setTimeout(async () => {
-          if (backRef.current) {
-            // Remove transform for capture to ensure it's not mirrored
-            const dataUrlBack = await toPng(backRef.current, {
-              ...options,
-              style: { transform: 'none' }
-            });
-            const linkBack = document.createElement('a');
-            linkBack.download = `raise-id-${registration.id}-back.png`;
-            linkBack.href = dataUrlBack;
-            linkBack.click();
-          }
-        }, 500);
+      const dataUrl = await toPng(element, options);
+      const link = document.createElement('a');
+      link.download = `raise-id-${registration.id}-${side}.png`;
+      link.href = dataUrl;
+      link.click();
 
-      } catch (err) {
-        console.error('Could not generate image', err);
-      }
+    } catch (err) {
+      console.error('Could not generate image', err);
     }
   };
 
@@ -572,14 +558,22 @@ export const RegistrationBusinessCard = ({ registration, actions, hideFlipInstru
       </div>
 
       {!hideDownloadButton && (
-        <div className="flex justify-center mt-4 sm:mt-6">
+        <div className="flex flex-wrap justify-center gap-3 mt-6 mb-8">
           <Button
-            onClick={handleDownload}
+            onClick={(e) => handleDownload(e, 'front')}
             variant="outline"
             className="group/btn gap-2 shadow-sm hover:shadow-md transition-all rounded-full bg-white/50 backdrop-blur-sm border-white/20 hover:bg-white/80"
           >
             <Download className="w-4 h-4 text-foreground/70 group-hover/btn:text-primary transition-colors" />
-            <span className="text-foreground/80 group-hover/btn:text-foreground">Download ID</span>
+            <span className="text-foreground/80 group-hover/btn:text-foreground">Download Front</span>
+          </Button>
+          <Button
+            onClick={(e) => handleDownload(e, 'back')}
+            variant="outline"
+            className="group/btn gap-2 shadow-sm hover:shadow-md transition-all rounded-full bg-white/50 backdrop-blur-sm border-white/20 hover:bg-white/80"
+          >
+            <Download className="w-4 h-4 text-foreground/70 group-hover/btn:text-primary transition-colors" />
+            <span className="text-foreground/80 group-hover/btn:text-foreground">Download Back</span>
           </Button>
         </div>
       )}
