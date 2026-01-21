@@ -21,7 +21,7 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu"
-import { Users, Clock, CheckCircle2, XCircle, Search, Loader2, Scan, Keyboard, Mail, Trash2, MoreHorizontal, Copy, BarChart3, ArrowUpDown, ArrowUp, ArrowDown, Filter, ShieldCheck, Activity, MapPin } from 'lucide-react';
+import { Users, Clock, CheckCircle2, XCircle, Search, Loader2, Scan, Keyboard, Mail, Trash2, MoreHorizontal, Copy, BarChart3, ArrowUpDown, ArrowUp, ArrowDown, Filter, ShieldCheck, Activity, MapPin, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 // Recharts removed as we switched to list view
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -737,6 +737,17 @@ const AdminPage = () => {
         return filtered;
     }, [registrations, searchTerm, regionFilter, sortColumn, sortDirection]);
 
+    // Pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+
+    const totalPages = Math.ceil(filteredRegistrations.length / itemsPerPage);
+
+    const paginatedRegistrations = useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return filteredRegistrations.slice(startIndex, startIndex + itemsPerPage);
+    }, [filteredRegistrations, currentPage, itemsPerPage]);
+
 
 
     // Local stats for table-dependent metrics (like Top Cards)
@@ -905,12 +916,12 @@ const AdminPage = () => {
                         </div>
 
                         {adminRole === 'super_admin' && (
-                            <div className="flex items-center gap-3">
+                            <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
                                 <Button
                                     variant="outline"
                                     onClick={syncPermissions}
                                     disabled={isSyncing}
-                                    className={`h-10 px-4 transition-all duration-300 border-white/10 bg-black/20 hover:bg-black/40 hover:text-primary ${syncSuccess ? 'border-emerald-500/50 text-emerald-500 bg-emerald-500/10' : ''}`}
+                                    className={`h-10 px-4 transition-all duration-300 border-white/10 bg-black/20 hover:bg-black/40 hover:text-primary justify-center ${syncSuccess ? 'border-emerald-500/50 text-emerald-500 bg-emerald-500/10' : ''}`}
                                 >
                                     {isSyncing ? (
                                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -925,7 +936,7 @@ const AdminPage = () => {
                                 <Button
                                     variant={eventStatus === 'ongoing' ? "destructive" : "default"}
                                     onClick={toggleEventStatus}
-                                    className="h-10 px-6 shadow-lg shadow-black/20"
+                                    className="h-10 px-6 shadow-lg shadow-black/20 justify-center"
                                 >
                                     {eventStatus === 'ongoing' ? 'Finish Event' : 'Re-open Event'}
                                 </Button>
@@ -1035,7 +1046,10 @@ const AdminPage = () => {
                                                 placeholder="Search names, emails, regions..."
                                                 className="pl-8 bg-background/50 w-full"
                                                 value={searchTerm}
-                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                onChange={(e) => {
+                                                    setSearchTerm(e.target.value);
+                                                    setCurrentPage(1); // Reset to page 1 on search
+                                                }}
                                             />
                                         </div>
                                     </div>
@@ -1107,14 +1121,14 @@ const AdminPage = () => {
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
-                                                {filteredRegistrations.length === 0 ? (
+                                                {paginatedRegistrations.length === 0 ? (
                                                     <TableRow>
                                                         <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                                                             No registrations found.
                                                         </TableCell>
                                                     </TableRow>
                                                 ) : (
-                                                    filteredRegistrations.map((reg) => (
+                                                    paginatedRegistrations.map((reg) => (
                                                         <TableRow key={reg.id} className="hover:bg-muted/30 transition-colors">
                                                             <TableCell>
                                                                 <div className="flex items-center gap-3">
@@ -1270,12 +1284,12 @@ const AdminPage = () => {
 
                                     {/* Mobile View - Cards */}
                                     <div className="md:hidden space-y-4">
-                                        {filteredRegistrations.length === 0 ? (
+                                        {paginatedRegistrations.length === 0 ? (
                                             <div className="text-center py-12 text-muted-foreground border border-dashed border-border/50 rounded-lg">
                                                 No registrations found.
                                             </div>
                                         ) : (
-                                            filteredRegistrations.map((reg) => (
+                                            paginatedRegistrations.map((reg) => (
                                                 <div key={reg.id} className="p-4 rounded-lg border border-white/10 bg-white/5 space-y-3">
                                                     <div className="flex items-start justify-between">
                                                         <div className="flex items-center gap-3">
@@ -1400,6 +1414,74 @@ const AdminPage = () => {
                                             ))
                                         )}
                                     </div>
+
+                                    {/* Pagination Controls */}
+                                    {filteredRegistrations.length > 0 && (
+                                        <div className="flex flex-col md:flex-row items-center justify-between p-4 border-t border-border/50 gap-4">
+                                            <div className="text-sm text-muted-foreground order-2 md:order-1">
+                                                Showing {Math.min((currentPage - 1) * itemsPerPage + 1, filteredRegistrations.length)} to {Math.min(currentPage * itemsPerPage, filteredRegistrations.length)} of {filteredRegistrations.length} entries
+                                            </div>
+                                            <div className="flex items-center gap-2 order-1 md:order-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="icon"
+                                                    onClick={() => setCurrentPage(1)}
+                                                    disabled={currentPage === 1}
+                                                    title="First Page"
+                                                >
+                                                    <ChevronsLeft className="h-4 w-4" />
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="icon"
+                                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                                    disabled={currentPage === 1}
+                                                    title="Previous Page"
+                                                >
+                                                    <ChevronLeft className="h-4 w-4" />
+                                                </Button>
+                                                <span className="text-sm font-medium mx-2 min-w-[3rem] text-center">
+                                                    Page {currentPage} of {totalPages}
+                                                </span>
+                                                <Button
+                                                    variant="outline"
+                                                    size="icon"
+                                                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                                    disabled={currentPage === totalPages}
+                                                    title="Next Page"
+                                                >
+                                                    <ChevronRight className="h-4 w-4" />
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="icon"
+                                                    onClick={() => setCurrentPage(totalPages)}
+                                                    disabled={currentPage === totalPages}
+                                                    title="Last Page"
+                                                >
+                                                    <ChevronsRight className="h-4 w-4" />
+                                                </Button>
+
+                                                <Select
+                                                    value={itemsPerPage.toString()}
+                                                    onValueChange={(val) => {
+                                                        setItemsPerPage(Number(val));
+                                                        setCurrentPage(1);
+                                                    }}
+                                                >
+                                                    <SelectTrigger className="w-[70px] ml-2 h-9">
+                                                        <SelectValue placeholder="10" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="10">10</SelectItem>
+                                                        <SelectItem value="20">20</SelectItem>
+                                                        <SelectItem value="50">50</SelectItem>
+                                                        <SelectItem value="100">100</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                        </div>
+                                    )}
                                 </CardContent>
                             </Card>
 
