@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Link } from 'react-router-dom';
+import { SchoolAutocomplete } from '@/components/SchoolAutocomplete';
 
 const RegistrationPage = () => {
     const [formData, setFormData] = useState({
@@ -23,9 +24,23 @@ const RegistrationPage = () => {
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState<'idle' | 'success' | 'error' | 'exists'>('idle');
     const [privacyPolicyAccepted, setPrivacyPolicyAccepted] = useState(false);
+    const [noAffiliation, setNoAffiliation] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleAffiliationChange = (value: string) => {
+        setFormData({ ...formData, schoolAffiliation: value });
+    };
+
+    const handleNoAffiliationChange = (checked: boolean) => {
+        setNoAffiliation(checked);
+        if (checked) {
+            setFormData(prev => ({ ...prev, schoolAffiliation: 'None' }));
+        } else {
+            setFormData(prev => ({ ...prev, schoolAffiliation: '' }));
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -83,6 +98,7 @@ const RegistrationPage = () => {
                 registrantType: 'participant',
                 foodPreference: ''
             });
+            setNoAffiliation(false);
         } catch (error) {
             console.error("Error adding registration: ", error);
             setStatus('error');
@@ -121,17 +137,21 @@ const RegistrationPage = () => {
                                         const updates: any = { registrantType: type };
                                         if (type === 'chedofficial') {
                                             updates.schoolAffiliation = 'Not Applicable';
+                                            setNoAffiliation(true); // Treat Not Applicable as None/Checked
                                         } else if (formData.schoolAffiliation === 'Not Applicable') {
                                             updates.schoolAffiliation = '';
+                                            setNoAffiliation(false);
                                         }
                                         setFormData({ ...formData, ...updates });
                                     }}
                                 >
-                                    <option value="participant">Participant</option>
-                                    <option value="shs">Senior High or High School</option>
+                                    <option value="chedofficial">CHED Official</option>
                                     <option value="speaker">Speaker</option>
                                     <option value="exhibitor">Exhibitor</option>
-                                    <option value="chedofficial">CHED Official</option>
+                                    <option value="faculty">Faculty</option>
+                                    <option value="college">College Student</option>
+                                    <option value="shs">Senior High Student</option>
+                                    <option value="participant">Participant</option>
                                     <option value="others">Others</option>
                                 </select>
                             </div>
@@ -160,8 +180,39 @@ const RegistrationPage = () => {
                             </div>
                             {formData.registrantType !== 'chedofficial' && (
                                 <div className="space-y-2">
-                                    <Label htmlFor="schoolAffiliation">Company / Institution</Label>
-                                    <Input id="schoolAffiliation" name="schoolAffiliation" value={formData.schoolAffiliation} onChange={handleChange} placeholder="University of the Philippines" />
+                                    <div className="flex justify-between items-center">
+                                        <Label htmlFor="schoolAffiliation">Company / Institution</Label>
+                                        <div className="flex items-center space-x-2">
+                                            <Checkbox
+                                                id="noAffiliation"
+                                                checked={noAffiliation}
+                                                onCheckedChange={(checked: boolean) => handleNoAffiliationChange(checked)}
+                                            />
+                                            <label
+                                                htmlFor="noAffiliation"
+                                                className="text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground"
+                                            >
+                                                N/A or None
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {!noAffiliation ? (
+                                        <SchoolAutocomplete
+                                            id="schoolAffiliation"
+                                            name="schoolAffiliation"
+                                            value={formData.schoolAffiliation}
+                                            onChange={handleAffiliationChange}
+                                            placeholder="Type university or college name..."
+                                        />
+                                    ) : (
+                                        <Input
+                                            id="schoolAffiliation"
+                                            name="schoolAffiliation"
+                                            value={formData.schoolAffiliation}
+                                            disabled
+                                            className="bg-muted text-muted-foreground"
+                                        />
+                                    )}
                                 </div>
                             )}
 

@@ -683,11 +683,13 @@ const UserDashboard = () => {
                                                         <SelectValue placeholder="Select type" />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        <SelectItem value="participant">Participant</SelectItem>
-                                                        <SelectItem value="shs">Senior High or High School</SelectItem>
+                                                        <SelectItem value="chedofficial">CHED Official</SelectItem>
                                                         <SelectItem value="speaker">Speaker</SelectItem>
                                                         <SelectItem value="exhibitor">Exhibitor</SelectItem>
-                                                        <SelectItem value="chedofficial">CHED Official</SelectItem>
+                                                        <SelectItem value="faculty">Faculty</SelectItem>
+                                                        <SelectItem value="college">College Student</SelectItem>
+                                                        <SelectItem value="shs">Senior High Student</SelectItem>
+                                                        <SelectItem value="participant">Participant</SelectItem>
                                                         <SelectItem value="others">Others</SelectItem>
                                                     </SelectContent>
                                                 </Select>
@@ -722,13 +724,43 @@ const UserDashboard = () => {
                                             </div>
                                             {editFormData.registrantType !== 'chedofficial' && (
                                                 <div className="space-y-2">
-                                                    <Label htmlFor="edit-schoolAffiliation">School Affiliation <span className="text-destructive">*</span></Label>
-                                                    <SchoolAutocomplete
-                                                        id="edit-schoolAffiliation"
-                                                        name="schoolAffiliation"
-                                                        value={editFormData.schoolAffiliation}
-                                                        onChange={(val) => setEditFormData((prev: any) => ({ ...prev, schoolAffiliation: val }))}
-                                                    />
+                                                    <div className="flex justify-between items-center">
+                                                        <Label htmlFor="edit-schoolAffiliation">School Affiliation <span className="text-destructive">*</span></Label>
+                                                        <div className="flex items-center space-x-2">
+                                                            <input
+                                                                type="checkbox"
+                                                                id="edit-noAffiliation"
+                                                                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                                                checked={editFormData.schoolAffiliation === 'None' || editFormData.schoolAffiliation === 'Not Applicable'}
+                                                                onChange={(e) => {
+                                                                    const checked = e.target.checked;
+                                                                    setEditFormData((prev: any) => ({ ...prev, schoolAffiliation: checked ? 'None' : '' }));
+                                                                }}
+                                                            />
+                                                            <label
+                                                                htmlFor="edit-noAffiliation"
+                                                                className="text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground"
+                                                            >
+                                                                N/A or None
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    {editFormData.schoolAffiliation !== 'None' && editFormData.schoolAffiliation !== 'Not Applicable' ? (
+                                                        <SchoolAutocomplete
+                                                            id="edit-schoolAffiliation"
+                                                            name="schoolAffiliation"
+                                                            value={editFormData.schoolAffiliation}
+                                                            onChange={(val) => setEditFormData((prev: any) => ({ ...prev, schoolAffiliation: val }))}
+                                                        />
+                                                    ) : (
+                                                        <Input
+                                                            id="edit-schoolAffiliation"
+                                                            name="schoolAffiliation"
+                                                            value={editFormData.schoolAffiliation}
+                                                            disabled
+                                                            className="bg-muted text-muted-foreground"
+                                                        />
+                                                    )}
                                                 </div>
                                             )}
                                             <div className="space-y-2">
@@ -874,11 +906,13 @@ const UserDashboard = () => {
                                                     <SelectValue placeholder="Select type" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="participant">Participant</SelectItem>
-                                                    <SelectItem value="shs">Senior High or High School</SelectItem>
+                                                    <SelectItem value="chedofficial">CHED Official</SelectItem>
                                                     <SelectItem value="speaker">Speaker</SelectItem>
                                                     <SelectItem value="exhibitor">Exhibitor</SelectItem>
-                                                    <SelectItem value="chedofficial">CHED Official</SelectItem>
+                                                    <SelectItem value="faculty">Faculty</SelectItem>
+                                                    <SelectItem value="college">College Student</SelectItem>
+                                                    <SelectItem value="shs">Senior High Student</SelectItem>
+                                                    <SelectItem value="participant">Participant</SelectItem>
                                                     <SelectItem value="others">Others</SelectItem>
                                                 </SelectContent>
                                             </Select>
