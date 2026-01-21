@@ -1,9 +1,10 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { Github } from '@uiw/react-color';
 import { GithubPlacement } from '@uiw/react-color-github';
 import { db, auth } from '@/lib/firebase';
 import { deleteAttendanceForRegistration } from '@/lib/attendanceService';
+import { SearchableSelect } from '@/components/SearchableSelect';
+
 import { collection, addDoc, deleteDoc, updateDoc, doc, serverTimestamp, query, where, onSnapshot, getDocs } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -207,13 +208,13 @@ const UserDashboard = () => {
         setFormData({ ...formData, registrantType: value });
     };
 
-    // const handleRegionChange = (value: string) => {
-    //     setFormData({ ...formData, region: value });
-    // };
+    const handleRegionChange = (value: string) => {
+        setFormData({ ...formData, region: value });
+    };
 
-    // const handleFoodPreferenceChange = (value: string) => {
-    //     setFormData({ ...formData, foodPreference: value });
-    // };
+    const handleFoodPreferenceChange = (value: string) => {
+        setFormData({ ...formData, foodPreference: value });
+    };
 
     const handleCancelRegistration = async () => {
         if (!registration?.id) return;
@@ -765,18 +766,12 @@ const UserDashboard = () => {
                                             )}
                                             <div className="space-y-2">
                                                 <Label htmlFor="edit-region">Region <span className="text-destructive">*</span></Label>
-                                                <Select onValueChange={handleEditRegionChange} value={editFormData.region}>
-                                                    <SelectTrigger className="bg-background/50">
-                                                        <SelectValue placeholder="Select region" />
-                                                    </SelectTrigger>
-                                                    <SelectContent className="max-h-[200px]">
-                                                        {PHILIPPINE_REGIONS.map((region) => (
-                                                            <SelectItem key={region} value={region}>
-                                                                {region}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
+                                                <SearchableSelect
+                                                    options={PHILIPPINE_REGIONS}
+                                                    value={editFormData.region}
+                                                    onChange={handleEditRegionChange}
+                                                    placeholder="Select region"
+                                                />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="edit-contactNumber">Contact Number <span className="text-destructive">*</span></Label>
@@ -977,6 +972,31 @@ const UserDashboard = () => {
                                                 />
                                             </div>
                                         )}
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="region">Region <span className="text-destructive">*</span></Label>
+                                            <SearchableSelect
+                                                options={PHILIPPINE_REGIONS}
+                                                value={formData.region}
+                                                onChange={handleRegionChange}
+                                                placeholder="Select region"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="foodPreference">Food Preference <span className="text-destructive">*</span></Label>
+                                            <Select onValueChange={handleFoodPreferenceChange} value={formData.foodPreference}>
+                                                <SelectTrigger className="bg-background/50">
+                                                    <SelectValue placeholder="Select preference" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="no_restriction">No Food Restriction</SelectItem>
+                                                    <SelectItem value="halal">Halal</SelectItem>
+                                                    <SelectItem value="vegetarian">Vegetarian</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
 
 
                                         <Button type="submit" className="w-full bg-primary hover:bg-primary/90 mt-4" size="lg" disabled={submitting}>

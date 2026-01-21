@@ -9,6 +9,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Checkbox } from '@/components/ui/checkbox';
 import { Link } from 'react-router-dom';
 import { SchoolAutocomplete } from '@/components/SchoolAutocomplete';
+import { SearchableSelect } from '@/components/SearchableSelect';
+import { PHILIPPINE_REGIONS } from '@/lib/regions';
 
 const RegistrationPage = () => {
     const [formData, setFormData] = useState({
@@ -18,6 +20,7 @@ const RegistrationPage = () => {
         email: '',
         contactNumber: '',
         schoolAffiliation: '',
+        region: '',
         registrantType: 'participant',
         foodPreference: ''
     });
@@ -32,6 +35,10 @@ const RegistrationPage = () => {
 
     const handleAffiliationChange = (value: string) => {
         setFormData({ ...formData, schoolAffiliation: value });
+    };
+
+    const handleRegionChange = (value: string) => {
+        setFormData({ ...formData, region: value });
     };
 
     const handleNoAffiliationChange = (checked: boolean) => {
@@ -53,6 +60,11 @@ const RegistrationPage = () => {
 
         if (!formData.foodPreference) {
             alert('Please select a food preference.');
+            return;
+        }
+
+        if (!formData.region) {
+            alert('Please select a region.');
             return;
         }
 
@@ -80,6 +92,7 @@ const RegistrationPage = () => {
                 email: formData.email,
                 contactNumber: formData.contactNumber,
                 schoolAffiliation: formData.schoolAffiliation,
+                region: formData.region,
                 registrantType: formData.registrantType,
                 foodPreference: formData.foodPreference,
                 status: 'pending',
@@ -95,6 +108,7 @@ const RegistrationPage = () => {
                 email: '',
                 contactNumber: '',
                 schoolAffiliation: '',
+                region: '',
                 registrantType: 'participant',
                 foodPreference: ''
             });
@@ -215,6 +229,17 @@ const RegistrationPage = () => {
                                     )}
                                 </div>
                             )}
+
+                            <div className="space-y-2">
+                                <Label htmlFor="region">Region <span className="text-destructive">*</span></Label>
+                                <SearchableSelect
+                                    options={PHILIPPINE_REGIONS}
+                                    value={formData.region}
+                                    onChange={handleRegionChange}
+                                    placeholder="Select region"
+                                    required
+                                />
+                            </div>
 
                             <div className="space-y-2">
                                 <div className="space-y-2">
