@@ -1,14 +1,14 @@
 
-import { useState, useEffect, useMemo } from 'react';
-import { db, auth } from '@/lib/firebase';
-import { collection, deleteDoc, updateDoc, doc, query, where, onSnapshot, setDoc, deleteField, getDoc } from 'firebase/firestore';
-import { onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, type User } from 'firebase/auth';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
+import { auth, db } from '@/lib/firebase';
+import { GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, type User } from 'firebase/auth';
+import { collection, deleteDoc, deleteField, doc, getDoc, onSnapshot, query, setDoc, updateDoc, where } from 'firebase/firestore';
+import { useEffect, useMemo, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
-import { Badge } from '@/components/ui/badge';
 
 import {
     DropdownMenu,
@@ -16,29 +16,15 @@ import {
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
-    DropdownMenuTrigger,
     DropdownMenuSub,
-    DropdownMenuSubTrigger,
     DropdownMenuSubContent,
-} from "@/components/ui/dropdown-menu"
-import { Users, Clock, CheckCircle2, XCircle, Search, Loader2, Scan, Keyboard, Mail, Trash2, MoreHorizontal, Copy, BarChart3, ArrowUpDown, ArrowUp, ArrowDown, Filter, ShieldCheck, Activity, MapPin, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Activity, ArrowDown, ArrowUp, ArrowUpDown, BarChart3, CheckCircle2, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Clock, Copy, Filter, Keyboard, Loader2, Mail, MapPin, MoreHorizontal, Scan, Search, ShieldCheck, Trash2, Users, XCircle } from 'lucide-react';
 // Recharts removed as we switched to list view
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { UserAvatar, getDeterministicAvatarColor } from '@/components/UserAvatar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AttendanceScanner } from '@/components/AttendanceScanner';
-import { getAttendanceRecords, getAttendanceStats, deleteAttendanceRecord, subscribeToAttendance, type AttendanceRecord, type AttendanceStats } from '@/lib/attendanceService';
-import { getRegionShortName, PHILIPPINE_REGIONS } from '@/lib/regions';
-import axios from 'axios';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
+import { getDeterministicAvatarColor, UserAvatar } from '@/components/UserAvatar';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -48,8 +34,22 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { deleteAttendanceRecord, getAttendanceStats, subscribeToAttendance, type AttendanceRecord, type AttendanceStats } from '@/lib/attendanceService';
+import { getRegionShortName, PHILIPPINE_REGIONS } from '@/lib/regions';
+import axios from 'axios';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { toast } from "sonner";
 import NotFoundPage from './NotFoundPage';
 
