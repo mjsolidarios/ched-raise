@@ -1008,14 +1008,14 @@ const AdminPage = () => {
                                         <CardTitle>Registrations</CardTitle>
                                         <CardDescription>Manage and review participant details.</CardDescription>
                                     </div>
-                                    <div className="flex gap-2 w-full md:w-auto">
-                                        <Button variant="outline" onClick={handleExportCSV} className="gap-2">
+                                    <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                                        <Button variant="outline" onClick={handleExportCSV} className="gap-2 w-full sm:w-auto">
                                             <BarChart3 className="h-4 w-4" />
                                             Export CSV
                                         </Button>
                                         {adminRole === 'super_admin' && (
                                             <Select value={regionFilter} onValueChange={setRegionFilter}>
-                                                <SelectTrigger className="w-full md:w-48 bg-background/50">
+                                                <SelectTrigger className="w-full sm:w-[180px] md:w-48 bg-background/50">
                                                     <div className="flex items-center gap-2">
                                                         <Filter className="h-4 w-4" />
                                                         <SelectValue placeholder="All Regions" />
@@ -1029,11 +1029,11 @@ const AdminPage = () => {
                                                 </SelectContent>
                                             </Select>
                                         )}
-                                        <div className="relative flex-1 md:w-64">
+                                        <div className="relative flex-1 w-full md:w-64">
                                             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                                             <Input
                                                 placeholder="Search names, emails, regions..."
-                                                className="pl-8 bg-background/50"
+                                                className="pl-8 bg-background/50 w-full"
                                                 value={searchTerm}
                                                 onChange={(e) => setSearchTerm(e.target.value)}
                                             />
@@ -1041,7 +1041,8 @@ const AdminPage = () => {
                                     </div>
                                 </CardHeader>
                                 <CardContent className="p-0">
-                                    <div className="rounded-md border border-border/50 overflow-hidden">
+                                    {/* Desktop View - Table */}
+                                    <div className="hidden md:block rounded-md border border-border/50 overflow-hidden">
                                         <Table>
                                             <TableHeader className="bg-muted/50">
                                                 <TableRow>
@@ -1265,6 +1266,139 @@ const AdminPage = () => {
                                                 )}
                                             </TableBody>
                                         </Table>
+                                    </div>
+
+                                    {/* Mobile View - Cards */}
+                                    <div className="md:hidden space-y-4">
+                                        {filteredRegistrations.length === 0 ? (
+                                            <div className="text-center py-12 text-muted-foreground border border-dashed border-border/50 rounded-lg">
+                                                No registrations found.
+                                            </div>
+                                        ) : (
+                                            filteredRegistrations.map((reg) => (
+                                                <div key={reg.id} className="p-4 rounded-lg border border-white/10 bg-white/5 space-y-3">
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="flex items-center gap-3">
+                                                            <UserAvatar seed={reg.avatarSeed || reg.ticketCode || reg.id} size={40} className="shadow-sm" color={reg.avatarColor} />
+                                                            <div>
+                                                                <div className="font-medium">{formatFullName(reg.lastName, reg.firstName, reg.middleName)}</div>
+                                                                <div className="text-xs text-muted-foreground/70 font-mono">#{reg.ticketCode || reg.id.slice(0, 8)}</div>
+                                                            </div>
+                                                        </div>
+                                                        <Badge
+                                                            variant="outline"
+                                                            className={`
+                                                                ${reg.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : ''}
+                                                                ${reg.status === 'rejected' ? 'bg-destructive/10 text-destructive border-destructive/20' : ''}
+                                                                ${reg.status === 'pending' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : ''}
+                                                            `}
+                                                        >
+                                                            {reg.status}
+                                                        </Badge>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 gap-2 text-sm">
+                                                        <div className="space-y-1">
+                                                            <span className="text-xs text-muted-foreground block">School / Region</span>
+                                                            <div className="font-medium truncate">{reg.schoolAffiliation || 'N/A'}</div>
+                                                            <div className="text-xs text-muted-foreground">{reg.region || 'N/A'}</div>
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <span className="text-xs text-muted-foreground block">Type</span>
+                                                            <div className="capitalize">{reg.registrantType || 'N/A'}</div>
+                                                            {reg.registrantType === 'others' && reg.registrantTypeOther && (
+                                                                <div className="text-xs text-muted-foreground">({reg.registrantTypeOther})</div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 gap-2 text-sm pt-2 border-t border-white/5">
+                                                        <div className="space-y-1">
+                                                            <span className="text-xs text-muted-foreground block">Contact</span>
+                                                            <div className="truncate">{reg.email}</div>
+                                                            <div className="text-xs text-muted-foreground">{reg.contactNumber}</div>
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <span className="text-xs text-muted-foreground block">Food Pref</span>
+                                                            <div className="capitalize">{(reg.foodPreference || 'no_restriction').replace('_', ' ')}</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex items-center justify-between pt-2">
+                                                        <div className="flex gap-2 text-[10px] text-muted-foreground/60">
+                                                            {reg.statusUpdatedBy && <Clock className="w-3 h-3" />}
+                                                            {reg.emailSentBy && <Mail className="w-3 h-3" />}
+                                                            {reg.surveyDeletedBy && <Trash2 className="w-3 h-3" />}
+                                                        </div>
+
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <Button variant="ghost" size="sm" className="h-8 gap-2">
+                                                                    Actions <MoreHorizontal className="h-4 w-4" />
+                                                                </Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent align="end" className="w-56">
+                                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                                <DropdownMenuItem
+                                                                    onClick={() => {
+                                                                        navigator.clipboard.writeText(reg.ticketCode || reg.id);
+                                                                        toast.success("Ticket ID copied to clipboard");
+                                                                    }}
+                                                                >
+                                                                    <Copy className="mr-2 h-4 w-4" />
+                                                                    Copy Ticket ID
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuSeparator />
+                                                                <DropdownMenuSub>
+                                                                    <DropdownMenuSubTrigger>
+                                                                        <Clock className="mr-2 h-4 w-4" />
+                                                                        Change Status
+                                                                    </DropdownMenuSubTrigger>
+                                                                    <DropdownMenuSubContent>
+                                                                        <DropdownMenuItem onClick={() => updateStatus(reg.id, 'pending')}>
+                                                                            <Clock className="mr-2 h-4 w-4" />
+                                                                            Pending
+                                                                        </DropdownMenuItem>
+                                                                        <DropdownMenuItem onClick={() => updateStatus(reg.id, 'confirmed')}>
+                                                                            <CheckCircle2 className="mr-2 h-4 w-4 text-emerald-500" />
+                                                                            Confirm
+                                                                        </DropdownMenuItem>
+                                                                        <DropdownMenuItem onClick={() => updateStatus(reg.id, 'rejected')}>
+                                                                            <XCircle className="mr-2 h-4 w-4 text-destructive" />
+                                                                            Reject
+                                                                        </DropdownMenuItem>
+                                                                    </DropdownMenuSubContent>
+                                                                </DropdownMenuSub>
+
+                                                                {adminRole === 'super_admin' && (
+                                                                    <>
+                                                                        <DropdownMenuSeparator />
+                                                                        <DropdownMenuItem onClick={() => promoteToRegionalAdmin(reg.id, reg.region)}>
+                                                                            <CheckCircle2 className="mr-2 h-4 w-4" />
+                                                                            Promote Regional Admin
+                                                                        </DropdownMenuItem>
+                                                                        <DropdownMenuItem onClick={() => initiateChangeRegion(reg.id, reg.region)}>
+                                                                            <MapPin className="mr-2 h-4 w-4" />
+                                                                            Change Region
+                                                                        </DropdownMenuItem>
+                                                                        <DropdownMenuItem onClick={() => handleDeleteRegistration(reg.id)} className="text-destructive focus:text-destructive">
+                                                                            <Trash2 className="mr-2 h-4 w-4" />
+                                                                            Delete Registration
+                                                                        </DropdownMenuItem>
+                                                                    </>
+                                                                )}
+
+                                                                <DropdownMenuSeparator />
+                                                                <DropdownMenuItem onClick={() => initiateEmailSend(reg)}>
+                                                                    <Mail className="mr-2 h-4 w-4" />
+                                                                    Email Certificate
+                                                                </DropdownMenuItem>
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
                                     </div>
                                 </CardContent>
                             </Card>

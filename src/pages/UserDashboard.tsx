@@ -48,7 +48,6 @@ import { SchoolAutocomplete } from '@/components/SchoolAutocomplete';
 import { RegistrationBusinessCard } from '@/components/RegistrationBusinessCard';
 import { toTitleCase } from '@/lib/utils/format';
 import { generateTicketCode } from '@/lib/raiseCodeUtils';
-import { Link } from 'react-router-dom';
 import { UserAvatar, getDeterministicAvatarColor } from '@/components/UserAvatar';
 import { PHILIPPINE_REGIONS, getRegionShortName } from '@/lib/regions';
 // Recharts removed as we switched to list view
@@ -1098,11 +1097,6 @@ const UserDashboard = () => {
                             </div>
                         </CardContent>
                     </Card>
-                </div>
-                <div className="mt-12 pt-8 border-t border-border/40 text-center">
-                    <Link to="/privacy-policy" className="text-xs text-muted-foreground/60 hover:text-primary transition-colors">
-                        Privacy Policy
-                    </Link>
                 </div>
             </div>
         </div >
