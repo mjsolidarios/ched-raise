@@ -7,7 +7,8 @@ import {
     getDocs,
     orderBy,
     Timestamp,
-    deleteDoc
+    deleteDoc,
+    doc
 } from 'firebase/firestore';
 
 export interface AttendanceRecord {
@@ -226,5 +227,18 @@ export async function deleteAttendanceForRegistration(registrationId: string): P
     } catch (error) {
         console.error('Error deleting attendance for registration:', error);
         // We don't throw here to avoid blocking the main registration deletion flow
+    }
+}
+
+/**
+ * Delete a specific attendance record by ID
+ */
+export async function deleteAttendanceRecord(recordId: string): Promise<{ success: boolean; message: string }> {
+    try {
+        await deleteDoc(doc(db, 'attendance', recordId));
+        return { success: true, message: 'Attendance record deleted successfully' };
+    } catch (error) {
+        console.error('Error deleting attendance record:', error);
+        return { success: false, message: 'Failed to delete attendance record' };
     }
 }

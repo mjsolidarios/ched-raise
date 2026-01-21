@@ -23,12 +23,7 @@ const AttendancePage = lazy(() => import('./pages/AttendancePage'));
 const ProgramPage = lazy(() => import('./pages/ProgramPage'));
 const ResourcePersonsPage = lazy(() => import('./pages/ResourcePersonsPage'));
 
-// Loading component
-const PageLoader = () => (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950">
-        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-    </div>
-);
+import { AppSkeleton } from './components/skeletons/AppSkeleton';
 
 const ConditionalChatbot = () => {
     const location = useLocation();
@@ -45,7 +40,7 @@ const App = () => {
             <div className="min-h-screen bg-background text-foreground font-sans selection:bg-accent selection:text-white">
                 <Navbar />
                 <ConditionalChatbot />
-                <Suspense fallback={<PageLoader />}>
+                <Suspense fallback={<AppSkeleton />}>
                     <Routes>
                         <Route path="/" element={<LandingPage />} />
                         <Route path="/login" element={<LoginPage />} />

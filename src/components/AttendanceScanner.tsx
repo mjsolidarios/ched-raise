@@ -2,11 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Scan, Keyboard, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { Scan, Keyboard, CheckCircle, XCircle, Loader2, RefreshCw } from 'lucide-react';
 import { recordAttendance } from '@/lib/attendanceService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
 
 interface AttendanceScannerProps {
     scannedBy: string;
@@ -18,42 +18,95 @@ export function AttendanceScanner({ scannedBy, onSuccess }: AttendanceScannerPro
     const [ticketCode, setTicketCode] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
     const [lastResult, setLastResult] = useState<{ success: boolean; message: string } | null>(null);
-    const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+    const [scannerError, setScannerError] = useState<string | null>(null);
+    const scannerRef = useRef<Html5Qrcode | null>(null);
+    const scannerContainerId = "attendance-scanner-reader";
 
     // Initialize/Cleanup Scanner
     useEffect(() => {
-        if (mode === 'scan') {
-            // Small timeout to ensure DOM element exists
-            const timer = setTimeout(() => {
-                const scanner = new Html5QrcodeScanner(
-                    "reader",
-                    {
-                        fps: 10,
-                        qrbox: { width: 250, height: 250 },
-                        aspectRatio: 1
-                    },
-                    false
-                );
+        let isMounted = true;
 
-                scanner.render(onScanSuccess, onScanFailure);
-                scannerRef.current = scanner;
-            }, 100);
+        const startScanner = async () => {
+            if (mode !== 'scan') return;
 
-            return () => {
-                clearTimeout(timer);
-                if (scannerRef.current) {
-                    scannerRef.current.clear().catch(err => console.error("Failed to clear scanner", err));
+            // Cleanup previous instance if any
+            if (scannerRef.current) {
+                try {
+                    await scannerRef.current.stop();
+                    scannerRef.current.clear();
+                } catch (e) {
+                    console.warn("Cleanup error:", e);
                 }
-            };
+                scannerRef.current = null;
+            }
+
+            // Small delay to ensure DOM is ready
+            await new Promise(resolve => setTimeout(resolve, 100));
+            if (!isMounted) return;
+
+            const element = document.getElementById(scannerContainerId);
+            if (!element) {
+                console.error("Scanner container not found");
+                return;
+            }
+
+            try {
+                const html5QrCode = new Html5Qrcode(scannerContainerId);
+                scannerRef.current = html5QrCode;
+
+                const config = {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 },
+                    aspectRatio: 1.0,
+                    formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE]
+                };
+
+                await html5QrCode.start(
+                    { facingMode: "environment" },
+                    config,
+                    (decodedText) => {
+                        if (isMounted) onScanSuccess(decodedText);
+                    },
+                    (_errorMessage) => {
+                        // ignore frame errors
+                    }
+                );
+                setScannerError(null);
+            } catch (err) {
+                console.error("Failed to start scanner", err);
+                if (isMounted) {
+                    setScannerError("Could not access camera. Please ensure permissions are granted.");
+                    toast.error("Camera access failed");
+                }
+            }
+        };
+
+        if (mode === 'scan') {
+            startScanner();
         }
+
+        return () => {
+            isMounted = false;
+            if (scannerRef.current) {
+                scannerRef.current.stop().then(() => {
+                    scannerRef.current?.clear();
+                }).catch(err => {
+                    console.warn("Failed to stop scanner on unmount", err);
+                });
+            }
+        };
     }, [mode]);
 
     const onScanSuccess = async (decodedText: string) => {
         if (isProcessing) return;
 
-        // Pause scanning
+        // Pause scanning logic implicitly by setting processing flag
+        // We don't necessarily need to pause the camera stream, just ignore new inputs
+        // But for better UX, we can pause
         if (scannerRef.current) {
-            scannerRef.current.pause();
+            try {
+                await scannerRef.current.pause();
+            } catch (e) { console.warn("Pause error", e) }
         }
 
         setIsProcessing(true);
@@ -72,17 +125,15 @@ export function AttendanceScanner({ scannedBy, onSuccess }: AttendanceScannerPro
             toast.error("Failed to process scan");
         } finally {
             setIsProcessing(false);
-            // Resume scanning afte delay
+            // Resume scanning after delay
             setTimeout(() => {
                 if (scannerRef.current) {
-                    scannerRef.current.resume();
+                    try {
+                        scannerRef.current.resume();
+                    } catch (e) { console.warn("Resume error", e) }
                 }
             }, 2000);
         }
-    };
-
-    const onScanFailure = (_error: any) => {
-        // console.warn(error); // Ignore frame errors
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -109,6 +160,12 @@ export function AttendanceScanner({ scannedBy, onSuccess }: AttendanceScannerPro
         }
 
         setIsProcessing(false);
+    };
+
+    const handleRetryCamera = () => {
+        // Force re-mount of effect
+        setMode('manual');
+        setTimeout(() => setMode('scan'), 100);
     };
 
     return (
@@ -145,11 +202,23 @@ export function AttendanceScanner({ scannedBy, onSuccess }: AttendanceScannerPro
 
                 {/* Scanner View */}
                 {mode === 'scan' && (
-                    <div className="w-full max-w-sm mx-auto overflow-hidden rounded-lg border border-white/10 bg-black/50">
-                        <div id="reader" className="w-full"></div>
-                        <p className="text-xs text-center text-muted-foreground p-2">
+                    <div className="w-full max-w-sm mx-auto overflow-hidden rounded-lg border border-white/10 bg-black/50 relative min-h-[300px] flex flex-col items-center justify-center">
+                        <div id={scannerContainerId} className="w-full h-full" />
+
+                        {scannerError && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center bg-black/80 z-10">
+                                <XCircle className="h-8 w-8 text-red-500 mb-2" />
+                                <p className="text-red-400 text-sm mb-4">{scannerError}</p>
+                                <Button size="sm" variant="outline" onClick={handleRetryCamera}>
+                                    <RefreshCw className="h-4 w-4 mr-2" />
+                                    Retry Camera
+                                </Button>
+                            </div>
+                        )}
+
+                        {!scannerError && <p className="text-xs text-center text-muted-foreground p-2 absolute bottom-0 left-0 right-0 bg-black/50 z-10">
                             Point camera at QR code
-                        </p>
+                        </p>}
                     </div>
                 )}
 

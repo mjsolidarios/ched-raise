@@ -1,29 +1,55 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { AttendanceScanner } from '@/components/AttendanceScanner';
-import { getAttendanceRecords, getAttendanceStats, type AttendanceRecord, type AttendanceStats } from '@/lib/attendanceService';
+import { getAttendanceRecords, getAttendanceStats, deleteAttendanceRecord, type AttendanceRecord, type AttendanceStats } from '@/lib/attendanceService';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Users, CheckCircle, Scan, Keyboard, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Users, CheckCircle, Scan, Keyboard, Search, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function AttendancePage() {
     const [user, setUser] = useState<any>(null);
+    const [role, setRole] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [records, setRecords] = useState<AttendanceRecord[]>([]);
     const [stats, setStats] = useState<AttendanceStats | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const [recordToDelete, setRecordToDelete] = useState<string | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (!currentUser) {
                 navigate('/login');
             } else {
                 setUser(currentUser);
+                // Fetch user role
+                try {
+                    const q = query(collection(db, 'registrations'), where('uid', '==', currentUser.uid));
+                    const snapshot = await getDocs(q);
+                    if (!snapshot.empty) {
+                        const data = snapshot.docs[0].data();
+                        setRole(data.role || 'user');
+                    }
+                } catch (error) {
+                    console.error("Error fetching role", error);
+                }
                 setLoading(false);
             }
         });
@@ -43,6 +69,28 @@ export default function AttendancePage() {
         ]);
         setRecords(attendanceRecords);
         setStats(attendanceStats);
+    };
+
+    const handleDeleteClick = (id: string) => {
+        setRecordToDelete(id);
+    };
+
+    const confirmDelete = async () => {
+        if (!recordToDelete) return;
+
+        try {
+            const result = await deleteAttendanceRecord(recordToDelete);
+            if (result.success) {
+                toast.success(result.message);
+                loadData(); // Refresh data
+            } else {
+                toast.error(result.message);
+            }
+        } catch (error) {
+            toast.error("An error occurred while deleting");
+        } finally {
+            setRecordToDelete(null);
+        }
     };
 
     const filteredRecords = records.filter(record =>
@@ -168,7 +216,7 @@ export default function AttendancePage() {
                                                 animate={{ opacity: 1, x: 0 }}
                                                 className="p-4 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-colors"
                                             >
-                                                <div className="flex items-start justify-between">
+                                                <div className="flex items-start justify-between gap-4">
                                                     <div className="flex-1">
                                                         <div className="flex items-center gap-2 mb-1">
                                                             <h3 className="font-semibold">{record.attendeeName}</h3>
@@ -192,13 +240,26 @@ export default function AttendancePage() {
                                                             ID: {record.ticketCode}
                                                         </p>
                                                     </div>
-                                                    <div className="text-right">
-                                                        <p className="text-sm font-medium">
-                                                            {record.timestamp.toDate().toLocaleDateString()}
-                                                        </p>
-                                                        <p className="text-xs text-muted-foreground">
-                                                            {record.timestamp.toDate().toLocaleTimeString()}
-                                                        </p>
+                                                    <div className="text-right flex flex-col items-end gap-2">
+                                                        <div className="text-right">
+                                                            <p className="text-sm font-medium">
+                                                                {record.timestamp.toDate().toLocaleDateString()}
+                                                            </p>
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {record.timestamp.toDate().toLocaleTimeString()}
+                                                            </p>
+                                                        </div>
+                                                        {role === 'super_admin' && record.id && (
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="h-8 w-8 text-red-500 hover:text-red-400 hover:bg-red-950/20"
+                                                                onClick={() => handleDeleteClick(record.id!)}
+                                                                title="Delete Record"
+                                                            >
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </motion.div>
@@ -210,6 +271,26 @@ export default function AttendancePage() {
                     </div>
                 </div>
             </div>
+
+            <AlertDialog open={!!recordToDelete} onOpenChange={(open) => !open && setRecordToDelete(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Attendance Record?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently remove the attendance record for this user.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={confirmDelete}
+                            className="bg-red-500 hover:bg-red-600 text-white"
+                        >
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }
