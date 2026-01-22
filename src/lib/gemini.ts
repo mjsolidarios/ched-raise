@@ -1,35 +1,31 @@
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-
-let genAI: GoogleGenerativeAI | null = null;
-if (API_KEY) {
-    genAI = new GoogleGenerativeAI(API_KEY);
-} else {
-    console.warn("Gemini API Key is missing! Autocomplete will not work.");
-}
-
 export async function getSchoolSuggestions(query: string): Promise<string[]> {
-    if (!genAI) {
-        console.warn("Gemini API not initialized.");
-        return [];
-    }
     if (!query || query.length < 3) return [];
 
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-        const prompt = `List 5 Philippine universities or colleges that match this partial name: "${query}". Return ONLY a valid JSON array of strings. Example: ["School A", "School B"]. NO markdown.`;
+        console.log("Fetching school suggestions from PHP API for:", query);
 
-        console.log("Sending prompt to Gemini:", prompt);
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
+        const response = await fetch('/src/api/ai/index.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                type: 'suggestion',
+                query: query
+            })
+        });
 
-        console.log("Gemini Raw Response:", text);
+        if (!response.ok) {
+            console.error("PHP API Error:", response.status, response.statusText);
+            return [];
+        }
+
+        const data = await response.json();
+        const text = data.text; // PHP returns { text: "..." }
 
         if (!text) {
-            console.warn("Gemini returned empty text.");
+            console.warn("PHP API returned empty text.");
             return [];
         }
 
@@ -42,9 +38,8 @@ export async function getSchoolSuggestions(query: string): Promise<string[]> {
             cleanText = cleanText.substring(firstBracket, lastBracket + 1);
         } else {
             console.warn("Could not find JSON array brackets in response.");
-            // Fallback: try to split by newlines if it returned a list
             if (cleanText.includes('\n')) {
-                return cleanText.split('\n').map(line => line.replace(/^- /, '').trim()).slice(0, 5);
+                return cleanText.split('\n').map((line: string) => line.replace(/^- /, '').trim()).slice(0, 5);
             }
             return [];
         }
@@ -60,7 +55,7 @@ export async function getSchoolSuggestions(query: string): Promise<string[]> {
 
         return [];
     } catch (error) {
-        console.error("Gemini Autocomplete Error (Details):", error);
+        console.error("School Suggestions Error:", error);
         return [];
     }
 }

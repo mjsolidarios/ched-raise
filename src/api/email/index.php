@@ -52,7 +52,7 @@ if ($requestMethod !== 'POST' && !($requestMethod === 'GET' && isset($_GET['data
     ]);
 }
 
-$autoloadPath = __DIR__ . '/vendor/autoload.php';
+$autoloadPath = __DIR__ . '/../vendor/autoload.php';
 if (!file_exists($autoloadPath)) {
     respondJson(500, [
         'error' => 'Server dependencies are missing. Please deploy the vendor/ directory or run composer install.',
@@ -66,7 +66,7 @@ require $autoloadPath;
 
 // Load environment variables
 if (class_exists(Dotenv\Dotenv::class)) {
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
     // Use safeLoad to avoid exception if .env is missing
     $dotenv->safeLoad();
 }
@@ -169,7 +169,7 @@ if ($type === 'generate_certificate') {
     // Logos assumed to be in background at top. Text follows.
     // 2. Header Text (Below Logos)
     // Logos assumed to be in background at top. Text follows.
-    $pdf->SetY(40); 
+    $pdf->SetY(40);
     $pdf->SetFont('Arial', 'B', 10);
     $pdf->SetTextColor(71, 85, 105); // #475569 slate-600
 
@@ -197,13 +197,13 @@ if ($type === 'generate_certificate') {
     // --- TEXT LAYOUT (Compressed & Dynamic for A4 Landscape) ---
 
     // Title
-    $pdf->SetY(75); 
+    $pdf->SetY(75);
     $pdf->SetFont('Arial', 'B', 32);
     $pdf->SetTextColor(30, 27, 75); // #1e1b4b
     $pdf->Cell(0, 15, $certTitle, 0, 1, 'C');
 
     // "This recognition is..."
-    $pdf->SetY(90); 
+    $pdf->SetY(90);
     $pdf->SetFont('Arial', '', 12);
     $pdf->SetTextColor(100, 116, 139); // #64748b
     $pdf->Cell(0, 10, $certifyText, 0, 1, 'C');
