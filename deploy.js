@@ -55,7 +55,7 @@ const remotePath = process.env.FTP_REMOTE_PATH || '/';
 const localDistPath = path.join(__dirname, 'dist');
 const localApiPath = path.join(__dirname, 'src/api');
 
-async function uploadDirSmart(client, localDir, remoteDir) {
+async function uploadDirSmart(client, localDir, remoteDir, filter = null) {
     // Ensure remote directory exists
     await client.ensureDir(remoteDir);
 
@@ -73,8 +73,9 @@ async function uploadDirSmart(client, localDir, remoteDir) {
 
         if (stats.isDirectory()) {
             // Recursively upload subdirectory
+            if (filter && !filter(file)) return;
             console.log(`📂 Entering ${file}...`);
-            await uploadDirSmart(client, localPath, remotePath);
+            await uploadDirSmart(client, localPath, remotePath, filter);
         } else {
             // Always upload/overwrite
             console.log(`📝 Overwriting ${file}...`);
@@ -112,11 +113,23 @@ async function deploy() {
     const deployBackend = choice === '2' || choice === '3';
 
     let updateVendor = false;
+    let updateAssets = false;
+
+    if (deployFrontend) {
+        const assetsChoice = await rl.question('Does the "assets" folder need to be updated? (y/n) [n]: ');
+        updateAssets = assetsChoice.toLowerCase() === 'y';
+    }
+
     if (deployBackend) {
         const vendorChoice = await rl.question('Does the backend "vendor" folder need to be updated? (y/n) [n]: ');
         updateVendor = vendorChoice.toLowerCase() === 'y';
     }
     rl.close();
+
+    // Pass options to client context if needed, or handle filtering in upload loop
+    // Since uploadDirSmart is used for frontend, we need to modify it or pass a filter
+    // For now, let's modify uploadDirSmart to accept a filter function
+
 
     const client = new ftp.Client();
     client.ftp.verbose = false; // Disable verbose logging to cleaner output for smart sync
@@ -156,7 +169,13 @@ async function deploy() {
         if (deployFrontend) {
             // Upload dist folder contents
             console.log('📤 Syncing frontend files (dist)...');
-            await uploadDirSmart(client, localDistPath, remotePath);
+            await uploadDirSmart(client, localDistPath, remotePath, (filename) => {
+                if (filename === 'assets' && !updateAssets) {
+                    console.log('   ⏭️  Skipping assets folder...');
+                    return false;
+                }
+                return true;
+            });
             console.log('✅ Frontend sync complete!\n');
         }
 
@@ -165,6 +184,16 @@ async function deploy() {
             console.log('📤 Syncing backend API (src/api)...');
             const remoteApiPath = remotePath.endsWith('/') ? `${remotePath}api` : `${remotePath}/api`;
             await client.ensureDir(remoteApiPath);
+
+            // Create temporary .env file for backend
+            try {
+                const envContent = `VITE_GEMINI_API_KEY=${process.env.VITE_GEMINI_API_KEY || ''}`;
+                const tempEnvPath = path.join(localApiPath, '.env');
+                fs.writeFileSync(tempEnvPath, envContent);
+                console.log('   📝 Created temporary .env for backend');
+            } catch (err) {
+                console.error('   ⚠️  Failed to create .env for backend:', err.message);
+            }
 
             const entries = fs.readdirSync(localApiPath, { withFileTypes: true });
             for (const entry of entries) {
@@ -176,11 +205,25 @@ async function deploy() {
                 const entryRemotePath = `${remoteApiPath}/${entry.name}`;
 
                 if (entry.isDirectory()) {
-                    await client.uploadFromDir(entryLocalPath, entryRemotePath);
+                    console.log(`📂 Entering ${entry.name}...`);
+                    await uploadDirSmart(client, entryLocalPath, entryRemotePath);
                 } else {
+                    console.log(`📝 Overwriting ${entry.name}...`);
                     await client.uploadFrom(entryLocalPath, entryRemotePath);
                 }
             }
+
+            // Clean up temporary .env
+            try {
+                const tempEnvPath = path.join(localApiPath, '.env');
+                if (fs.existsSync(tempEnvPath)) {
+                    fs.unlinkSync(tempEnvPath);
+                    console.log('   🧹 Cleaned up temporary .env');
+                }
+            } catch (err) {
+                console.error('   ⚠️  Failed to cleanup .env:', err.message);
+            }
+
             console.log('\n✅ Backend API upload complete!\n');
         }
 

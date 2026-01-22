@@ -52,7 +52,7 @@ export function Objectives() {
                         transition={{ duration: 0.5 }}
                         className="text-3xl md:text-5xl font-bold text-white mb-4"
                     >
-                        The RAISE Framework
+                        The R<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">AI</span>SE Framework
                     </motion.h2>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
@@ -154,7 +154,7 @@ function KeyObjectivesCard() {
 }
 
 
-function SpotlightCard({ pillar, index }: { pillar: { letter: string, title: string, desc: string, outcome: string }, index: number }) {
+function SpotlightCard({ pillar }: { pillar: { letter: string, title: string, desc: string, outcome: string }, index: number }) {
     const divRef = useRef<HTMLDivElement>(null)
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -168,6 +168,29 @@ function SpotlightCard({ pillar, index }: { pillar: { letter: string, title: str
         divRef.current.style.setProperty("--mouse-y", `${y}px`)
     }
 
+    const isAI = pillar.letter === 'A' || pillar.letter === 'I';
+
+    // Theme colors
+    const theme = isAI ? {
+        border: 'hover:border-purple-500/50',
+        shadow: 'hover:shadow-purple-500/20',
+        spotlight: 'hsl(270 50% 60% / 0.15)',
+        bgGradient: 'from-purple-500/10 to-pink-500/5',
+        textGradient: 'from-indigo-400 via-purple-400 to-pink-400',
+        titleGradient: 'group-hover:from-indigo-300 group-hover:to-pink-300',
+        badge: 'bg-purple-500/10 text-purple-300 border-purple-500/20 group-hover:bg-purple-500/20',
+        bar: 'from-indigo-500 to-pink-500'
+    } : {
+        border: 'hover:border-cyan-500/50',
+        shadow: 'hover:shadow-cyan-500/20',
+        spotlight: 'hsl(180 70% 50% / 0.15)',
+        bgGradient: 'from-cyan-500/10 to-teal-500/5',
+        textGradient: 'from-cyan-400 via-blue-400 to-teal-400',
+        titleGradient: 'group-hover:from-cyan-300 group-hover:to-teal-300',
+        badge: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20 group-hover:bg-cyan-500/20',
+        bar: 'from-cyan-500 to-teal-500'
+    };
+
     return (
         <motion.div
             className="h-full pillar-card"
@@ -175,7 +198,7 @@ function SpotlightCard({ pillar, index }: { pillar: { letter: string, title: str
             <Card
                 ref={divRef as any}
                 onMouseMove={handleMouseMove}
-                className={`glass-card bg-gradient-to-br from-slate-900/60 to-slate-900/40 border-white/10 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-3 group overflow-hidden relative h-full gpu-accelerated flex flex-col`}
+                className={`glass-card bg-slate-950/40 backdrop-blur-md border-white/10 ${theme.border} ${theme.shadow} hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 group overflow-hidden relative h-full gpu-accelerated flex flex-col`}
                 style={{
                     // @ts-ignore
                     "--mouse-x": "0px",
@@ -186,46 +209,46 @@ function SpotlightCard({ pillar, index }: { pillar: { letter: string, title: str
                 <div
                     className="absolute inset-0 z-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100 pointer-events-none"
                     style={{
-                        background: "radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), hsl(var(--primary) / 0.15), transparent 40%)"
+                        background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), ${theme.spotlight}, transparent 40%)`
                     }}
                 />
 
-                {/* Animated gradient background - KEEPING as per design but ensuring it doesn't conflict excessively, maybe tone it down if user asked? User didn't ask to remove this, only to ADD spotlight. 
-                   Actually user said "remove the hover animation effect on the pillar texts R-A-I-S-E". 
-                   Also "Remove the wiggling or shaking hover effect on the logos."
-                   I will keep other bg effects but remove the text animation below.
-                */}
-                <motion.div
-                    className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-primary/20 to-teal-400/10 rounded-bl-full -mr-10 -mt-10"
-                    // Removing whileHover scale/rotate on the bg blob as it might be distracting? User didn't explicitly say to remove THIS, but "wiggling" on logos. 
-                    // I will leave this background blob animation for now as it wasn't requested to be removed.
-                    whileHover={{ scale: 1.3, rotate: 45 }}
-                    transition={{ duration: 0.5 }}
-                />
+                {/* Background Watermark Letter */}
+                <div
+                    className={`absolute -right-4 -bottom-12 text-[10rem] font-black leading-none opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-500 select-none bg-clip-text text-transparent bg-gradient-to-br ${theme.textGradient}`}
+                >
+                    {pillar.letter}
+                </div>
 
-                {/* Shimmer effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 z-0" />
+                {/* Subtle top gradient */}
+                <div className={`absolute top-0 right-0 w-full h-32 bg-gradient-to-b ${theme.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`} />
 
-                <CardHeader className="relative z-10">
-                    <motion.div
-                        className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-400 via-cyan-300 to-teal-400 mb-4"
-                    // REMOVED whileHover animation here as requested
-                    >
-                        {pillar.letter}
-                    </motion.div>
-                    <CardTitle className="text-lg font-bold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-300 group-hover:to-teal-300 transition-all duration-300">{pillar.title}</CardTitle>
+                <CardHeader className="relative z-10 pb-2">
+                    <div className="flex items-center justify-between mb-4">
+                        <motion.div
+                            className={`text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br ${theme.textGradient}`}
+                        >
+                            {pillar.letter}
+                        </motion.div>
+                        <div className={`h-1.5 w-12 rounded-full bg-gradient-to-r ${theme.bar}`} />
+                    </div>
+                    <CardTitle className={`text-xl font-bold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r ${theme.titleGradient} transition-all duration-300 leading-tight min-h-[3.5rem] flex items-center`}>
+                        {pillar.title}
+                    </CardTitle>
                 </CardHeader>
-                <CardContent className="relative z-10 flex-1 flex flex-col">
-                    <motion.div
-                        className="h-1 w-16 bg-gradient-to-r from-primary to-teal-400 rounded-full mb-4"
-                        initial={{ width: 0 }}
-                        whileInView={{ width: 64 }}
-                        transition={{ duration: 0.8, delay: index * 0.1 }}
-                    />
-                    <p className="text-slate-400 group-hover:text-slate-300 leading-relaxed text-sm transition-colors">{pillar.desc}</p>
-                    <div className="text-xs font-bold text-teal-400 group-hover:text-teal-300 uppercase tracking-wider flex flex-col mt-auto pt-4 transition-colors">
-                        <span className="text-[10px] text-slate-500 group-hover:text-slate-400 font-normal transition-colors">Target Outcome</span>
-                        {pillar.outcome}
+
+                <CardContent className="relative z-10 flex-1 flex flex-col pt-0">
+                    <p className="text-slate-400/90 group-hover:text-slate-300 leading-relaxed text-sm mb-6 transition-colors">
+                        {pillar.desc}
+                    </p>
+
+                    <div className="mt-auto">
+                        <span className="text-[10px] text-slate-500 uppercase tracking-widest font-medium mb-2 block">
+                            Target Outcome
+                        </span>
+                        <div className={`inline-flex items-center px-3 py-1.5 rounded-lg border text-xs font-semibold tracking-wide transition-colors ${theme.badge}`}>
+                            {pillar.outcome}
+                        </div>
                     </div>
                 </CardContent>
             </Card>

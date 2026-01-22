@@ -9,6 +9,15 @@ export default defineConfig({
             "@": path.resolve(__dirname, "./src"),
         },
     },
+    server: {
+        proxy: {
+            '/api': {
+                target: 'https://ched-raise.wvsu.edu.ph',
+                changeOrigin: true,
+                secure: false,
+            }
+        }
+    },
     build: {
         rollupOptions: {
             output: {

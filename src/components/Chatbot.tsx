@@ -68,7 +68,7 @@ export function Chatbot() {
             // Add current user message
             history.push({ role: 'user', content: userMessage.content });
 
-            const response = await fetch('/src/api/ai/index.php', {
+            const response = await fetch('/api/ai/index.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

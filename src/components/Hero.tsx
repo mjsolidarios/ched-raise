@@ -176,7 +176,7 @@ export function Hero() {
                     ref={badgeRef}
                     whileHover={{ scale: 1.05 }}
                 >
-                    <Badge variant="outline" className="mb-6 py-1.5 px-4 border-primary/50 text-blue-200 bg-blue-900/30 hover:bg-blue-900/50 hover:border-primary/70 transition-all duration-300 uppercase tracking-widest text-xs font-semibold backdrop-blur-md shadow-lg shadow-primary/10">
+                    <Badge variant="outline" className="mb-2 py-1.5 px-4 border-primary/50 text-blue-200 bg-blue-900/30 hover:bg-blue-900/50 hover:border-primary/70 transition-all duration-300 uppercase tracking-widest text-xs font-semibold backdrop-blur-md shadow-lg shadow-primary/10">
                         <span className="relative flex items-center gap-2">
                             <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
                             National Industry–Academe Collaborative Conference
@@ -186,7 +186,7 @@ export function Hero() {
 
                 <motion.div
                     ref={logoRef}
-                    className="group relative w-full max-w-5xl aspect-[3/1] flex items-center justify-center md:-mt-2"
+                    className="group relative w-full max-w-5xl aspect-[3/1] flex items-center justify-center -mt-4 md:-mt-8"
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     whileHover={{ scale: 1.02 }}
