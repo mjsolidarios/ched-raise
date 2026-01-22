@@ -53,7 +53,7 @@ const config = {
 
 const remotePath = process.env.FTP_REMOTE_PATH || '/';
 const localDistPath = path.join(__dirname, 'dist');
-const localApiPath = path.join(__dirname, 'src/api/email');
+const localApiPath = path.join(__dirname, 'src/api');
 
 async function uploadDirSmart(client, localDir, remoteDir) {
     // Ensure remote directory exists
@@ -91,7 +91,7 @@ async function deploy() {
 
     console.log('--- Deployment Target (Smart Sync) ---');
     console.log('1. Frontend (dist)');
-    console.log('2. Backend API (src/api/email)');
+    console.log('2. Backend API (src/api)');
     console.log('3. Both');
     console.log('0. Exit');
 
@@ -162,8 +162,8 @@ async function deploy() {
 
         if (deployBackend) {
             // Upload API folder contents
-            console.log('📤 Syncing backend API (src/api/email)...');
-            const remoteApiPath = remotePath.endsWith('/') ? `${remotePath}api/email` : `${remotePath}/api/email`;
+            console.log('📤 Syncing backend API (src/api)...');
+            const remoteApiPath = remotePath.endsWith('/') ? `${remotePath}api` : `${remotePath}/api`;
             await client.ensureDir(remoteApiPath);
 
             const entries = fs.readdirSync(localApiPath, { withFileTypes: true });

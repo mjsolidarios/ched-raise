@@ -26,4 +26,4 @@ dist-ssr
 .env.local
 firestore.rules
 
-src/api/email/vendor
+src/api/vendor

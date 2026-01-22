@@ -65,6 +65,7 @@ const AdminPage = () => {
     const [sortColumn, setSortColumn] = useState<'name' | 'region' | 'status' | null>(null);
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
     const [regionFilter, setRegionFilter] = useState<string>('all');
+    const [registrantTypeFilter, setRegistrantTypeFilter] = useState<string>('all');
     const [eventStatus, setEventStatus] = useState<'ongoing' | 'finished'>('ongoing');
 
     // Admin Role State
@@ -740,6 +741,11 @@ const AdminPage = () => {
             filtered = filtered.filter(reg => reg.region === regionFilter);
         }
 
+        // Apply registrant type filter
+        if (registrantTypeFilter !== 'all') {
+            filtered = filtered.filter(reg => reg.registrantType === registrantTypeFilter);
+        }
+
         // Apply sorting
         if (sortColumn) {
             filtered = [...filtered].sort((a, b) => {
@@ -764,7 +770,7 @@ const AdminPage = () => {
 
         console.log('Filtered registrations:', filtered);
         return filtered;
-    }, [registrations, searchTerm, regionFilter, sortColumn, sortDirection]);
+    }, [registrations, searchTerm, regionFilter, registrantTypeFilter, sortColumn, sortDirection]);
 
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
@@ -1069,6 +1075,25 @@ const AdminPage = () => {
                                                 </SelectContent>
                                             </Select>
                                         )}
+                                        <Select value={registrantTypeFilter} onValueChange={setRegistrantTypeFilter}>
+                                            <SelectTrigger className="w-full sm:w-[180px] md:w-48 bg-background/50">
+                                                <div className="flex items-center gap-2">
+                                                    <Filter className="h-4 w-4" />
+                                                    <SelectValue placeholder="All Types" />
+                                                </div>
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="all">All Types</SelectItem>
+                                                <SelectItem value="chedofficial">CHED Official</SelectItem>
+                                                <SelectItem value="speaker">Speaker</SelectItem>
+                                                <SelectItem value="exhibitor">Exhibitor</SelectItem>
+                                                <SelectItem value="faculty">Faculty</SelectItem>
+                                                <SelectItem value="college">College Student</SelectItem>
+                                                <SelectItem value="shs">Senior High Student</SelectItem>
+                                                <SelectItem value="participant">Participant</SelectItem>
+                                                <SelectItem value="others">Others</SelectItem>
+                                            </SelectContent>
+                                        </Select>
                                         <div className="relative flex-1 w-full md:w-64">
                                             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                                             <Input
