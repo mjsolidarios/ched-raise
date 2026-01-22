@@ -187,7 +187,11 @@ async function deploy() {
 
             // Create temporary .env file for backend
             try {
-                const envContent = `VITE_GEMINI_API_KEY=${process.env.VITE_GEMINI_API_KEY || ''}`;
+                const envContent = [
+                    `VITE_GEMINI_API_KEY=${process.env.VITE_GEMINI_API_KEY || ''}`,
+                    `VITE_RESEND_API_KEY=${process.env.VITE_RESEND_API_KEY || ''}`,
+                    `VITE_ENCRYPTION_KEY=${process.env.VITE_ENCRYPTION_KEY || ''}`
+                ].join('\n');
                 const tempEnvPath = path.join(localApiPath, '.env');
                 fs.writeFileSync(tempEnvPath, envContent);
                 console.log('   📝 Created temporary .env for backend');

@@ -5,7 +5,7 @@ export async function getSchoolSuggestions(query: string): Promise<string[]> {
     try {
         console.log("Fetching school suggestions from PHP API for:", query);
 
-        const response = await fetch('/src/api/ai/index.php', {
+        const response = await fetch('/api/ai/index.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

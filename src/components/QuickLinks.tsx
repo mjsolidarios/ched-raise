@@ -76,7 +76,7 @@ export function QuickLinks() {
 
 function LinkCard({ title, description, icon: Icon, href, color }: typeof LINKS[0]) {
     return (
-        <Link to={href} className="block h-full">
+        <Link to={href} className="block h-full opacity-0">
             <motion.div whileHover={{ y: -5 }} className="h-full">
                 <Card className={`glass-card h-full border-white/5 hover:border-${color}-500/30 transition-all duration-300 group overflow-hidden relative`}>
                     <div className={`absolute inset-0 bg-gradient-to-br from-${color}-500/0 via-transparent to-transparent group-hover:from-${color}-500/5 transition-all duration-500`} />

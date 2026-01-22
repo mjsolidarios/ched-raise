@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageCircle, X, Send, Bot, User, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { cn } from "@/lib/utils";
 
 
@@ -167,7 +169,11 @@ export function Chatbot() {
                                                     ? "bg-gradient-to-br from-blue-600/90 to-indigo-600/90 text-white border border-blue-400/20 rounded-tr-sm"
                                                     : "bg-white/5 text-slate-100 border border-white/10 rounded-tl-sm"
                                             )}>
-                                                <p className="leading-relaxed">{msg.content}</p>
+                                                <div className="prose prose-sm dark:prose-invert max-w-none break-words leading-relaxed">
+                                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                        {msg.content}
+                                                    </ReactMarkdown>
+                                                </div>
                                             </div>
                                         </motion.div>
                                     ))}
