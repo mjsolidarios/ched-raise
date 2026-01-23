@@ -1,9 +1,9 @@
-import { useRef, useLayoutEffect } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { staggerFadeIn, useGSAPScroll } from "@/hooks/useGSAPScroll"
 import { motion } from "framer-motion"
+import { ArrowRight, BookOpen, Calendar, Users } from "lucide-react"
+import { useLayoutEffect, useRef } from "react"
 import { Link } from "react-router-dom"
-import { Calendar, Users, BookOpen, ArrowRight, type LucideIcon } from "lucide-react"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { useGSAPScroll, staggerFadeIn } from "@/hooks/useGSAPScroll"
 
 const LINKS = [
     {
