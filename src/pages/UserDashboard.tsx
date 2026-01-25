@@ -40,7 +40,7 @@ import {
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { onAuthStateChanged, type User } from 'firebase/auth';
-import { Loader2, CalendarDays, Mail, Phone, CheckCircle2, XCircle, Clock, Pencil, Info, Edit, RefreshCcw, Circle, AlertCircle, MailCheckIcon, ClipboardCheck, BarChart3, Scan, Keyboard } from 'lucide-react';
+import { Loader2, CalendarDays, Mail, Phone, CheckCircle2, XCircle, Clock, Pencil, Info, Edit, RefreshCcw, Circle, AlertCircle, MailCheckIcon, ClipboardCheck, BarChart3, Scan, Keyboard, Calendar, ArrowRight, Copy } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useGSAPScroll, fadeInUp, slideInLeft, slideInRight } from '@/hooks/useGSAPScroll';
 import { RegistrationProgress } from '@/components/RegistrationProgress';
@@ -72,6 +72,10 @@ const UserDashboard = () => {
     const [submitting, setSubmitting] = useState(false);
     const [dashboardAlert, setDashboardAlert] = useState<{ show: boolean, message: string, variant?: 'default' | 'destructive', title?: string } | null>(null);
     const [regionStats, setRegionStats] = useState<{ name: string; value: number; avatars: { seed: string; color: string; id?: string; firstName?: string; ticketCode?: string }[] }[]>([]);
+
+    // Attendance Confirmation State
+    const [attendanceChoice, setAttendanceChoice] = useState<string>('');
+    const [confirmingAttendance, setConfirmingAttendance] = useState(false);
 
     // Edit State
     const [isEditOpen, setIsEditOpen] = useState(false);
@@ -453,6 +457,47 @@ const UserDashboard = () => {
         }
     };
 
+    const handleConfirmAttendance = async () => {
+        if (!registration?.id || !attendanceChoice) return;
+        setConfirmingAttendance(true);
+
+        try {
+            await updateDoc(doc(db, 'registrations', registration.id), {
+                attendanceConfirmation: attendanceChoice,
+                attendanceConfirmedAt: serverTimestamp()
+            });
+
+            // Send confirmation email
+            await axios.post('/api/email/', {
+                type: 'attendance_confirmation',
+                to: registration.email,
+                name: registration.firstName,
+                ticketCode: registration.ticketCode || registration.id,
+                attendanceDays: attendanceChoice === 'both' ? 'Both Days (Jan 29 & 30)' : (attendanceChoice === 'day1' ? 'Day 1 (Jan 29)' : 'Day 2 (Jan 30)'),
+                from: 'noreply@ched-raise.wvsu.edu.ph',
+            });
+
+            setDashboardAlert({
+                show: true,
+                message: "Attendance confirmed successfully! Check your email.",
+                variant: 'default',
+                title: 'Success'
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        } catch (error) {
+            console.error("Error confirming attendance:", error);
+            setDashboardAlert({
+                show: true,
+                message: "Failed to confirm attendance. Please try again.",
+                variant: 'destructive',
+                title: 'Error'
+            });
+        } finally {
+            setConfirmingAttendance(false);
+        }
+    };
+
     // Variants removed in favor of GSAP
 
     const [eventStatus, setEventStatus] = useState<'ongoing' | 'finished'>('ongoing');
@@ -557,6 +602,50 @@ const UserDashboard = () => {
         );
     }
 
+    // Component for Agenda Item
+    const AgendaItem = ({ time, title }: { time: string, title: string }) => (
+        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+            <span className="font-mono text-xs text-primary/70 mt-0.5 whitespace-nowrap">{time}</span>
+            <span>{title}</span>
+        </li>
+    );
+
+    // Component for Selection Card
+    const SelectionCard = ({
+        id,
+        label,
+        icon: Icon,
+        selected,
+        onClick
+    }: {
+        id: string,
+        label: string,
+        icon: any,
+        selected: boolean,
+        onClick: () => void
+    }) => (
+        <div
+            className={`cursor-pointer relative overflow-hidden rounded-xl border p-4 transition-all duration-300 group ${selected
+                ? 'bg-primary/10 border-primary ring-1 ring-primary shadow-[0_0_20px_rgba(59,130,246,0.2)]'
+                : 'bg-background/40 border-white/10 hover:border-primary/50 hover:bg-white/5'
+                }`}
+            onClick={onClick}
+        >
+            <div className={`absolute inset-0 bg-gradient-to-br transition-opacity duration-300 ${selected ? 'from-primary/20 to-transparent opacity-100' : 'from-primary/5 to-transparent opacity-0 group-hover:opacity-100'
+                }`} />
+
+            <div className="relative z-10 flex flex-col items-center gap-3 text-center">
+                <div className={`p-2 rounded-full transition-colors duration-300 ${selected ? 'bg-primary text-white' : 'bg-white/5 text-muted-foreground group-hover:text-primary group-hover:bg-primary/10'
+                    }`}>
+                    <Icon className="w-5 h-5" />
+                </div>
+                <span className={`font-semibold transition-colors duration-300 ${selected ? 'text-primary' : 'text-foreground'}`}>
+                    {label}
+                </span>
+            </div>
+        </div>
+    );
+
     return (
         <div className="container mx-auto px-4 py-6 sm:py-8 lg:py-12 min-h-[calc(100vh-64px)]">
             <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
@@ -601,9 +690,138 @@ const UserDashboard = () => {
                         <div
                             ref={registrationCardRef}
                             key={registration.id}
-                            className="lg:col-span-3 opacity-0"
+                            className="lg:col-span-3 opacity-0 text-left"
                         >
                             <div className="max-w-3xl mx-auto space-y-6">
+
+                                {/* Attendance Confirmation for Students */}
+                                {(registration.registrantType === 'college' || registration.registrantType === 'shs') && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="mb-8"
+                                    >
+                                        <Card className={`border shadow-lg overflow-hidden relative ${!registration.attendanceConfirmation
+                                            ? 'border-amber-500/50 bg-gradient-to-br from-amber-500/5 to-orange-500/5'
+                                            : 'border-emerald-500/50 bg-gradient-to-br from-emerald-500/5 to-teal-500/5'
+                                            }`}>
+                                            {/* decorative background blur */}
+                                            <div className={`absolute -top-24 -right-24 w-48 h-48 rounded-full blur-3xl opacity-20 pointer-events-none ${!registration.attendanceConfirmation ? 'bg-amber-500' : 'bg-emerald-500'
+                                                }`} />
+
+                                            <CardHeader className="relative z-10">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`p-2 rounded-full ${!registration.attendanceConfirmation ? 'bg-amber-500/10 text-amber-500' : 'bg-emerald-500/10 text-emerald-500'
+                                                        }`}>
+                                                        {!registration.attendanceConfirmation ? (
+                                                            <div className="relative">
+                                                                <AlertCircle className="h-6 w-6" />
+                                                                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+                                                                </span>
+                                                            </div>
+                                                        ) : (
+                                                            <CheckCircle2 className="h-6 w-6" />
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <CardTitle className={`text-xl ${!registration.attendanceConfirmation ? "text-amber-500" : "text-emerald-500"}`}>
+                                                            {!registration.attendanceConfirmation ? "Action Required: Confirm Your Attendance" : "Attendance Confirmed"}
+                                                        </CardTitle>
+                                                        <CardDescription className="mt-1 text-base">
+                                                            {!registration.attendanceConfirmation
+                                                                ? "Please let us know which days you will be attending to help us prepare."
+                                                                : <span className="flex items-center gap-2">
+                                                                    You are confirmed for <Badge variant="outline" className="bg-emerald-500/10 border-emerald-500/20 text-emerald-600 ml-1">
+                                                                        {registration.attendanceConfirmation === 'both' ? 'Both Days' : (registration.attendanceConfirmation === 'day1' ? 'Day 1 Only' : 'Day 2 Only')}
+                                                                    </Badge>
+                                                                </span>
+                                                            }
+                                                        </CardDescription>
+                                                    </div>
+                                                </div>
+                                            </CardHeader>
+
+                                            {!registration.attendanceConfirmation && (
+                                                <CardContent className="space-y-8 relative z-10">
+                                                    <div className="grid md:grid-cols-2 gap-6 p-4 rounded-xl bg-black/20 border border-white/5">
+                                                        <div className="space-y-3">
+                                                            <div className="flex items-center gap-2 pb-2 border-b border-white/10">
+                                                                <Calendar className="w-4 h-4 text-blue-400" />
+                                                                <h4 className="font-semibold text-blue-100">Day 1: January 29</h4>
+                                                            </div>
+                                                            <ul className="space-y-2">
+                                                                <AgendaItem time="AM" title="Demystifying the AI World" />
+                                                                <AgendaItem time="PM" title="Teaching Machines to See" />
+                                                            </ul>
+                                                        </div>
+                                                        <div className="space-y-3">
+                                                            <div className="flex items-center gap-2 pb-2 border-b border-white/10">
+                                                                <Calendar className="w-4 h-4 text-indigo-400" />
+                                                                <h4 className="font-semibold text-indigo-100">Day 2: January 30</h4>
+                                                            </div>
+                                                            <ul className="space-y-2">
+                                                                <AgendaItem time="AM" title="The Next Frontier: AI Agents" />
+                                                                <AgendaItem time="PM" title="Building Smarter Chatbots" />
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="space-y-4">
+                                                        <Label className="text-base font-medium flex items-center gap-2">
+                                                            Select your attendance:
+                                                            <span className="text-xs font-normal text-muted-foreground uppercase tracking-wider ml-auto">Required</span>
+                                                        </Label>
+                                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                                            <SelectionCard
+                                                                id="day1"
+                                                                label="Day 1 Only"
+                                                                icon={Calendar}
+                                                                selected={attendanceChoice === 'day1'}
+                                                                onClick={() => setAttendanceChoice('day1')}
+                                                            />
+                                                            <SelectionCard
+                                                                id="day2"
+                                                                label="Day 2 Only"
+                                                                icon={Calendar}
+                                                                selected={attendanceChoice === 'day2'}
+                                                                onClick={() => setAttendanceChoice('day2')}
+                                                            />
+                                                            <SelectionCard
+                                                                id="both"
+                                                                label="Both Days"
+                                                                icon={Copy}
+                                                                selected={attendanceChoice === 'both'}
+                                                                onClick={() => setAttendanceChoice('both')}
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex justify-end pt-2">
+                                                        <Button
+                                                            size="lg"
+                                                            className="w-full sm:w-auto font-bold shadow-lg shadow-primary/20"
+                                                            onClick={handleConfirmAttendance}
+                                                            disabled={!attendanceChoice || confirmingAttendance}
+                                                        >
+                                                            {confirmingAttendance ? (
+                                                                <>
+                                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                                    Confirming...
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    Confirm Attendance <ArrowRight className="ml-2 h-4 w-4" />
+                                                                </>
+                                                            )}
+                                                        </Button>
+                                                    </div>
+                                                </CardContent>
+                                            )}
+                                        </Card>
+                                    </motion.div>
+                                )}
                                 <Card className="glass-card border-primary/20">
                                     <CardContent className="p-6 flex flex-col sm:flex-row items-center gap-6">
                                         <div className="flex flex-col items-center gap-2">

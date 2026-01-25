@@ -682,7 +682,7 @@ const AdminPage = () => {
         const headers = [
             "Ticket ID", "Last Name", "First Name", "Middle Name",
             "Email", "Contact Number", "School/Affiliation", "Region",
-            "Type", "Food Preference", "Status", "Survey Completed?", "Date Registered"
+            "Type", "Food Preference", "Status", "Attendance Confirmed", "Survey Completed?", "Date Registered"
         ];
 
         const csvContent = [
@@ -700,6 +700,7 @@ const AdminPage = () => {
                     `"${reg.registrantType || ''}"`,
                     `"${reg.foodPreference || ''}"`,
                     reg.status || 'pending',
+                    reg.attendanceConfirmation ? (reg.attendanceConfirmation === 'both' ? 'Both Days' : (reg.attendanceConfirmation === 'day1' ? 'Day 1' : 'Day 2')) : 'Not Set',
                     reg.surveyCompleted ? 'Yes' : 'No',
                     reg.timestamp?.toDate ? new Date(reg.timestamp.toDate()).toLocaleDateString() : ''
                 ].join(',');
@@ -1151,6 +1152,7 @@ const AdminPage = () => {
                                                         </button>
                                                     </TableHead>
                                                     <TableHead>Contact</TableHead>
+                                                    <TableHead>Attendance</TableHead>
                                                     <TableHead>Food Preference</TableHead>
                                                     <TableHead>
                                                         <button
@@ -1210,6 +1212,15 @@ const AdminPage = () => {
                                                             <TableCell>
                                                                 <div className="text-sm">{reg.email}</div>
                                                                 <div className="text-xs text-muted-foreground">{reg.contactNumber}</div>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {reg.attendanceConfirmation ? (
+                                                                    <Badge variant="outline" className={`${reg.attendanceConfirmation === 'both' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}>
+                                                                        {reg.attendanceConfirmation === 'both' ? 'Both' : (reg.attendanceConfirmation === 'day1' ? 'Day 1' : 'Day 2')}
+                                                                    </Badge>
+                                                                ) : (
+                                                                    <span className="text-xs text-muted-foreground">-</span>
+                                                                )}
                                                             </TableCell>
                                                             <TableCell>
                                                                 <Badge variant="outline" className="capitalize">
@@ -1389,6 +1400,18 @@ const AdminPage = () => {
                                                         <div className="space-y-1">
                                                             <span className="text-xs text-muted-foreground block">Food Pref</span>
                                                             <div className="capitalize">{(reg.foodPreference || 'no_restriction').replace('_', ' ')}</div>
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <span className="text-xs text-muted-foreground block">Attendance</span>
+                                                            <div>
+                                                                {reg.attendanceConfirmation ? (
+                                                                    <Badge variant="outline" className={`h-5 text-[10px] ${reg.attendanceConfirmation === 'both' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}>
+                                                                        {reg.attendanceConfirmation === 'both' ? 'Both' : (reg.attendanceConfirmation === 'day1' ? 'Day 1' : 'Day 2')}
+                                                                    </Badge>
+                                                                ) : (
+                                                                    <span className="text-xs text-muted-foreground">-</span>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </div>
 

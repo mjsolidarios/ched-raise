@@ -303,6 +303,18 @@ switch ($type) {
             respondJson(500, ['error' => 'Template file not found.']);
         }
         break;
+    case 'attendance_confirmation':
+        $templatePath = __DIR__ . '/templates/AttendanceConfirmation.html';
+        if (file_exists($templatePath)) {
+            $htmlContent = file_get_contents($templatePath);
+            $subject = '[CHED-RAISE] Attendance Confirmation';
+            $htmlContent = str_replace('{{name}}', $name, $htmlContent);
+            $attendanceDays = $input['attendanceDays'] ?? 'Both Days'; // Default or get from input
+            $htmlContent = str_replace('{{attendanceDays}}', $attendanceDays, $htmlContent);
+        } else {
+            respondJson(500, ['error' => 'Template file not found.']);
+        }
+        break;
     case 'registration_rejected':
         $templatePath = __DIR__ . '/templates/RegistrationRejectedEmail.html';
         if (file_exists($templatePath)) {
