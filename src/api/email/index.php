@@ -187,7 +187,7 @@ if ($type === 'generate_certificate') {
     $fullNameUpper = strtoupper($fullName);
 
     if ($certType === 'appearance') {
-        $description = "This is to certify that " . $fullNameUpper . " of " . $school . " appeared at the Iloilo Convention Center on January 28-30, 2026 to attend the CHED-RAISE 2026 Summit.";
+        $description = "This is to certify that " . $fullNameUpper . " of " . $school . " appeared at the Iloilo Convention Center on February 25-27, 2026 to attend the CHED-RAISE 2026 Summit.";
     } else {
         $description = "has actively participated in the CHED RAISE 2026 activities.";
     }
@@ -310,6 +310,9 @@ switch ($type) {
             $subject = '[CHED-RAISE] Attendance Confirmation';
             $htmlContent = str_replace('{{name}}', $name, $htmlContent);
             $attendanceDays = $input['attendanceDays'] ?? 'Both Days'; // Default or get from input
+            // Ensure the input matches the new dates if hardcoded in frontend call, but dynamic is better.
+            // Just strictly relying on input for now, but if default is needed:
+            // $attendanceDays = 'Both Days (Feb 25 & 26)';
             $htmlContent = str_replace('{{attendanceDays}}', $attendanceDays, $htmlContent);
         } else {
             respondJson(500, ['error' => 'Template file not found.']);

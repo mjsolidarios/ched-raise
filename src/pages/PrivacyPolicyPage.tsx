@@ -16,7 +16,7 @@ const PrivacyPolicyPage = () => {
                     <div className="space-y-8 text-lg leading-relaxed text-slate-300">
                         <section>
                             <p className="mb-4">
-                                Last Updated: January 2026
+                                Last Updated: February 2026
                             </p>
                             <p>
                                 Welcome to the official website of the <strong>CHED RAISE 2026 Summit</strong> ("we," "us," or "our"), organized by the <strong>Commission on Higher Education (CHED) of the Philippines</strong> in partnership with West Visayas State University and Northern Iloilo State University. We are committed to protecting your personal information and your right to privacy.

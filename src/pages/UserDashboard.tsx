@@ -473,7 +473,7 @@ const UserDashboard = () => {
                 to: registration.email,
                 name: registration.firstName,
                 ticketCode: registration.ticketCode || registration.id,
-                attendanceDays: attendanceChoice === 'both' ? 'Both Days (Jan 29 & 30)' : (attendanceChoice === 'day1' ? 'Day 1 (Jan 29)' : 'Day 2 (Jan 30)'),
+                attendanceDays: attendanceChoice === 'both' ? 'Both Days (Feb 25 & 26)' : (attendanceChoice === 'day1' ? 'Day 1 (Feb 25)' : 'Day 2 (Feb 26)'),
                 from: 'noreply@ched-raise.wvsu.edu.ph',
             });
 
@@ -612,13 +612,11 @@ const UserDashboard = () => {
 
     // Component for Selection Card
     const SelectionCard = ({
-        id,
         label,
         icon: Icon,
         selected,
         onClick
     }: {
-        id: string,
         label: string,
         icon: any,
         selected: boolean,
@@ -749,7 +747,7 @@ const UserDashboard = () => {
                                                         <div className="space-y-3">
                                                             <div className="flex items-center gap-2 pb-2 border-b border-white/10">
                                                                 <Calendar className="w-4 h-4 text-blue-400" />
-                                                                <h4 className="font-semibold text-blue-100">Day 1: January 29</h4>
+                                                                <h4 className="font-semibold text-primary">Day 1: Feb 25</h4>
                                                             </div>
                                                             <ul className="space-y-2">
                                                                 <AgendaItem time="AM" title="Demystifying the AI World" />
@@ -759,7 +757,7 @@ const UserDashboard = () => {
                                                         <div className="space-y-3">
                                                             <div className="flex items-center gap-2 pb-2 border-b border-white/10">
                                                                 <Calendar className="w-4 h-4 text-indigo-400" />
-                                                                <h4 className="font-semibold text-indigo-100">Day 2: January 30</h4>
+                                                                <h4 className="font-semibold text-primary">Day 2: Feb 26</h4>
                                                             </div>
                                                             <ul className="space-y-2">
                                                                 <AgendaItem time="AM" title="The Next Frontier: AI Agents" />
@@ -775,21 +773,18 @@ const UserDashboard = () => {
                                                         </Label>
                                                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                                             <SelectionCard
-                                                                id="day1"
                                                                 label="Day 1 Only"
                                                                 icon={Calendar}
                                                                 selected={attendanceChoice === 'day1'}
                                                                 onClick={() => setAttendanceChoice('day1')}
                                                             />
                                                             <SelectionCard
-                                                                id="day2"
                                                                 label="Day 2 Only"
                                                                 icon={Calendar}
                                                                 selected={attendanceChoice === 'day2'}
                                                                 onClick={() => setAttendanceChoice('day2')}
                                                             />
                                                             <SelectionCard
-                                                                id="both"
                                                                 label="Both Days"
                                                                 icon={Copy}
                                                                 selected={attendanceChoice === 'both'}
