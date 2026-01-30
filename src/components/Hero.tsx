@@ -12,7 +12,7 @@ import { useGSAPScroll, parallax, scaleIn, staggerFadeIn } from "@/hooks/useGSAP
 import { CountdownTimer } from "@/components/CountdownTimer"
 // import { Robot } from "@/components/Robot"
 import { useRive, Layout, Fit, Alignment } from '@rive-app/react-canvas';
-import { PixelParticles } from "./PixelParticles";
+import FloatingLines from "./FloatingLines";
 
 export function Hero() {
     const containerRef = useRef<HTMLElement>(null);
@@ -112,7 +112,18 @@ export function Hero() {
             className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden group/hero"
         >
             {/* Professional Grid & Dots Background Overlay */}
-            <PixelParticles targetRef={logoRef} />
+            <FloatingLines
+                enabledWaves={['top', 'middle', 'bottom']}
+                lineCount={1}
+                lineDistance={8}
+                bendRadius={10.5}
+                bendStrength={-3}
+                interactive={true}
+                parallax={true}
+                parallaxStrength={0.2}
+                className="opacity-20"
+                linesGradient={['#5b8def', '#10b981', '#3b82f6']}
+            />
             <div className="absolute inset-0 pointer-events-none">
                 {/* Base Faint Pattern */}
                 <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] opacity-5" />
