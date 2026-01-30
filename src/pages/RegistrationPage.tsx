@@ -160,6 +160,7 @@ const RegistrationPage = () => {
                                     }}
                                 >
                                     <option value="chedofficial">CHED Official</option>
+                                    <option value="organizing_committee">Organizing Committee</option>
                                     <option value="speaker">Speaker</option>
                                     <option value="exhibitor">Exhibitor</option>
                                     <option value="faculty">Faculty</option>

@@ -236,6 +236,7 @@ export const RegistrationBusinessCard = ({ registration, actions, hideFlipInstru
 
   const registrantTypeLabel = (() => {
     if (registration.registrantType === 'others') return registration.registrantTypeOther || 'Other';
+    if (registration.registrantType === 'organizing_committee') return 'Organizing Committee';
     if (registration.registrantType) return registration.registrantType;
     return '—';
   })();

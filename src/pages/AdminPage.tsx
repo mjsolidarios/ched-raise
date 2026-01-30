@@ -1086,6 +1086,7 @@ const AdminPage = () => {
                                             <SelectContent>
                                                 <SelectItem value="all">All Types</SelectItem>
                                                 <SelectItem value="chedofficial">CHED Official</SelectItem>
+                                                <SelectItem value="organizing_committee">Organizing Committee</SelectItem>
                                                 <SelectItem value="speaker">Speaker</SelectItem>
                                                 <SelectItem value="exhibitor">Exhibitor</SelectItem>
                                                 <SelectItem value="faculty">Faculty</SelectItem>
@@ -1198,7 +1199,9 @@ const AdminPage = () => {
                                                             <TableCell>
                                                                 <div className="text-sm font-medium">{reg.schoolAffiliation || 'N/A'}</div>
                                                                 <div className="text-xs text-muted-foreground">{reg.region || 'N/A'}</div>
-                                                                <div className="text-xs text-muted-foreground/60 capitalize mt-0.5">{reg.registrantType || 'N/A'} {reg.registrantType === 'others' && reg.registrantTypeOther ? `(${reg.registrantTypeOther})` : ''}</div>
+                                                                <div className="text-xs text-muted-foreground/60 capitalize mt-0.5">
+                                                                    {reg.registrantType === 'organizing_committee' ? 'Organizing Committee' : reg.registrantType || 'N/A'} {reg.registrantType === 'others' && reg.registrantTypeOther ? `(${reg.registrantTypeOther})` : ''}
+                                                                </div>
                                                                 {reg.role === 'regional_admin' && (
                                                                     <Badge variant="secondary" className="mt-1 text-[10px] h-5">Regional Admin</Badge>
                                                                 )}
@@ -1384,7 +1387,7 @@ const AdminPage = () => {
                                                         </div>
                                                         <div className="space-y-1">
                                                             <span className="text-xs text-muted-foreground block">Type</span>
-                                                            <div className="capitalize">{reg.registrantType || 'N/A'}</div>
+                                                            <div className="capitalize">{reg.registrantType === 'organizing_committee' ? 'Organizing Committee' : reg.registrantType || 'N/A'}</div>
                                                             {reg.registrantType === 'others' && reg.registrantTypeOther && (
                                                                 <div className="text-xs text-muted-foreground">({reg.registrantTypeOther})</div>
                                                             )}

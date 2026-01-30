@@ -853,7 +853,9 @@ const UserDashboard = () => {
                                             <h2 className="text-2xl font-bold tracking-tight">Hello, {registration.firstName}!</h2>
                                             <p className="text-muted-foreground">Ready for the CHED RAISE 2026 Summit?</p>
                                             <div className="flex flex-wrap justify-center sm:justify-start gap-2 pt-2">
-                                                <Badge variant="outline" className="capitalize text-xs">{registration.registrantType}</Badge>
+                                                <Badge variant="outline" className="capitalize text-xs">
+                                                    {registration.registrantType === 'organizing_committee' ? 'Organizing Committee' : registration.registrantType}
+                                                </Badge>
                                             </div>
                                         </div>
                                     </CardContent>
@@ -1042,6 +1044,7 @@ const UserDashboard = () => {
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         <SelectItem value="chedofficial">CHED Official</SelectItem>
+                                                        <SelectItem value="organizing_committee">Organizing Committee</SelectItem>
                                                         <SelectItem value="speaker">Speaker</SelectItem>
                                                         <SelectItem value="exhibitor">Exhibitor</SelectItem>
                                                         <SelectItem value="faculty">Faculty</SelectItem>
@@ -1259,6 +1262,7 @@ const UserDashboard = () => {
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectItem value="chedofficial">CHED Official</SelectItem>
+                                                    <SelectItem value="organizing_committee">Organizing Committee</SelectItem>
                                                     <SelectItem value="speaker">Speaker</SelectItem>
                                                     <SelectItem value="exhibitor">Exhibitor</SelectItem>
                                                     <SelectItem value="faculty">Faculty</SelectItem>
