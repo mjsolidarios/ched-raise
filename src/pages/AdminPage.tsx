@@ -808,6 +808,40 @@ const AdminPage = () => {
             .sort((a, b) => b.value - a.value);
     }, [registrations]);
 
+    const calculatedUserTypeStats = useMemo(() => {
+        const stats: Record<string, number> = {};
+        registrations.forEach(reg => {
+            const type = reg.registrantType || 'Unknown';
+            stats[type] = (stats[type] || 0) + 1;
+        });
+
+        const formatType = (type: string) => {
+            if (type === 'chedofficial') return 'CHED Official';
+            if (type === 'organizing_committee') return 'Org. Committee';
+            if (type === 'shs') return 'SHS Student';
+            if (type === 'college') return 'College Student';
+            return type
+                .split('_')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+        };
+
+        return Object.entries(stats)
+            .map(([name, value]) => ({ name, displayName: formatType(name), value }))
+            .sort((a, b) => b.value - a.value);
+    }, [registrations]);
+
+    const calculatedMixedStats = useMemo(() => {
+        let count = 0;
+        registrations.forEach(reg => {
+            const t = reg.registrantType;
+            if (t === 'faculty' || t === 'shs' || t === 'college' || t === 'participant') {
+                count++;
+            }
+        });
+        return count;
+    }, [registrations]);
+
     const displayRegionStats = globalStats.length > 0 ? globalStats : calculatedRegionStats;
 
     const container = {
@@ -990,11 +1024,15 @@ const AdminPage = () => {
             >
                 {/* Main Content Area with Tabs */}
                 <motion.div variants={item}>
-                    <Tabs defaultValue="registrations" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2 mb-6">
-                            <TabsTrigger value="registrations" className="flex items-center gap-2">
+                    <Tabs defaultValue="metrics" className="w-full">
+                        <TabsList className="grid w-full grid-cols-3 mb-6">
+                            <TabsTrigger value="metrics" className="flex items-center gap-2">
+                                <BarChart3 className="h-4 w-4" />
+                                Metrics & KPIs
+                            </TabsTrigger>
+                            <TabsTrigger value="registry" className="flex items-center gap-2">
                                 <Users className="h-4 w-4" />
-                                Registrations
+                                Registry & Status
                             </TabsTrigger>
                             <TabsTrigger value="attendance" className="flex items-center gap-2">
                                 <CheckCircle2 className="h-4 w-4" />
@@ -1002,10 +1040,10 @@ const AdminPage = () => {
                             </TabsTrigger>
                         </TabsList>
 
-                        {/* Registrations Tab */}
-                        <TabsContent value="registrations">
+                        {/* Metrics & KPIs Tab */}
+                        <TabsContent value="metrics">
                             {/* Stats Cards */}
-                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-4">
+                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5 mb-4">
                                 <Card className="glass-card">
                                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                         <CardTitle className="text-sm font-medium">Total Registrations</CardTitle>
@@ -1046,9 +1084,23 @@ const AdminPage = () => {
                                         <p className="text-xs text-muted-foreground">Declined submissions</p>
                                     </CardContent>
                                 </Card>
+                                <Card className="glass-card">
+                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                        <CardTitle className="text-sm font-medium">Participants</CardTitle>
+                                        <Users className="h-4 w-4 text-primary" />
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-2xl font-bold text-primary">{calculatedMixedStats}</div>
+                                        <p className="text-xs text-muted-foreground">Faculty + Students + Participants</p>
+                                    </CardContent>
+                                </Card>
                             </div>
 
 
+                        </TabsContent>
+
+                        {/* Registry & Status Tab */}
+                        <TabsContent value="registry">
                             <Card className="glass-card">
                                 <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                                     <div>
@@ -1565,6 +1617,41 @@ const AdminPage = () => {
                                 </CardContent>
                             </Card>
 
+                        </TabsContent>
+
+                        {/* Metrics Tab (continued) */}
+                        <TabsContent value="metrics">
+
+                            {/* User User Type Stats Cards */}
+                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+                                {calculatedUserTypeStats.map((stat, index) => {
+                                    // Colors based on index to give variety
+                                    const colors = [
+                                        'text-blue-500', 'text-purple-500', 'text-pink-500',
+                                        'text-orange-500', 'text-cyan-500', 'text-teal-500'
+                                    ];
+                                    const colorClass = colors[index % colors.length];
+
+                                    const total = calculatedUserTypeStats.reduce((acc, curr) => acc + curr.value, 0);
+                                    const percentage = ((stat.value / total) * 100).toFixed(1);
+
+                                    return (
+                                        <Card key={stat.name} className="glass-card">
+                                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                                <CardTitle className="text-sm font-medium truncate" title={stat.displayName}>
+                                                    {stat.displayName}
+                                                </CardTitle>
+                                                <Users className={`h-4 w-4 ${colorClass}`} />
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className={`text-2xl font-bold ${colorClass}`}>{stat.value}</div>
+                                                <p className="text-xs text-muted-foreground">{percentage}% of participants</p>
+                                            </CardContent>
+                                        </Card>
+                                    );
+                                })}
+                            </div>
+
                             <div className="grid gap-4 my-4">
                                 <Card className="glass-card">
                                     <CardHeader>
@@ -1699,7 +1786,7 @@ const AdminPage = () => {
                         </TabsContent>
                     </Tabs>
                 </motion.div>
-            </motion.div>
+            </motion.div >
 
             <Dialog open={isRejectDialogOpen} onOpenChange={setIsRejectDialogOpen}>
                 <DialogContent>
