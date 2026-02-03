@@ -478,6 +478,39 @@ const AdminPage = () => {
         }
     };
 
+    const demoteToUser = async (id: string) => {
+        if (adminRole !== 'super_admin') {
+            toast.error("Only Super Admins can demote users.");
+            return;
+        }
+
+        if (!confirm("Are you sure you want to demote this admin to a regular user?")) return;
+
+        try {
+            const ref = doc(db, 'registrations', id);
+            await updateDoc(ref, {
+                role: 'user',
+                region: deleteField()
+            });
+
+            // Sync to user_roles collection
+            const reg = registrations.find(r => r.id === id);
+            if (reg && reg.uid) {
+                const userRoleRef = doc(db, 'user_roles', reg.uid);
+                // Safe update or set
+                await setDoc(userRoleRef, {
+                    role: 'user',
+                    region: deleteField()
+                }, { merge: true });
+            }
+
+            toast.success("User demoted to regular User");
+        } catch (error) {
+            console.error("Error demoting user", error);
+            toast.error("Failed to demote user");
+        }
+    };
+
     const syncPermissions = async () => {
         if (adminRole !== 'super_admin') return;
         setIsSyncing(true);
@@ -1368,6 +1401,12 @@ const AdminPage = () => {
                                                                                     <ShieldCheck className="mr-2 h-4 w-4 text-primary" />
                                                                                     Promote to Super Admin
                                                                                 </DropdownMenuItem>
+                                                                                {(reg.role === 'regional_admin' || reg.role === 'super_admin') && (
+                                                                                    <DropdownMenuItem onClick={() => demoteToUser(reg.id)} className="text-amber-500 focus:text-amber-500">
+                                                                                        <ArrowDown className="mr-2 h-4 w-4" />
+                                                                                        Demote to User
+                                                                                    </DropdownMenuItem>
+                                                                                )}
                                                                                 <DropdownMenuItem onClick={() => initiateChangeRegion(reg.id, reg.region)}>
                                                                                     <MapPin className="mr-2 h-4 w-4" />
                                                                                     Change Region
@@ -1523,6 +1562,12 @@ const AdminPage = () => {
                                                                             <CheckCircle2 className="mr-2 h-4 w-4" />
                                                                             Promote Regional Admin
                                                                         </DropdownMenuItem>
+                                                                        {(reg.role === 'regional_admin' || reg.role === 'super_admin') && (
+                                                                            <DropdownMenuItem onClick={() => demoteToUser(reg.id)} className="text-amber-500 focus:text-amber-500">
+                                                                                <ArrowDown className="mr-2 h-4 w-4" />
+                                                                                Demote to User
+                                                                            </DropdownMenuItem>
+                                                                        )}
                                                                         <DropdownMenuItem onClick={() => initiateChangeRegion(reg.id, reg.region)}>
                                                                             <MapPin className="mr-2 h-4 w-4" />
                                                                             Change Region
