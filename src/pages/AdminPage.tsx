@@ -113,6 +113,12 @@ const AdminPage = () => {
     // Delete Attendance State
     const [attendanceRecordToDelete, setAttendanceRecordToDelete] = useState<string | null>(null);
 
+    // Demote User State
+    const [demoteConfirmation, setDemoteConfirmation] = useState<{ isOpen: boolean; id: string | null }>({
+        isOpen: false,
+        id: null
+    });
+
 
     useEffect(() => {
         // Subscribe to global settings
@@ -484,7 +490,12 @@ const AdminPage = () => {
             return;
         }
 
-        if (!confirm("Are you sure you want to demote this admin to a regular user?")) return;
+        setDemoteConfirmation({ isOpen: true, id });
+    };
+
+    const handleConfirmDemote = async () => {
+        const id = demoteConfirmation.id;
+        if (!id) return;
 
         try {
             const ref = doc(db, 'registrations', id);
@@ -508,6 +519,8 @@ const AdminPage = () => {
         } catch (error) {
             console.error("Error demoting user", error);
             toast.error("Failed to demote user");
+        } finally {
+            setDemoteConfirmation({ isOpen: false, id: null });
         }
     };
 
@@ -1901,6 +1914,25 @@ const AdminPage = () => {
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={handleConfirmPromoteSuperAdmin} className="bg-primary hover:bg-primary/90">
                             Promote to Super Admin
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={demoteConfirmation.isOpen} onOpenChange={(open) => setDemoteConfirmation(prev => ({ ...prev, isOpen: open }))}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Demote to User?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to demote this admin to a regular <strong>User</strong>?
+                            <br /><br />
+                            They will lose access to all admin features and regional data.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmDemote} className="bg-amber-500 hover:bg-amber-600 text-white">
+                            Demote to User
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
