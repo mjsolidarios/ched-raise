@@ -66,6 +66,7 @@ const AdminPage = () => {
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
     const [regionFilter, setRegionFilter] = useState<string>('all');
     const [registrantTypeFilter, setRegistrantTypeFilter] = useState<string>('all');
+    const [statusFilter, setStatusFilter] = useState<string>('all');
     const [eventStatus, setEventStatus] = useState<'ongoing' | 'finished'>('ongoing');
 
     // Admin Role State
@@ -788,9 +789,14 @@ const AdminPage = () => {
             filtered = filtered.filter(reg => reg.region === regionFilter);
         }
 
-        // Apply registrant type filter
+        // Apply registrantType filter
         if (registrantTypeFilter !== 'all') {
             filtered = filtered.filter(reg => reg.registrantType === registrantTypeFilter);
+        }
+
+        // Apply status filter
+        if (statusFilter !== 'all') {
+            filtered = filtered.filter(reg => reg.status === statusFilter);
         }
 
         // Apply sorting
@@ -817,7 +823,7 @@ const AdminPage = () => {
 
         console.log('Filtered registrations:', filtered);
         return filtered;
-    }, [registrations, searchTerm, regionFilter, registrantTypeFilter, sortColumn, sortDirection]);
+    }, [registrations, searchTerm, regionFilter, registrantTypeFilter, statusFilter, sortColumn, sortDirection]);
 
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
@@ -1192,6 +1198,20 @@ const AdminPage = () => {
                                                 <SelectItem value="shs">Senior High Student</SelectItem>
                                                 <SelectItem value="participant">Participant</SelectItem>
                                                 <SelectItem value="others">Others</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <Select value={statusFilter} onValueChange={setStatusFilter}>
+                                            <SelectTrigger className="w-full sm:w-[150px] bg-background/50">
+                                                <div className="flex items-center gap-2">
+                                                    <Filter className="h-4 w-4" />
+                                                    <SelectValue placeholder="All Status" />
+                                                </div>
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="all">All Status</SelectItem>
+                                                <SelectItem value="pending">Pending</SelectItem>
+                                                <SelectItem value="confirmed">Confirmed</SelectItem>
+                                                <SelectItem value="rejected">Rejected</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <div className="relative flex-1 w-full md:w-64">
