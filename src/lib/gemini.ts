@@ -56,6 +56,6 @@ export async function getSchoolSuggestions(query: string): Promise<string[]> {
         return [];
     } catch (error) {
         console.error("School Suggestions Error:", error);
-        return [];
+        throw error; // Propagate error to let component handle fallback
     }
 }

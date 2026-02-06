@@ -2,7 +2,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { getSchoolSuggestions } from '@/lib/gemini';
-import { Loader2, GraduationCap } from 'lucide-react';
+import { getAllSchools } from '@/data/schools';
+import { Loader2, GraduationCap, WifiOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SchoolAutocompleteProps {
@@ -20,6 +21,7 @@ export function SchoolAutocomplete({ value, onChange, id, name, placeholder, cla
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [showSuggestions, setShowSuggestions] = useState(false);
+    const [isOfflineMode, setIsOfflineMode] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
     const shouldFetchRef = useRef(true);
 
@@ -37,24 +39,38 @@ export function SchoolAutocomplete({ value, onChange, id, name, placeholder, cla
         setInputValue(value);
     }, [value]);
 
+    const filterOfflineSchools = (query: string) => {
+        const allSchools = getAllSchools();
+        const lowerQuery = query.toLowerCase();
+        return allSchools.filter(school => school.toLowerCase().includes(lowerQuery)).slice(0, 5);
+    };
+
     useEffect(() => {
         const fetchSuggestions = async () => {
-            // If empty or short, clear suggestions
             if (debouncedValue.length < 3) {
                 setSuggestions([]);
                 return;
             }
 
-            // Don't fetch if we just selected an item
             if (!shouldFetchRef.current) {
                 return;
             }
 
-            // Only fetch if the input isn't exactly one of the previous suggestions 
-            // (heuristic to avoid searching when user clicks a suggestion)
-            // But here we rely on showSuggestions to control the dropdown visibility.
+            // Heuristic for strict equality check to avoid fetching
+            if (suggestions.includes(debouncedValue)) {
+                return;
+            }
 
             setLoading(true);
+
+            // If already in offline mode, just filter locally
+            if (isOfflineMode) {
+                setSuggestions(filterOfflineSchools(debouncedValue));
+                setShowSuggestions(true);
+                setLoading(false);
+                return;
+            }
+
             try {
                 console.log("Fetching suggestions for:", debouncedValue);
                 const results = await getSchoolSuggestions(debouncedValue);
@@ -62,16 +78,24 @@ export function SchoolAutocomplete({ value, onChange, id, name, placeholder, cla
                 setSuggestions(results);
                 if (results.length > 0) {
                     setShowSuggestions(true);
+                } else {
+                    // If API returns empty but no error, it might just be no match
+                    // We can opt to fallback to local search if we want to be helpful, 
+                    // or just show "No schools found"
+                    // keeping as is for now: let it show "No schools found"
                 }
             } catch (error) {
-                console.error("Failed to fetch suggestions", error);
+                console.error("Failed to fetch suggestions, switching to offline mode", error);
+                setIsOfflineMode(true);
+                setSuggestions(filterOfflineSchools(debouncedValue));
+                setShowSuggestions(true);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchSuggestions();
-    }, [debouncedValue]);
+    }, [debouncedValue, isOfflineMode]);
 
     useEffect(() => {
         // Handle clicks outside
@@ -121,6 +145,10 @@ export function SchoolAutocomplete({ value, onChange, id, name, placeholder, cla
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
                     {loading ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : isOfflineMode ? (
+                        <div title="Offline Mode - Manual Search">
+                            <WifiOff className="h-4 w-4 opacity-50 text-orange-500" />
+                        </div>
                     ) : (
                         <GraduationCap className="h-4 w-4 opacity-50" />
                     )}
@@ -134,7 +162,11 @@ export function SchoolAutocomplete({ value, onChange, id, name, placeholder, cla
                     )}
 
                     {!loading && suggestions.length === 0 && debouncedValue.length >= 3 && (
-                        <li className="px-2 py-2 text-sm text-muted-foreground text-center">No schools found</li>
+                        <li className="px-2 py-2 text-sm text-muted-foreground text-center">
+                            No matches found.
+                            <br />
+                            <span className="text-xs">Type the full name to add it manually.</span>
+                        </li>
                     )}
 
                     {suggestions.map((school, index) => (
@@ -148,7 +180,7 @@ export function SchoolAutocomplete({ value, onChange, id, name, placeholder, cla
                     ))}
                     {suggestions.length > 0 && (
                         <li className="px-2 py-2 text-[10px] uppercase tracking-wider text-muted-foreground border-t mt-1 bg-muted/20 text-center">
-                            Suggested Schools
+                            {isOfflineMode ? "Offline Suggestions" : "Suggested Schools"}
                         </li>
                     )}
                 </ul>
