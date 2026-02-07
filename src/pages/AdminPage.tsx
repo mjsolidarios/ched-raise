@@ -68,6 +68,7 @@ const AdminPage = () => {
     const [registrantTypeFilter, setRegistrantTypeFilter] = useState<string>('all');
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [eventStatus, setEventStatus] = useState<'ongoing' | 'finished'>('ongoing');
+    const [registrationStatus, setRegistrationStatus] = useState<'open' | 'closed'>('open');
 
     // Admin Role State
     const [adminRole, setAdminRole] = useState<'super_admin' | 'regional_admin' | 'user' | null>(null);
@@ -130,9 +131,12 @@ const AdminPage = () => {
         // Subscribe to global settings
         const settingsUnsub = onSnapshot(doc(db, 'settings', 'general'), (docSnap) => {
             if (docSnap.exists()) {
-                setEventStatus(docSnap.data().eventStatus || 'ongoing');
+                const data = docSnap.data();
+                setEventStatus(data.eventStatus || 'ongoing');
+                setRegistrationStatus(data.registrationStatus || 'open');
             } else {
                 setEventStatus('ongoing');
+                setRegistrationStatus('open');
             }
         });
         return () => settingsUnsub();
@@ -157,18 +161,21 @@ const AdminPage = () => {
         if (adminRole !== 'super_admin') return; // Security check
         const newStatus = eventStatus === 'ongoing' ? 'finished' : 'ongoing';
         try {
-            // Ensure document exists and update
-            await updateDoc(doc(db, 'settings', 'general'), {
-                eventStatus: newStatus
-            });
-        } catch (e) {
-            // If doc doesn't exist, create it (lazy init)
-            try {
-                const { setDoc } = await import('firebase/firestore');
-                await setDoc(doc(db, 'settings', 'general'), { eventStatus: newStatus }, { merge: true });
-            } catch (err) {
-                console.error("Error toggling status", err);
-            }
+            await setDoc(doc(db, 'settings', 'general'), { eventStatus: newStatus }, { merge: true });
+        } catch (err) {
+            console.error("Error toggling event status", err);
+        }
+    };
+
+    const toggleRegistrationStatus = async () => {
+        if (adminRole !== 'super_admin') return;
+        const newStatus = registrationStatus === 'open' ? 'closed' : 'open';
+        try {
+            await setDoc(doc(db, 'settings', 'general'), { registrationStatus: newStatus }, { merge: true });
+            toast.success(`Registration is now ${newStatus}`);
+        } catch (err) {
+            console.error("Error toggling registration status", err);
+            toast.error("Failed to update registration status");
         }
     };
 
@@ -1070,6 +1077,13 @@ const AdminPage = () => {
                                     {isSyncing ? 'Syncing...' : syncSuccess ? 'Synced!' : 'Sync Permissions'}
                                 </Button>
                                 <div className="h-8 w-[1px] bg-white/10 mx-1 hidden md:block" />
+                                <Button
+                                    variant={registrationStatus === 'open' ? "secondary" : "default"}
+                                    onClick={toggleRegistrationStatus}
+                                    className={`h-10 px-4 transition-all ${registrationStatus === 'open' ? 'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20' : 'bg-emerald-500 hover:bg-emerald-600 text-white'}`}
+                                >
+                                    {registrationStatus === 'open' ? 'Close Registration' : 'Open Registration'}
+                                </Button>
                                 <Button
                                     variant={eventStatus === 'ongoing' ? "destructive" : "default"}
                                     onClick={toggleEventStatus}

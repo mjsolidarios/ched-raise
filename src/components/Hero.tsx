@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, Calendar, MapPin } from "lucide-react"
+import { ArrowRight, Calendar, MapPin, Lock } from "lucide-react"
 import { motion } from "framer-motion"
 import { Link } from "react-router-dom"
 import Typewriter from 'typewriter-effect';
@@ -17,6 +17,7 @@ import FloatingLines from "./FloatingLines";
 export function Hero() {
     const containerRef = useRef<HTMLElement>(null);
     const [eventStatus, setEventStatus] = useState<'ongoing' | 'finished'>('ongoing');
+    const [registrationStatus, setRegistrationStatus] = useState<'open' | 'closed'>('open');
     const blob1Ref = useRef<HTMLDivElement>(null);
     const blob2Ref = useRef<HTMLDivElement>(null);
     const blob3Ref = useRef<HTMLDivElement>(null);
@@ -31,7 +32,9 @@ export function Hero() {
         // Subscribe to global settings for event status
         const settingsUnsub = onSnapshot(doc(db, 'settings', 'general'), (docSnap) => {
             if (docSnap.exists()) {
-                setEventStatus(docSnap.data().eventStatus || 'ongoing');
+                const data = docSnap.data();
+                setEventStatus(data.eventStatus || 'ongoing');
+                setRegistrationStatus(data.registrationStatus || 'open');
             }
         });
         return () => settingsUnsub();
@@ -266,32 +269,45 @@ export function Hero() {
                     <>
                         <CountdownTimer targetDate="2026-02-25T08:00:00" />
 
-                        <motion.div
-                            ref={ctaRef}
-                            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-                        >
-                            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                <Button size="lg" className="bg-primary text-white hover:bg-primary/90 h-14 px-8 text-lg font-bold shadow-[0_0_40px_rgba(8,52,159,0.6)] hover:shadow-[0_0_50px_rgba(8,52,159,0.8)] transition-all relative overflow-hidden group" asChild>
-                                    <Link to="/login" onClick={() => window.scrollTo(0, 0)}>
-                                        <span className="relative z-10 flex items-center">
-                                            Register Now
-                                            <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                                        </span>
-                                    </Link>
-                                </Button>
+                        {registrationStatus === 'closed' && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mb-6 px-6 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 backdrop-blur-md flex items-center gap-2 shadow-lg shadow-amber-500/5"
+                            >
+                                <Lock className="w-4 h-4 text-amber-500" />
+                                <span className="text-amber-200 text-sm font-medium">Registration is currently closed</span>
                             </motion.div>
-                            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-white/20 hover:bg-white/5 hover:border-teal-400/50 bg-white/5 backdrop-blur-md transition-all relative overflow-hidden group" asChild>
-                                    <Link to="/agenda">
-                                        <span className="relative z-10 flex items-center group-hover:text-teal-300 transition-colors">
-                                            <Calendar className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
-                                            View Agenda
-                                        </span>
-                                        <span className="absolute inset-0 bg-gradient-to-r from-teal-400/10 via-cyan-400/10 to-transparent -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out" />
-                                    </Link>
-                                </Button>
+                        )}
+
+                        {registrationStatus === 'open' && (
+                            <motion.div
+                                ref={ctaRef}
+                                className="flex flex-col sm:flex-row items-center justify-center gap-4"
+                            >
+                                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                    <Button size="lg" className="bg-primary text-white hover:bg-primary/90 h-14 px-8 text-lg font-bold shadow-[0_0_40px_rgba(8,52,159,0.6)] hover:shadow-[0_0_50px_rgba(8,52,159,0.8)] transition-all relative overflow-hidden group" asChild>
+                                        <Link to="/login" onClick={() => window.scrollTo(0, 0)}>
+                                            <span className="relative z-10 flex items-center">
+                                                Register Now
+                                                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                                            </span>
+                                        </Link>
+                                    </Button>
+                                </motion.div>
+                                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                    <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-white/20 hover:bg-white/5 hover:border-teal-400/50 bg-white/5 backdrop-blur-md transition-all relative overflow-hidden group" asChild>
+                                        <Link to="/agenda">
+                                            <span className="relative z-10 flex items-center group-hover:text-teal-300 transition-colors">
+                                                <Calendar className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
+                                                View Agenda
+                                            </span>
+                                            <span className="absolute inset-0 bg-gradient-to-r from-teal-400/10 via-cyan-400/10 to-transparent -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out" />
+                                        </Link>
+                                    </Button>
+                                </motion.div>
                             </motion.div>
-                        </motion.div>
+                        )}
                     </>
                 )}
             </div>

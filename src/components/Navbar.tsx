@@ -12,7 +12,7 @@ import { useState, useEffect } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { auth, db } from '@/lib/firebase';
 import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, doc } from 'firebase/firestore';
 import { motion } from "framer-motion"
 
 import { cn } from "@/lib/utils"
@@ -22,6 +22,7 @@ export function Navbar() {
     const [user, setUser] = useState<User | null>(null);
     const [isRegistrationComplete, setIsRegistrationComplete] = useState(false);
     const [checkingRegistration, setCheckingRegistration] = useState(true);
+    const [registrationStatus, setRegistrationStatus] = useState<'open' | 'closed'>('open');
     const location = useLocation()
     const navigate = useNavigate();
 
@@ -29,7 +30,18 @@ export function Navbar() {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
         });
-        return () => unsubscribe();
+
+        // Subscribe to global settings for registration status
+        const settingsUnsub = onSnapshot(doc(db, 'settings', 'general'), (docSnap) => {
+            if (docSnap.exists()) {
+                setRegistrationStatus(docSnap.data().registrationStatus || 'open');
+            }
+        });
+
+        return () => {
+            unsubscribe();
+            settingsUnsub();
+        };
     }, []);
 
     useEffect(() => {
@@ -189,7 +201,7 @@ export function Navbar() {
                             <Button className="bg-primary text-white font-bold shadow-lg hover:shadow-xl hover:shadow-primary/50 transition-all duration-300 hover:scale-105 group">
                                 <span className="relative flex items-center gap-2">
                                     <LogIn className="w-4 h-4" />
-                                    Sign In / Register
+                                    {registrationStatus === 'open' ? 'Sign In / Register' : 'Sign In'}
                                 </span>
                             </Button>
                         </Link>
@@ -227,7 +239,7 @@ export function Navbar() {
                                         <Button className="bg-primary text-white font-bold shadow-lg hover:shadow-xl hover:shadow-primary/50 transition-all duration-300 hover:scale-105 w-full group">
                                             <span className="relative flex items-center justify-center gap-2">
                                                 <LogIn className="w-4 h-4" />
-                                                Sign In / Register
+                                                {registrationStatus === 'open' ? 'Sign In / Register' : 'Sign In'}
                                             </span>
                                         </Button>
                                     </Link>

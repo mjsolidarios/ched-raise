@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, where, getDocs, onSnapshot, doc } from 'firebase/firestore';
 import { generateTicketCode } from '@/lib/raiseCodeUtils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,6 +28,16 @@ const RegistrationPage = () => {
     const [status, setStatus] = useState<'idle' | 'success' | 'error' | 'exists'>('idle');
     const [privacyPolicyAccepted, setPrivacyPolicyAccepted] = useState(false);
     const [noAffiliation, setNoAffiliation] = useState(false);
+    const [registrationStatus, setRegistrationStatus] = useState<'open' | 'closed'>('open');
+
+    useEffect(() => {
+        const unsub = onSnapshot(doc(db, 'settings', 'general'), (doc) => {
+            if (doc.exists()) {
+                setRegistrationStatus(doc.data().registrationStatus || 'open');
+            }
+        });
+        return () => unsub();
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -129,7 +139,29 @@ const RegistrationPage = () => {
                     <CardDescription className="text-center">Join us for CHED RAISE 2026</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {status === 'success' ? (
+                    {registrationStatus === 'closed' ? (
+                        <div className="text-center space-y-6 py-8">
+                            <div className="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-500">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" y1="8" x2="12" y2="12" />
+                                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                                </svg>
+                            </div>
+                            <h3 className="text-xl font-semibold text-foreground">Registration is Currently Closed</h3>
+                            <p className="text-muted-foreground max-w-sm mx-auto">
+                                We are no longer accepting new registrations at this time.
+                                If you have already registered, you can check your status below.
+                            </p>
+                            <div className="pt-4">
+                                <Link to="/status">
+                                    <Button variant="outline" className="w-full h-12 border-primary/20 hover:border-primary/50 text-primary">
+                                        Check Registration Status
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    ) : status === 'success' ? (
                         <div className="text-center space-y-4">
                             <div className="text-green-500 font-bold text-xl">Registration Successful!</div>
                             <p className="text-muted-foreground">Thank you for registering. You can check your status using your email.</p>
@@ -282,7 +314,7 @@ const RegistrationPage = () => {
                         </form>
                     )}
                 </CardContent>
-                {status !== 'success' && (
+                {status !== 'success' && registrationStatus !== 'closed' && (
                     <CardFooter className="justify-center">
                         <Link to="/status" className="text-sm text-muted-foreground hover:text-primary">
                             Already registered? Check status

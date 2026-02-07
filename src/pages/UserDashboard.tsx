@@ -501,12 +501,15 @@ const UserDashboard = () => {
     // Variants removed in favor of GSAP
 
     const [eventStatus, setEventStatus] = useState<'ongoing' | 'finished'>('ongoing');
+    const [registrationStatus, setRegistrationStatus] = useState<'open' | 'closed'>('open');
 
     useEffect(() => {
         // Subscribe to global settings for event status
         const settingsUnsub = onSnapshot(doc(db, 'settings', 'general'), (docSnap) => {
             if (docSnap.exists()) {
-                setEventStatus(docSnap.data().eventStatus || 'ongoing');
+                const data = docSnap.data();
+                setEventStatus(data.eventStatus || 'ongoing');
+                setRegistrationStatus(data.registrationStatus || 'open');
             }
         });
         return () => settingsUnsub();
@@ -1242,132 +1245,145 @@ const UserDashboard = () => {
                                         </div>
                                     </div>
                                 ) : (
-                                    <form onSubmit={handleSubmit} className="space-y-4">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="registrantType">Registrant Type <span className="text-destructive">*</span></Label>
-                                            <Select
-                                                value={formData.registrantType}
-                                                onValueChange={(val) => {
-                                                    handleSelectChange(val);
-                                                    if (val === 'chedofficial') {
-                                                        setFormData(prev => ({ ...prev, schoolAffiliation: 'Not Applicable' }));
-                                                    } else if (formData.schoolAffiliation === 'Not Applicable') {
-                                                        // Clear it if switching back from chedofficial
-                                                        setFormData(prev => ({ ...prev, schoolAffiliation: '' }));
-                                                    }
-                                                }}
-                                            >
-                                                <SelectTrigger className="bg-background/50">
-                                                    <SelectValue placeholder="Select type" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="chedofficial">CHED Official</SelectItem>
-                                                    <SelectItem value="organizing_committee">Organizing Committee</SelectItem>
-                                                    <SelectItem value="speaker">Speaker</SelectItem>
-                                                    <SelectItem value="exhibitor">Exhibitor</SelectItem>
-                                                    <SelectItem value="faculty">Faculty</SelectItem>
-                                                    <SelectItem value="college">College Student</SelectItem>
-                                                    <SelectItem value="shs">Senior High Student</SelectItem>
-                                                    <SelectItem value="participant">Participant</SelectItem>
-                                                    <SelectItem value="others">Others</SelectItem>
-                                                </SelectContent>
-                                            </Select>
+                                    registrationStatus === 'closed' ? (
+                                        <div className="flex flex-col items-center justify-center py-12 px-4 text-center space-y-4">
+                                            <div className="p-4 bg-amber-500/10 rounded-full mb-2">
+                                                <AlertCircle className="w-12 h-12 text-amber-500" />
+                                            </div>
+                                            <h3 className="text-2xl font-bold">Registration Closed</h3>
+                                            <p className="text-muted-foreground max-w-md">
+                                                Online registration for the CHED RAISE 2026 Summit is currently closed.
+                                                Please check back later or contact the organizing committee for assistance.
+                                            </p>
                                         </div>
-
-                                        {formData.registrantType === 'others' && (
+                                    ) : (
+                                        <form onSubmit={handleSubmit} className="space-y-4">
                                             <div className="space-y-2">
-                                                <Label htmlFor="registrantTypeOther">Please specify <span className="text-destructive">*</span></Label>
-                                                <Input
-                                                    id="registrantTypeOther"
-                                                    name="registrantTypeOther"
+                                                <Label htmlFor="registrantType">Registrant Type <span className="text-destructive">*</span></Label>
+                                                <Select
+                                                    value={formData.registrantType}
+                                                    onValueChange={(val) => {
+                                                        handleSelectChange(val);
+                                                        if (val === 'chedofficial') {
+                                                            setFormData(prev => ({ ...prev, schoolAffiliation: 'Not Applicable' }));
+                                                        } else if (formData.schoolAffiliation === 'Not Applicable') {
+                                                            // Clear it if switching back from chedofficial
+                                                            setFormData(prev => ({ ...prev, schoolAffiliation: '' }));
+                                                        }
+                                                    }}
+                                                >
+                                                    <SelectTrigger className="bg-background/50">
+                                                        <SelectValue placeholder="Select type" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="chedofficial">CHED Official</SelectItem>
+                                                        <SelectItem value="organizing_committee">Organizing Committee</SelectItem>
+                                                        <SelectItem value="speaker">Speaker</SelectItem>
+                                                        <SelectItem value="exhibitor">Exhibitor</SelectItem>
+                                                        <SelectItem value="faculty">Faculty</SelectItem>
+                                                        <SelectItem value="college">College Student</SelectItem>
+                                                        <SelectItem value="shs">Senior High Student</SelectItem>
+                                                        <SelectItem value="participant">Participant</SelectItem>
+                                                        <SelectItem value="others">Others</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+
+                                            {formData.registrantType === 'others' && (
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="registrantTypeOther">Please specify <span className="text-destructive">*</span></Label>
+                                                    <Input
+                                                        id="registrantTypeOther"
+                                                        name="registrantTypeOther"
+                                                        required
+                                                        value={formData.registrantTypeOther}
+                                                        onChange={handleChange}
+                                                        placeholder="e.g. Researcher, Guest"
+                                                        className="bg-background/50"
+                                                    />
+                                                </div>
+                                            )}
+
+                                            <div className="grid gap-3 sm:gap-4 sm:grid-cols-3">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="lastName">Last Name <span className="text-destructive">*</span></Label>
+                                                    <Input id="lastName" name="lastName" required value={formData.lastName} onChange={handleChange} placeholder="Dela Cruz" className="bg-background/50" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="firstName">First Name <span className="text-destructive">*</span></Label>
+                                                    <Input id="firstName" name="firstName" required value={formData.firstName} onChange={handleChange} placeholder="Juana" className="bg-background/50" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="middleName">Middle Name <span className="text-destructive">*</span></Label>
+                                                    <Input id="middleName" name="middleName" required value={formData.middleName} onChange={handleChange} placeholder="Santos" className="bg-background/50" />
+                                                </div>
+                                            </div>
+
+                                            <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="email" className="flex items-center gap-2">
+                                                        <Mail className="h-4 w-4 text-muted-foreground" /> Email Address
+                                                    </Label>
+                                                    <Input id="email" name="email" type="email" required value={formData.email} onChange={handleChange} disabled className="bg-muted opacity-80" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="contactNumber" className="flex items-center gap-2">
+                                                        <Phone className="h-4 w-4 text-muted-foreground" /> Contact Number <span className="text-destructive">*</span>
+                                                    </Label>
+                                                    <Input id="contactNumber" name="contactNumber" required value={formData.contactNumber} onChange={handleChange} placeholder="0912 345 6789" className="bg-background/50" />
+                                                </div>
+                                            </div>
+
+                                            {formData.registrantType !== 'chedofficial' && (
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="schoolAffiliation">School Affiliation <span className="text-destructive">*</span></Label>
+                                                    <SchoolAutocomplete
+                                                        id="schoolAffiliation"
+                                                        name="schoolAffiliation"
+                                                        value={formData.schoolAffiliation}
+                                                        onChange={(val) => setFormData(prev => ({ ...prev, schoolAffiliation: val }))}
+                                                        placeholder="e.g. University of the Philippines"
+                                                        className="bg-background/50"
+                                                        required
+                                                    />
+                                                </div>
+                                            )}
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="region">Region <span className="text-destructive">*</span></Label>
+                                                <SearchableSelect
+                                                    options={PHILIPPINE_REGIONS}
+                                                    value={formData.region}
+                                                    onChange={handleRegionChange}
+                                                    placeholder="Select region"
                                                     required
-                                                    value={formData.registrantTypeOther}
-                                                    onChange={handleChange}
-                                                    placeholder="e.g. Researcher, Guest"
-                                                    className="bg-background/50"
                                                 />
                                             </div>
-                                        )}
 
-                                        <div className="grid gap-3 sm:gap-4 sm:grid-cols-3">
                                             <div className="space-y-2">
-                                                <Label htmlFor="lastName">Last Name <span className="text-destructive">*</span></Label>
-                                                <Input id="lastName" name="lastName" required value={formData.lastName} onChange={handleChange} placeholder="Dela Cruz" className="bg-background/50" />
+                                                <Label htmlFor="foodPreference">Food Preference <span className="text-destructive">*</span></Label>
+                                                <Select onValueChange={handleFoodPreferenceChange} value={formData.foodPreference}>
+                                                    <SelectTrigger className="bg-background/50">
+                                                        <SelectValue placeholder="Select preference" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="no_restriction">No Food Restriction</SelectItem>
+                                                        <SelectItem value="halal">Halal</SelectItem>
+                                                        <SelectItem value="vegetarian">Vegetarian</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
                                             </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="firstName">First Name <span className="text-destructive">*</span></Label>
-                                                <Input id="firstName" name="firstName" required value={formData.firstName} onChange={handleChange} placeholder="Juana" className="bg-background/50" />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="middleName">Middle Name <span className="text-destructive">*</span></Label>
-                                                <Input id="middleName" name="middleName" required value={formData.middleName} onChange={handleChange} placeholder="Santos" className="bg-background/50" />
-                                            </div>
-                                        </div>
-
-                                        <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
-                                            <div className="space-y-2">
-                                                <Label htmlFor="email" className="flex items-center gap-2">
-                                                    <Mail className="h-4 w-4 text-muted-foreground" /> Email Address
-                                                </Label>
-                                                <Input id="email" name="email" type="email" required value={formData.email} onChange={handleChange} disabled className="bg-muted opacity-80" />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="contactNumber" className="flex items-center gap-2">
-                                                    <Phone className="h-4 w-4 text-muted-foreground" /> Contact Number <span className="text-destructive">*</span>
-                                                </Label>
-                                                <Input id="contactNumber" name="contactNumber" required value={formData.contactNumber} onChange={handleChange} placeholder="0912 345 6789" className="bg-background/50" />
-                                            </div>
-                                        </div>
-
-                                        {formData.registrantType !== 'chedofficial' && (
-                                            <div className="space-y-2">
-                                                <Label htmlFor="schoolAffiliation">School Affiliation <span className="text-destructive">*</span></Label>
-                                                <SchoolAutocomplete
-                                                    id="schoolAffiliation"
-                                                    name="schoolAffiliation"
-                                                    value={formData.schoolAffiliation}
-                                                    onChange={(val) => setFormData(prev => ({ ...prev, schoolAffiliation: val }))}
-                                                    placeholder="e.g. University of the Philippines"
-                                                    className="bg-background/50"
-                                                    required
-                                                />
-                                            </div>
-                                        )}
-
-                                        <div className="space-y-2">
-                                            <Label htmlFor="region">Region <span className="text-destructive">*</span></Label>
-                                            <SearchableSelect
-                                                options={PHILIPPINE_REGIONS}
-                                                value={formData.region}
-                                                onChange={handleRegionChange}
-                                                placeholder="Select region"
-                                                required
-                                            />
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label htmlFor="foodPreference">Food Preference <span className="text-destructive">*</span></Label>
-                                            <Select onValueChange={handleFoodPreferenceChange} value={formData.foodPreference}>
-                                                <SelectTrigger className="bg-background/50">
-                                                    <SelectValue placeholder="Select preference" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="no_restriction">No Food Restriction</SelectItem>
-                                                    <SelectItem value="halal">Halal</SelectItem>
-                                                    <SelectItem value="vegetarian">Vegetarian</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
 
 
-                                        <Button type="submit" className="w-full bg-primary hover:bg-primary/90 mt-4" size="lg" disabled={submitting}>
-                                            {submitting ? (
-                                                <>
-                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...
-                                                </>
-                                            ) : 'Complete Registration'}
-                                        </Button>
-                                    </form>
+                                            <Button type="submit" className="w-full bg-primary hover:bg-primary/90 mt-4" size="lg" disabled={submitting}>
+                                                {submitting ? (
+                                                    <>
+                                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...
+                                                    </>
+                                                ) : 'Complete Registration'}
+                                            </Button>
+                                        </form>
+                                    )
                                 )}
                             </CardContent>
                         </Card>
@@ -1389,7 +1405,7 @@ const UserDashboard = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
 
     );
 };
