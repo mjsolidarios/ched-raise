@@ -109,6 +109,11 @@ const AdminPage = () => {
         userId: null,
         currentRegion: null
     });
+    const [promoteRegionalAdminDialog, setPromoteRegionalAdminDialog] = useState<{ isOpen: boolean; userId: string | null; currentRegion: string | null }>({
+        isOpen: false,
+        userId: null,
+        currentRegion: null
+    });
     const [selectedRegion, setSelectedRegion] = useState<string>('');
 
     // Delete Attendance State
@@ -411,27 +416,37 @@ const AdminPage = () => {
             return;
         }
 
-        if (!region) {
-            toast.error("User must have a region to be a Regional Admin.");
+        setPromoteRegionalAdminDialog({ isOpen: true, userId: id, currentRegion: region || null });
+        setSelectedRegion(region || '');
+    };
+
+    const handleConfirmPromoteRegionalAdmin = async () => {
+        const { userId } = promoteRegionalAdminDialog;
+        if (!userId) return;
+
+        if (!selectedRegion) {
+            toast.error("Please select a region for the Regional Admin.");
             return;
         }
 
         try {
-            const ref = doc(db, 'registrations', id);
+            const ref = doc(db, 'registrations', userId);
             await updateDoc(ref, {
-                role: 'regional_admin'
+                role: 'regional_admin',
+                region: selectedRegion
             });
 
             // Sync to user_roles collection for Firestore Rules
-            const reg = registrations.find(r => r.id === id);
+            const reg = registrations.find(r => r.id === userId);
             if (reg && reg.uid) {
                 await setDoc(doc(db, 'user_roles', reg.uid), {
                     role: 'regional_admin',
-                    region: region
-                });
+                    region: selectedRegion
+                }, { merge: true });
             }
 
-            toast.success("User promoted to Regional Admin");
+            toast.success(`User promoted to Regional Admin for ${getRegionShortName(selectedRegion)}`);
+            setPromoteRegionalAdminDialog({ isOpen: false, userId: null, currentRegion: null });
         } catch (error) {
             console.error("Error promoting user", error);
             toast.error("Failed to promote user");
@@ -1957,6 +1972,40 @@ const AdminPage = () => {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            <Dialog open={promoteRegionalAdminDialog.isOpen} onOpenChange={(open) => setPromoteRegionalAdminDialog(prev => ({ ...prev, isOpen: open }))}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Promote to Regional Admin</DialogTitle>
+                        <DialogDescription>
+                            Select the region this user will administer. This will grant them admin access for the selected region.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4 space-y-4">
+                        <div className="space-y-2">
+                            <Label>Select Region</Label>
+                            <Select value={selectedRegion} onValueChange={setSelectedRegion}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a region" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {PHILIPPINE_REGIONS.map((region) => (
+                                        <SelectItem key={region} value={region}>
+                                            {getRegionShortName(region)}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setPromoteRegionalAdminDialog({ isOpen: false, userId: null, currentRegion: null })}>Cancel</Button>
+                        <Button onClick={handleConfirmPromoteRegionalAdmin} disabled={!selectedRegion}>
+                            Promote
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             <Dialog open={changeRegionDialog.isOpen} onOpenChange={(open) => setChangeRegionDialog(prev => ({ ...prev, isOpen: open }))}>
                 <DialogContent>
