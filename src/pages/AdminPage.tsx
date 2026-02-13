@@ -9,6 +9,7 @@ import { GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, sig
 import { collection, deleteDoc, deleteField, doc, getDoc, onSnapshot, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { useEffect, useMemo, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
+import { Switch } from '@/components/ui/switch';
 
 import {
     DropdownMenu,
@@ -69,6 +70,7 @@ const AdminPage = () => {
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [eventStatus, setEventStatus] = useState<'ongoing' | 'finished'>('ongoing');
     const [registrationStatus, setRegistrationStatus] = useState<'open' | 'closed'>('open');
+    const [aiEnabled, setAiEnabled] = useState(true);
 
     // Admin Role State
     const [adminRole, setAdminRole] = useState<'super_admin' | 'regional_admin' | 'user' | null>(null);
@@ -134,9 +136,11 @@ const AdminPage = () => {
                 const data = docSnap.data();
                 setEventStatus(data.eventStatus || 'ongoing');
                 setRegistrationStatus(data.registrationStatus || 'open');
+                setAiEnabled(data.aiEnabled !== false); // Default to true if missing
             } else {
                 setEventStatus('ongoing');
                 setRegistrationStatus('open');
+                setAiEnabled(true);
             }
         });
         return () => settingsUnsub();
@@ -176,6 +180,21 @@ const AdminPage = () => {
         } catch (err) {
             console.error("Error toggling registration status", err);
             toast.error("Failed to update registration status");
+        }
+    };
+
+    const toggleAiEnabled = async () => {
+        if (adminRole !== 'super_admin') return;
+        try {
+            const newState = !aiEnabled;
+            // Optimistic update
+            setAiEnabled(newState);
+            await setDoc(doc(db, 'settings', 'general'), { aiEnabled: newState }, { merge: true });
+            toast.success(`AI Features ${newState ? 'Enabled' : 'Disabled'}`);
+        } catch (err) {
+            console.error("Error toggling AI status", err);
+            setAiEnabled(!aiEnabled); // Revert
+            toast.error("Failed to update AI status");
         }
     };
 
@@ -1091,6 +1110,17 @@ const AdminPage = () => {
                                 >
                                     {eventStatus === 'ongoing' ? 'Finish Event' : 'Re-open Event'}
                                 </Button>
+                                <div className="h-8 w-[1px] bg-white/10 mx-1 hidden md:block" />
+                                <div className="flex items-center space-x-2 border border-white/10 rounded-lg p-2 bg-black/20">
+                                    <Switch
+                                        id="ai-mode"
+                                        checked={aiEnabled}
+                                        onCheckedChange={toggleAiEnabled}
+                                    />
+                                    <Label htmlFor="ai-mode" className="text-sm font-medium cursor-pointer text-white">
+                                        AI Features
+                                    </Label>
+                                </div>
                             </div>
                         )}
                     </div>

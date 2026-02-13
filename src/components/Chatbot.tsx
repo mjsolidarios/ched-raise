@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
+import { db } from '@/lib/firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +30,7 @@ export function Chatbot() {
     ]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [aiEnabled, setAiEnabled] = useState(true);
     const scrollRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -45,6 +48,22 @@ export function Chatbot() {
             setTimeout(() => inputRef.current?.focus(), 100);
         }
     }, [isOpen]);
+
+    useEffect(() => {
+        const unsub = onSnapshot(doc(db, 'settings', 'general'), (doc) => {
+            if (doc.exists()) {
+                const data = doc.data();
+                const enabled = data.aiEnabled !== false;
+                setAiEnabled(enabled);
+                if (!enabled) {
+                    setIsOpen(false);
+                }
+            }
+        });
+        return () => unsub();
+    }, []);
+
+    if (!aiEnabled) return null;
 
     const handleSend = async () => {
         if (!input.trim()) return;

@@ -163,9 +163,9 @@ export function SchoolAutocomplete({ value, onChange, id, name, placeholder, cla
 
                     {!loading && suggestions.length === 0 && debouncedValue.length >= 3 && (
                         <li className="px-2 py-2 text-sm text-muted-foreground text-center">
-                            No matches found.
+                            Our AI is busy at the moment...
                             <br />
-                            <span className="text-xs">Type the full name to add it manually.</span>
+                            <span className="text-xs">Please type the full name to add it manually.</span>
                         </li>
                     )}
 

@@ -1,8 +1,22 @@
 
+import { db } from './firebase';
+import { doc, getDoc } from 'firebase/firestore';
+
 export async function getSchoolSuggestions(query: string): Promise<string[]> {
     if (!query || query.length < 3) return [];
 
     try {
+        const settingsRef = doc(db, 'settings', 'general');
+        const settingsSnap = await getDoc(settingsRef);
+
+        if (settingsSnap.exists()) {
+            const data = settingsSnap.data();
+            if (data.aiEnabled === false) {
+                console.log("AI is disabled, skipping suggestions.");
+                return [];
+            }
+        }
+
         console.log("Fetching school suggestions from PHP API for:", query);
 
         const response = await fetch('/api/ai/index.php', {
