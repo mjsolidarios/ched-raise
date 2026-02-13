@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils"
 // Mock Data for Resource Persons
 const SPEAKERS = [
     {
-        name: "Dr. Bobby Gerardo",
+        name: "Dr. Bobby D. Gerardo",
         role: "President",
         org: "Northern Iloilo State University",
         image: "/resource_persons/gerardo.png",
@@ -68,7 +68,7 @@ const SPEAKERS = [
         bio: "Participating in: AI in Education Partnership, Turnover of Skills Framework, and Industry AI Requirements Panel."
     },
     {
-        name: "Dr. Joselito Villaruz",
+        name: "Dr. Joselito F. Villaruz",
         role: "President",
         org: "West Visayas State University",
         image: "/resource_persons/villaruz.png",
