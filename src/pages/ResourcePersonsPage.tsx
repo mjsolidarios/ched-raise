@@ -15,7 +15,7 @@ const SPEAKERS = [
         name: "Dr. Bobby Gerardo",
         role: "President",
         org: "Northern Iloilo State University",
-        image: "",
+        image: "/resource_persons/gerardo.png",
         topic: "Welcome Remarks",
         bio: "Also presenting: Turnover of Philippine Skills Framework, Coffee Table Book, and Exhibit Ribbon-Cutting."
     },
@@ -23,7 +23,7 @@ const SPEAKERS = [
         name: "Sherwin Pelayo",
         role: "Executive Director",
         org: "Analytics & AI Association of the Philippines",
-        image: "",
+        image: "/resource_persons/pelayo.png",
         topic: "Fireside Chat Introduction",
         bio: "Leading sessions on 'National AI Upskilling Roadmap', Government-Private Sector Partnership, AI Policy, and Student Open Forum."
     },
@@ -31,7 +31,7 @@ const SPEAKERS = [
         name: "Chair Shirley Agrupis",
         role: "Chair",
         org: "CHED",
-        image: "",
+        image: "/resource_persons/agrupis.png",
         topic: "Fireside Chat Panel",
         bio: "Participating in: AI in Education Partnership, Turnover of Skills Framework, Coffee Table Book, and Ribbon-Cutting."
     },
@@ -39,7 +39,7 @@ const SPEAKERS = [
         name: "Sec. Juan Edgardo \"Sonny\" Angara",
         role: "Secretary",
         org: "DepEd",
-        image: "",
+        image: "/resource_persons/angara.png",
         topic: "Fireside Chat Panel",
         bio: "Participating in: AI in Education Partnership and Turnover of Skills Framework."
     },
@@ -47,7 +47,7 @@ const SPEAKERS = [
         name: "Dir. Gen. Jose Francisco \"Kiko\" Benitez",
         role: "Director General",
         org: "TESDA",
-        image: "",
+        image: "/resource_persons/benitez.png",
         topic: "Fireside Chat Panel",
         bio: "Participating in: AI in Education Partnership and Turnover of Skills Framework."
     },
@@ -55,7 +55,7 @@ const SPEAKERS = [
         name: "Fred Ayala",
         role: "Chair",
         org: "Private Sector Jobs and Skills Corp.",
-        image: "",
+        image: "/resource_persons/ayala.png",
         topic: "Fireside Chat Panel",
         bio: "Participating in: AI in Education Partnership and Turnover of Skills Framework."
     },
@@ -63,7 +63,7 @@ const SPEAKERS = [
         name: "Michelle Alarcon",
         role: "President",
         org: "Analytics & AI Association of the Philippines",
-        image: "",
+        image: "/resource_persons/alarcon.png",
         topic: "Fireside Chat Panel",
         bio: "Participating in: AI in Education Partnership, Turnover of Skills Framework, and Industry AI Requirements Panel."
     },
@@ -71,7 +71,7 @@ const SPEAKERS = [
         name: "Dr. Joselito Villaruz",
         role: "President",
         org: "West Visayas State University",
-        image: "",
+        image: "/resource_persons/villaruz.png",
         topic: "Welcome Remarks",
         bio: "Participating in: Turnover of Skills Framework, Coffee Table Book, and Exhibit Ribbon-Cutting."
     },
@@ -79,7 +79,7 @@ const SPEAKERS = [
         name: "Dr. Maricar Casquejo",
         role: "Director",
         org: "CHED Region 9",
-        image: "",
+        image: "/resource_persons/casquejo.png",
         topic: "Turnover Ceremony",
         bio: "Participating in the turnover of the CHEDx 2024 Coffee Table Book."
     },
@@ -87,7 +87,7 @@ const SPEAKERS = [
         name: "Dr. Raul Muyong",
         role: "Regional Director",
         org: "CHED Region 6",
-        image: "",
+        image: "/resource_persons/muyong.png",
         topic: "Closing Remarks",
         bio: "Participating in: Turnover of Coffee Table Book and Exhibit Ribbon-Cutting."
     },
@@ -95,7 +95,7 @@ const SPEAKERS = [
         name: "Dr. Bonifacio Gabales Jr.",
         role: "President",
         org: "University of Southeastern Philippines",
-        image: "",
+        image: "/resource_persons/gabales.png",
         topic: "Turnover Ceremony",
         bio: "Participating in the turnover of the CHEDx 2024 Coffee Table Book."
     },
@@ -103,7 +103,7 @@ const SPEAKERS = [
         name: "Sec. Renato Solidum, Jr.",
         role: "Secretary",
         org: "DOST",
-        image: "",
+        image: "/resource_persons/solidum.png",
         topic: "Keynote: NAIS-PH",
         bio: "Presenting 'The National AI Strategy of the Philippines (NAIS-PH)'."
     },
@@ -135,7 +135,7 @@ const SPEAKERS = [
         name: "Dr. Ace Lagman",
         role: "Senior Director",
         org: "FEU Institute of Technology",
-        image: "",
+        image: "/resource_persons/lagman.png",
         topic: "Workshop Facilitator",
         bio: "Facilitating 'Demystifying the AI World: Core Concepts of AI, ML, DL'."
     },
@@ -143,7 +143,7 @@ const SPEAKERS = [
         name: "Jonathan De Luzuriaga",
         role: "President",
         org: "Spring Valley Tech Corp. / PSIA",
-        image: "",
+        image: "/resource_persons/luzuriaga.png",
         topic: "Panelist",
         bio: "Participating in the panel 'AI Requirements in the Industry'."
     },
@@ -151,7 +151,7 @@ const SPEAKERS = [
         name: "Arup Maity",
         role: "President",
         org: "Xamun / PSIA",
-        image: "",
+        image: "/resource_persons/maity.png",
         topic: "Panelist",
         bio: "Participating in the panel 'AI Requirements in the Industry'."
     },
