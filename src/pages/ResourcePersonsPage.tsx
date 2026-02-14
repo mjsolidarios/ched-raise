@@ -147,14 +147,14 @@ const SPEAKERS = [
         topic: "Panelist",
         bio: "Participating in the panel 'AI Requirements in the Industry'."
     },
-    {
-        name: "Arup Maity",
-        role: "President",
-        org: "Xamun / PSIA",
-        image: "/resource_persons/maity.png",
-        topic: "Panelist",
-        bio: "Participating in the panel 'AI Requirements in the Industry'."
-    },
+    // {
+    //     name: "Arup Maity",
+    //     role: "President",
+    //     org: "Xamun / PSIA",
+    //     image: "/resource_persons/maity.png",
+    //     topic: "Panelist",
+    //     bio: "Participating in the panel 'AI Requirements in the Industry'."
+    // },
     {
         name: "Fulbert Woo",
         role: "Regional Governor",
@@ -171,14 +171,14 @@ const SPEAKERS = [
         topic: "Moderator",
         bio: "Moderating the panel 'AI Requirements in the Industry'."
     },
-    {
-        name: "Dr. Prospero Naval",
-        role: "Professor",
-        org: "University of the Philippines",
-        image: "",
-        topic: "Workshop Facilitator",
-        bio: "Facilitating 'Setting Up the Infrastructure for an AI Program'."
-    },
+    // {
+    //     name: "Dr. Prospero Naval",
+    //     role: "Professor",
+    //     org: "University of the Philippines",
+    //     image: "",
+    //     topic: "Workshop Facilitator",
+    //     bio: "Facilitating 'Setting Up the Infrastructure for an AI Program'."
+    // },
     {
         name: "Oliver Malabanan",
         role: "Professor",
